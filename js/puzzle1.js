@@ -4,16 +4,16 @@ export function initPuzzle1(container, onBack, onNext) {
       <header>
         <div class="puzzle-top-row">
           <div>
-            <h1>Puzzle 1: Rebuild the Union Masonic Temple</h1>
-            <p>In 1886 Kimberley, Union Lodge members raised funds and built this temple as a shared space for mutual aid and cultural bonds.</p>
+            <h1>Puzzle 1: Shattered Sanctuary</h1>
+            <p>In the dust of Kimberley, a temple lies fragmented. What unseen forces held it together?</p>
           </div>
           <button id="back-to-landing" class="back-btn">← Back</button>
         </div>
       </header>
 
       <div class="puzzle-intro">
-        <div class="puzzle-tag">Heritage Task</div>
-        <div class="puzzle-description">Piece together the 1886 Kimberley Masonic Temple fragments. Each tile rebuild reveals how Chinese immigrant support and lodge solidarity enabled this lodge’s survival.</div>
+        <div class="puzzle-tag">Mysterious Task</div>
+        <div class="puzzle-description">The temple's visage is shattered into four enigmatic pieces. Reassemble them to unveil the first hidden bond that sustained the enclave.</div>
       </div>
 
       <div class="puzzle-layout">
@@ -26,7 +26,7 @@ export function initPuzzle1(container, onBack, onNext) {
         </div>
       </div>
 
-      <p id="feedback">Tip: Drag each tile into the correct slot. A full rebuild reveals the hidden bond between lodge members and migrant communities.</p>
+      <p id="feedback">Tip: Drag each fragment into its rightful place. When the sanctuary is whole, a hidden bond will emerge from the shadows.</p>
     </div>
   `;
 
@@ -145,7 +145,7 @@ export function initPuzzle1(container, onBack, onNext) {
 
       if (solved === slots.length) {
         const feedback = document.getElementById('feedback');
-        feedback.innerHTML = `<strong>Union Lodge and immigrant partners shared shelter, meals, and funds.</strong><br><span>The first hidden bond is revealed: community solidarity around the Masonic Temple.</span>`;
+        feedback.innerHTML = `<strong>The sanctuary stands whole once more.</strong><br><span>You've uncovered the first hidden bond: the silent pact of mutual aid that wove the community together.</span>`;
         gsap.fromTo(feedback, { opacity: 0, y: 20, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out' });
 
         // Celebrate with piece animations

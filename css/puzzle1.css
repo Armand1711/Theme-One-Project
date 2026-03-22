@@ -215,7 +215,7 @@ body {
 #feedback {
   margin-top: 40px;
   font-weight: 600;
-  min-height: 80px;
+  min-height: 90px;
   color: var(--color-primary);
   text-align: center;
   background: linear-gradient(180deg, var(--color-surface) 0%, #f8f2e4 100%);
@@ -224,10 +224,48 @@ body {
   box-shadow: var(--shadow-medium);
   backdrop-filter: blur(5px);
   border: 1px solid rgba(255,255,255,0.2);
-  max-width: 600px;
+  max-width: 650px;
   margin-left: auto;
   margin-right: auto;
 }
+
+@media (max-width: 900px) {
+  .puzzle-layout {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .puzzle-source,
+  .puzzle-target {
+    min-height: 260px;
+  }
+
+  .drop-slot {
+    min-height: 76px;
+    font-size: 0.88rem;
+    padding: 10px;
+  }
+
+  .piece {
+    height: 70px;
+    font-size: 1.1rem;
+  }
+
+  .puzzle-top-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .puzzle-top-row h1 {
+    font-size: 1.4rem;
+  }
+
+  .puzzle-description {
+    font-size: 0.9rem;
+  }
+}
+
 
 .puzzle-top-row {
   display: flex;
@@ -282,6 +320,58 @@ body {
   to {
     transform: rotate(360deg);
   }
+}
+
+.network-canvas {
+  height: 400px;
+  background: linear-gradient(135deg, #fdfcf8 0%, #f6ece2 50%, #f0e4d4 100%);
+  border: 2px dashed #b28d5a;
+  border-radius: var(--border-radius);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-heavy), inset 0 1px 0 rgba(255,255,255,0.3);
+  backdrop-filter: blur(15px);
+}
+
+.network-node {
+  position: absolute;
+  width: 120px;
+  height: 60px;
+  background: linear-gradient(135deg, #e8e0d4 0%, #d4c4a8 50%, #bbb 100%);
+  border: 2px solid rgba(67, 47, 15, 0.65);
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-medium);
+  user-select: none;
+  transition: var(--transition);
+  color: #2a1f0f;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  text-align: center;
+}
+
+.network-node:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-heavy);
+}
+
+.network-node.selected {
+  border-color: #1f8d26;
+  background: linear-gradient(135deg, #d9f2d5 0%, #b8e6b3 50%, #97d991 100%);
+  transform: scale(1.05);
+}
+
+.network-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 

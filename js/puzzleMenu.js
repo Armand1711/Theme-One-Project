@@ -1,34 +1,35 @@
 import { initPuzzle1 } from './puzzle1.js';
 
-export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzle3) {
+export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzle3, completedPuzzles = 0) {
+  const progressText = `${Math.min(completedPuzzles, 4)}/4`;
   const html = `
     <div id="screen-menu" class="screen active">
       <header>
-        <h1>HIDDEN BONDS ROUTE</h1>
-        <p>Complete each puzzle in order to reveal one continuous bond story through the Union Lodge history.</p>
+        <h1>THE ENIGMA PATH</h1>
+        <p>Four riddles await. Each solved unveils a fragment of the hidden bonds that once wove a community together in secrecy.</p>
       </header>
 
       <div class="menu-stats">
-        <div class="menu-chip"><strong>0/4</strong><span>Completed</span></div>
-        <div class="menu-chip"><strong>4</strong><span>Story chapters</span></div>
-        <div class="menu-chip"><strong>100%</strong><span>Heritage focus</span></div>
+        <div class="menu-chip"><strong>${progressText}</strong><span>Secrets revealed</span></div>
+        <div class="menu-chip"><strong>4</strong><span>Mysterious chapters</span></div>
+        <div class="menu-chip"><strong>100%</strong><span>Discovery focus</span></div>
       </div>
 
       <div class="menu-grid">
-        <button class="menu-card active" data-puzzle="1">
+        <button class="menu-card active" data-puzzle="1" data-unlocked="true">
           <div class="menu-title">01</div>
-          <div class="menu-item-title">Rebuild the Union Temple</div>
-          <div class="menu-small">Restore 1886 temple structure to reveal the first bond.</div>
+          <div class="menu-item-title">Shattered Sanctuary</div>
+          <div class="menu-small">Reassemble the temple's broken visage to glimpse the first veiled connection.</div>
         </button>
-        <button class="menu-card" data-puzzle="2">
+        <button class="menu-card ${completedPuzzles >= 1 ? '' : 'disabled'}" data-puzzle="2" data-unlocked="${completedPuzzles >= 1}">
           <div class="menu-title">02</div>
-          <div class="menu-item-title">Symbol Match</div>
-          <div class="menu-small">Pair lodge symbols with community values.</div>
+          <div class="menu-item-title">Symbol Cipher</div>
+          <div class="menu-small">Decipher ancient emblems to unlock the second hidden bond.</div>
         </button>
-        <button class="menu-card" data-puzzle="3">
+        <button class="menu-card ${completedPuzzles >= 2 ? '' : 'disabled'}" data-puzzle="3" data-unlocked="${completedPuzzles >= 2}">
           <div class="menu-title">03</div>
-          <div class="menu-item-title">Network Graph</div>
-          <div class="menu-small">Connect people, trade, and support links.</div>
+          <div class="menu-item-title">Web of Whispers</div>
+          <div class="menu-small">Trace the invisible threads that bound the enclave together.</div>
         </button>
       </div>
 
@@ -56,6 +57,8 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
   let selected = '1';
   cards.forEach(card => {
     card.addEventListener('click', () => {
+      if (card.dataset.unlocked !== 'true') return;
+
       cards.forEach(c => c.classList.remove('active'));
       card.classList.add('active');
       selected = card.dataset.puzzle;
