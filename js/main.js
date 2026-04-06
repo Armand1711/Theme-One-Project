@@ -1,12 +1,14 @@
-import { initLanding } from './landing.js';
-import { initPuzzleMenu } from './puzzleMenu.js';
-import { initPuzzle1 } from './puzzle1.js';
-import { initPuzzle2 } from './puzzle2.js';
-import { initPuzzle3 } from './puzzle3.js';
-import { initReflection } from './reflection.js';
+import { initLanding }     from './landing.js';
+import { initPuzzleMenu }  from './puzzleMenu.js';
+import { initPuzzle1 }     from './puzzle1.js';
+import { initPuzzle2 }     from './puzzle2.js';
+import { initPuzzle3 }     from './puzzle3.js';
+import { initReflection }  from './reflection.js';
 
 const app = document.getElementById('app');
 let completedPuzzles = 0;
+let puzzle1Clue = null;
+let puzzle2Clue = null;
 
 function renderMenu() {
   initPuzzleMenu(app,
@@ -27,43 +29,36 @@ document.addEventListener('DOMContentLoaded', () => {
 function startPuzzle(step) {
   if (step === 1) {
     initPuzzle1(app,
-      () => {
-        completedPuzzles = 1;
-        startPuzzle(2);
-      },
-      () => {
-        completedPuzzles = 1;
+      () => renderMenu(),
+      (clue) => {
+        puzzle1Clue = clue;
+        completedPuzzles = Math.max(completedPuzzles, 1);
         startPuzzle(2);
       }
     );
+
   } else if (step === 2) {
-    initPuzzle2(app,
-      () => {
-        completedPuzzles = completedPuzzles < 2 ? 2 : completedPuzzles;
-        startPuzzle(3);
-      },
-      () => {
-        completedPuzzles = completedPuzzles < 2 ? 2 : completedPuzzles;
+    initPuzzle2(app, puzzle1Clue,
+      () => renderMenu(),
+      (clue) => {
+        puzzle2Clue = clue;
+        completedPuzzles = Math.max(completedPuzzles, 2);
         startPuzzle(3);
       }
     );
+
   } else if (step === 3) {
-    initPuzzle3(app,
+    initPuzzle3(app, puzzle2Clue,
+      () => renderMenu(),
       () => {
-        completedPuzzles = completedPuzzles < 3 ? 3 : completedPuzzles;
+        completedPuzzles = Math.max(completedPuzzles, 3);
         initReflection(app, () => {
           completedPuzzles = 0;
-          initLanding(app, () => renderMenu());
-        });
-      },
-      () => {
-        completedPuzzles = completedPuzzles < 3 ? 3 : completedPuzzles;
-        initReflection(app, () => {
-          completedPuzzles = 0;
+          puzzle1Clue = null;
+          puzzle2Clue = null;
           initLanding(app, () => renderMenu());
         });
       }
     );
   }
 }
-

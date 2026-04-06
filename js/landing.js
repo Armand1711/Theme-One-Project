@@ -1,46 +1,81 @@
 export function initLanding(app, startMenu) {
   const html = `
-    <div id="screen-landing" class="screen active">
-      <header>
-        <h1>CONNECT THE HIDDEN BONDS</h1>
-        <p class="subtitle">Whispers from 1886: Unearth the secret threads that bound a forgotten community.</p>
-      </header>
-
-      <div class="hero-image"></div>
-
-      <div class="stats">
-        <div><strong>1886</strong><br>Veiled history</div>
-        <div><strong>8 min</strong><br>Mysterious quest</div>
-        <div><strong>4 puzzles</strong><br>Hidden revelations</div>
+    <div id="screen-landing">
+      <div class="landing-hero">
+        <div class="hero-grain"></div>
+        <div class="hero-overlay">
+          <nav class="hero-nav">
+            <div class="hero-badge">Heritage Discovery</div>
+          </nav>
+          <div class="hero-content">
+            <div class="hero-eyebrow">
+              <span class="eyebrow-line"></span>
+              <span>Kimberley &middot; 1886</span>
+              <span class="eyebrow-line"></span>
+            </div>
+            <h1 class="hero-title">CONNECT THE<br><span class="hero-title-accent">HIDDEN BONDS</span></h1>
+            <p class="hero-tagline">Unearth the secret threads that bound a forgotten community in the shadows of South Africa's diamond fields.</p>
+            <div class="hero-dividers">
+              <div class="hero-divider-line"></div>
+              <div class="hero-divider-icon">✦</div>
+              <div class="hero-divider-line"></div>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <span class="stat-num">3</span>
+                <span class="stat-label">Enigmas</span>
+              </div>
+              <div class="hero-stat-sep">&middot;</div>
+              <div class="hero-stat">
+                <span class="stat-num">1886</span>
+                <span class="stat-label">Veiled Era</span>
+              </div>
+              <div class="hero-stat-sep">&middot;</div>
+              <div class="hero-stat">
+                <span class="stat-num">&#8734;</span>
+                <span class="stat-label">Secrets</span>
+              </div>
+            </div>
+            <p class="hero-copy">Step into the shadows of Kimberley's past. Through enigmatic puzzles, decode the invisible connections that sustained a resilient immigrant enclave. What secrets lie beneath the surface?</p>
+            <button id="start-discovery">
+              <span class="btn-text">BEGIN THE DISCOVERY</span>
+              <span class="btn-arrow">&#8594;</span>
+            </button>
+          </div>
+          <div class="hero-footer">
+            <span>1886 Union Masonic Temple &middot; Kimberley, South Africa</span>
+          </div>
+        </div>
       </div>
-
-      <div class="landing-copy">
-        <p>Step into the shadows of Kimberley's past. Through enigmatic puzzles, decode the invisible connections that sustained a resilient immigrant enclave. What secrets lie beneath the surface?</p>
-      </div>
-
-      <button id="start-discovery">
-        <span class="btn-text">START DISCOVERY</span>
-      </button>
     </div>
   `;
 
   app.innerHTML = html;
 
-  // Animate elements in sequence
-  gsap.set('#screen-landing header h1', { opacity: 0, y: 30 });
-  gsap.set('.hero-image', { opacity: 0, scale: 0.9 });
-  gsap.set('.stats', { opacity: 0, y: 20 });
-  gsap.set('.landing-copy', { opacity: 0, y: 15 });
-  gsap.set('#start-discovery', { opacity: 0, y: 20 });
+  gsap.set('.hero-eyebrow', { opacity: 0, y: -16 });
+  gsap.set('.hero-title', { opacity: 0, y: 50, scale: 0.94 });
+  gsap.set('.hero-tagline', { opacity: 0, y: 20 });
+  gsap.set('.hero-dividers', { opacity: 0, scaleX: 0 });
+  gsap.set('.hero-stats', { opacity: 0, y: 16 });
+  gsap.set('.hero-copy', { opacity: 0, y: 16 });
+  gsap.set('#start-discovery', { opacity: 0, y: 20, scale: 0.95 });
+  gsap.set('.hero-footer', { opacity: 0 });
 
-  const tl = gsap.timeline();
-  tl.to('#screen-landing header h1', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' })
-    .to('.hero-image', { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }, '-=0.4')
-    .to('.stats', { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out' }, '-=0.3')
-    .to('.landing-copy', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.2')
-    .to('#start-discovery', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.3');
+  const tl = gsap.timeline({ delay: 0.4 });
+  tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' })
+    .to('.hero-title', { opacity: 1, y: 0, scale: 1, duration: 1.1, ease: 'power3.out' }, '-=0.3')
+    .to('.hero-tagline', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, '-=0.6')
+    .to('.hero-dividers', { opacity: 1, scaleX: 1, duration: 0.7, ease: 'power2.out' }, '-=0.5')
+    .to('.hero-stats', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4')
+    .to('.hero-copy', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4')
+    .to('#start-discovery', { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }, '-=0.3')
+    .to('.hero-footer', { opacity: 0.5, duration: 0.6 }, '-=0.2');
 
   document.getElementById('start-discovery').addEventListener('click', () => {
-    startMenu();
+    gsap.to('.hero-content', { opacity: 0, y: -20, duration: 0.4, ease: 'power2.in' });
+    gsap.to('#screen-landing', {
+      opacity: 0, duration: 0.6, delay: 0.2, ease: 'power2.in',
+      onComplete: startMenu
+    });
   });
 }

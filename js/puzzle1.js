@@ -1,63 +1,72 @@
 export function initPuzzle1(container, onBack, onNext) {
   const html = `
-    <div class="screen active">
-      <header>
-        <div class="puzzle-top-row">
-          <div>
-            <h1>Puzzle 1: Shattered Sanctuary</h1>
-            <p>In the dust of Kimberley, a temple lies fragmented. What unseen forces held it together?</p>
-          </div>
-          <button id="back-to-landing" class="back-btn">← Back</button>
+    <div id="screen-puzzle1" class="screen active">
+      <div class="puzzle-header">
+        <button class="back-btn" id="back-btn">&#8592; Back</button>
+        <div class="puzzle-header-center">
+          <div class="puzzle-step">Enigma 01 of 03</div>
+          <h1>Shattered Sanctuary</h1>
         </div>
-      </header>
+        <div class="puzzle-header-right"></div>
+      </div>
 
       <div class="puzzle-intro">
-        <div class="puzzle-tag">Mysterious Task</div>
-        <div class="puzzle-description">The temple's visage is shattered into four enigmatic pieces. Reassemble them to unveil the first hidden bond that sustained the enclave.</div>
+        <div class="puzzle-tag">Drag &amp; Restore</div>
+        <p class="puzzle-description">The temple's visage is shattered into four enigmatic pieces. Reassemble them to unveil the first hidden bond that sustained the enclave. <em>Solving this will unlock a clue for the next enigma.</em></p>
       </div>
 
       <div class="puzzle-layout">
-        <div class="puzzle-source" id="puzzle-source"></div>
-        <div class="puzzle-target" id="puzzle-target">
-          <div class="drop-slot" data-slot="1">Temple Base</div>
-          <div class="drop-slot" data-slot="2">Center Arch</div>
-          <div class="drop-slot" data-slot="3">Relic Wall</div>
-          <div class="drop-slot" data-slot="4">Heritage Roof</div>
+        <div class="puzzle-col">
+          <div class="col-label">Fragments</div>
+          <div class="puzzle-source" id="puzzle-source"></div>
+        </div>
+        <div class="puzzle-col">
+          <div class="col-label">Sanctuary</div>
+          <div class="puzzle-target" id="puzzle-target">
+            <div class="drop-slot" data-slot="1"><span class="slot-label">Temple Base</span></div>
+            <div class="drop-slot" data-slot="2"><span class="slot-label">Center Arch</span></div>
+            <div class="drop-slot" data-slot="3"><span class="slot-label">Relic Wall</span></div>
+            <div class="drop-slot" data-slot="4"><span class="slot-label">Heritage Roof</span></div>
+          </div>
         </div>
       </div>
 
-      <p id="feedback">Tip: Drag each fragment into its rightful place. When the sanctuary is whole, a hidden bond will emerge from the shadows.</p>
+      <div id="feedback" class="feedback-bar">
+        <span class="feedback-icon">&#128161;</span>
+        <span>Drag each fragment into its rightful place. When the sanctuary is whole, a hidden bond will emerge from the shadows.</span>
+      </div>
     </div>
   `;
 
   container.innerHTML = html;
 
-  // Animate puzzle entrance
-  gsap.set('header', { opacity: 0, y: -30 });
-  gsap.set('.puzzle-layout', { opacity: 0, y: 30 });
+  gsap.set('.puzzle-header', { opacity: 0, y: -20 });
+  gsap.set('.puzzle-intro', { opacity: 0, y: 16 });
+  gsap.set('.puzzle-layout', { opacity: 0, y: 24 });
   gsap.set('#feedback', { opacity: 0 });
 
   const tl = gsap.timeline();
-  tl.to('header', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' })
+  tl.to('.puzzle-header', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
+    .to('.puzzle-intro', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
     .to('.puzzle-layout', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
     .to('#feedback', { opacity: 1, duration: 0.4 }, '-=0.2');
 
-  document.getElementById('back-to-landing').addEventListener('click', () => {
-    if (typeof onBack === 'function') {
-      onBack();
-    }
+  document.getElementById('back-btn').addEventListener('click', () => {
+    if (typeof onBack === 'function') onBack();
   });
 
-  const source = document.getElementById('puzzle-source');
-  const imageUrl = 'https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1000&q=80';
+  const imageUrl = '../assets/PT-Masonic_Temple-1888.jpg';
   const pieces = [
-    { id: 1, label: 'Temple Base', x: '0%', y: '0%' },
-    { id: 2, label: 'Center Arch', x: '50%', y: '0%' },
-    { id: 3, label: 'Relic Wall', x: '0%', y: '50%' },
+    { id: 1, label: 'Temple Base',   x: '0%',  y: '0%'  },
+    { id: 2, label: 'Center Arch',   x: '50%', y: '0%'  },
+    { id: 3, label: 'Relic Wall',    x: '0%',  y: '50%' },
     { id: 4, label: 'Heritage Roof', x: '50%', y: '50%' }
   ];
 
-  pieces.forEach((pieceMeta, index) => {
+  const source = document.getElementById('puzzle-source');
+  const shuffled = [...pieces].sort(() => Math.random() - 0.5);
+
+  shuffled.forEach((pieceMeta, index) => {
     const piece = document.createElement('div');
     piece.className = 'piece';
     piece.draggable = true;
@@ -65,105 +74,110 @@ export function initPuzzle1(container, onBack, onNext) {
     piece.style.backgroundImage = `url(${imageUrl})`;
     piece.style.backgroundSize = '200% 200%';
     piece.style.backgroundPosition = `${pieceMeta.x} ${pieceMeta.y}`;
-    piece.textContent = pieceMeta.id;
+
+    const label = document.createElement('div');
+    label.className = 'piece-label';
+    label.textContent = pieceMeta.label;
+    piece.appendChild(label);
+
     source.appendChild(piece);
 
-    // Stagger piece entrance
-    gsap.set(piece, { opacity: 0, scale: 0.5, rotation: -10 });
+    gsap.set(piece, { opacity: 0, scale: 0.6, rotation: Math.random() * 14 - 7 });
     gsap.to(piece, {
-      opacity: 1,
-      scale: 1,
-      rotation: 0,
-      duration: 0.4,
-      delay: index * 0.1,
-      ease: 'back.out(1.7)'
+      opacity: 1, scale: 1, rotation: 0,
+      duration: 0.5, delay: index * 0.1, ease: 'back.out(1.7)'
     });
 
     piece.addEventListener('dragstart', (e) => {
       e.dataTransfer.setData('text/plain', pieceMeta.id.toString());
       e.dataTransfer.effectAllowed = 'move';
-      gsap.to(piece, { scale: 1.1, duration: 0.2, ease: 'power2.out' });
+      piece.classList.add('dragging');
     });
-
-    piece.addEventListener('dragend', () => {
-      gsap.to(piece, { scale: 1, duration: 0.2, ease: 'power2.out' });
-    });
+    piece.addEventListener('dragend', () => piece.classList.remove('dragging'));
   });
 
-  const solution = {
-    '1': '1',
-    '2': '2',
-    '3': '3',
-    '4': '4'
-  };
-
+  const solution = { '1': '1', '2': '2', '3': '3', '4': '4' };
   let solved = 0;
+  let completed = false;
   const slots = document.querySelectorAll('.drop-slot');
 
   slots.forEach(slot => {
     slot.addEventListener('dragover', (e) => {
       e.preventDefault();
-      slot.classList.add('drag-over');
+      if (!slot.querySelector('.piece')) slot.classList.add('drag-over');
     });
-
-    slot.addEventListener('dragleave', () => {
-      slot.classList.remove('drag-over');
-    });
-
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
     slot.addEventListener('drop', (e) => {
       e.preventDefault();
       slot.classList.remove('drag-over');
+      if (completed) return;
+
       const dragged = e.dataTransfer.getData('text/plain');
       if (!dragged) return;
-
       const piece = document.querySelector(`.piece[data-value='${dragged}']`);
       if (!piece) return;
 
-      // Animate piece placement
-      gsap.to(piece, {
-        x: slot.offsetLeft - piece.offsetLeft,
-        y: slot.offsetTop - piece.offsetTop,
-        duration: 0.3,
-        ease: 'power2.out',
-        onComplete: () => {
-          slot.appendChild(piece);
-          gsap.set(piece, { x: 0, y: 0 });
-        }
-      });
+      // If slot already has a piece, send it back to source
+      const existing = slot.querySelector('.piece');
+      if (existing) document.getElementById('puzzle-source').appendChild(existing);
+
+      slot.appendChild(piece);
+      gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
 
       solved = 0;
       slots.forEach(s => {
         const child = s.querySelector('.piece');
         if (child && solution[s.dataset.slot] === child.dataset.value) {
-          solved += 1;
+          solved++;
           s.classList.add('correct');
-          gsap.to(s, { scale: 1.05, duration: 0.2, yoyo: true, repeat: 1 });
         } else {
           s.classList.remove('correct');
         }
       });
 
-      if (solved === slots.length) {
-        const feedback = document.getElementById('feedback');
-        feedback.innerHTML = `<strong>The sanctuary stands whole once more.</strong><br><span>You've uncovered the first hidden bond: the silent pact of mutual aid that wove the community together.</span>`;
-        gsap.fromTo(feedback, { opacity: 0, y: 20, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out' });
-
-        // Celebrate with piece animations
-        gsap.to('.piece', {
-          scale: 1.1,
-          duration: 0.3,
-          yoyo: true,
-          repeat: 1,
-          stagger: 0.1,
-          ease: 'power2.out'
-        });
-
-        setTimeout(() => {
-          if (typeof onNext === 'function') {
-            onNext();
-          }
-        }, 2500);
-      }
+      if (solved === slots.length) handleComplete();
     });
   });
+
+  function handleComplete() {
+    completed = true;
+    gsap.to('.drop-slot.correct', {
+      scale: 1.04, duration: 0.3, yoyo: true, repeat: 1, stagger: 0.08
+    });
+
+    const feedbackEl = document.getElementById('feedback');
+    feedbackEl.innerHTML = `
+      <div class="feedback-success">
+        <div class="feedback-success-title">&#10022; The Sanctuary Stands Whole &#10022;</div>
+        <p>You've uncovered the first hidden bond: the silent pact of mutual aid that wove the community together.</p>
+        <div class="clue-reveal">
+          <div class="clue-reveal-label">&#128269; Clue Unlocked &mdash; Carry this into the next enigma</div>
+          <div class="clue-lines">
+            <div class="clue-line"><span class="clue-icon">&#129309;</span><span>The clasped hand seals <em>The Silent Oath</em></span></div>
+            <div class="clue-line"><span class="clue-icon">&#128279;</span><span>The unbroken chain weaves <em>Shared Prosperity</em></span></div>
+            <div class="clue-line"><span class="clue-icon">&#127759;</span><span>The arched bridge spans <em>Cultural Divide</em></span></div>
+            <div class="clue-line"><span class="clue-icon">&#128335;</span><span>The undying flame guards <em>Enduring Legacy</em></span></div>
+          </div>
+        </div>
+      </div>
+    `;
+    gsap.fromTo('#feedback',
+      { opacity: 0, y: 16, scale: 0.97 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out' }
+    );
+
+    const clue = {
+      title: "The Sanctuary's Inscription",
+      lines: [
+        { icon: '&#129309;', text: 'The clasped hand seals <em>The Silent Oath</em>' },
+        { icon: '&#128279;', text: 'The unbroken chain weaves <em>Shared Prosperity</em>' },
+        { icon: '&#127759;', text: 'The arched bridge spans <em>Cultural Bridge</em>' },
+        { icon: '&#128335;', text: 'The undying flame guards <em>Enduring Legacy</em>' }
+      ]
+    };
+
+    setTimeout(() => {
+      if (typeof onNext === 'function') onNext(clue);
+    }, 4500);
+  }
 }

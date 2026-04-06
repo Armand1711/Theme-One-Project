@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check js/main.js js/landing.js js/puzzleMenu.js js/puzzle1.js js/puzzle2.js js/puzzle3.js js/reflection.js)"
+    ]
+  }
+}

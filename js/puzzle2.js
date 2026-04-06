@@ -1,165 +1,221 @@
-export function initPuzzle2(container, onBack, onNext) {
-  const html = `
-    <div class="screen active">
-      <header>
-        <div class="puzzle-top-row">
-          <div>
-            <h1>Puzzle 2: Symbol Cipher</h1>
-            <p>Ancient emblems whisper secrets. Decode their meanings to unlock the next hidden bond.</p>
+function buildCluePanel(clue, sourceLabel) {
+  if (!clue) return '';
+  return `
+    <div class="clue-panel" id="clue-panel">
+      <button class="clue-toggle" id="clue-toggle">
+        <span class="clue-toggle-icon">&#128269;</span>
+        <span>Clue from ${sourceLabel}</span>
+        <span class="clue-chevron" id="clue-chevron">&#9660;</span>
+      </button>
+      <div class="clue-body" id="clue-body">
+        <div class="clue-title">${clue.title}</div>
+        ${clue.lines.map(l => `
+          <div class="clue-line">
+            <span class="clue-icon">${l.icon}</span>
+            <span>${l.text}</span>
           </div>
-          <button id="back-to-menu" class="back-btn">← Back</button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function attachClueToggle() {
+  const toggle = document.getElementById('clue-toggle');
+  if (!toggle) return;
+  const body = document.getElementById('clue-body');
+  const chevron = document.getElementById('clue-chevron');
+  let open = false;
+  body.style.display = 'none';
+  toggle.addEventListener('click', () => {
+    open = !open;
+    body.style.display = open ? 'block' : 'none';
+    chevron.innerHTML = open ? '&#9650;' : '&#9660;';
+    if (open) gsap.fromTo(body, { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.3 });
+  });
+}
+
+export function initPuzzle2(container, clue, onBack, onNext) {
+  const html = `
+    <div id="screen-puzzle2" class="screen active">
+      <div class="puzzle-header">
+        <button class="back-btn" id="back-btn">&#8592; Back</button>
+        <div class="puzzle-header-center">
+          <div class="puzzle-step">Enigma 02 of 03</div>
+          <h1>Symbol Cipher</h1>
         </div>
-      </header>
+        <div class="puzzle-header-right"></div>
+      </div>
+
+      ${buildCluePanel(clue, 'Shattered Sanctuary')}
 
       <div class="puzzle-intro">
-        <div class="puzzle-tag">Cryptic Challenge</div>
-        <div class="puzzle-description">Match each enigmatic symbol with its veiled meaning. When aligned, a deeper bond will emerge from the mystery.</div>
+        <div class="puzzle-tag">Decode &amp; Match</div>
+        <p class="puzzle-description">Ancient emblems whisper their secrets. Match each symbol to its veiled meaning — the inscription from the sanctuary holds the key. <em>The cipher, when broken, reveals the map for the final enigma.</em></p>
       </div>
 
       <div class="puzzle-layout">
-        <div class="puzzle-source" id="symbol-source"></div>
-        <div class="puzzle-target" id="symbol-target">
-          <div class="drop-slot" data-slot="1">The Silent Oath</div>
-          <div class="drop-slot" data-slot="2">Shared Prosperity</div>
-          <div class="drop-slot" data-slot="3">Cultural Bridge</div>
-          <div class="drop-slot" data-slot="4">Enduring Legacy</div>
+        <div class="puzzle-col">
+          <div class="col-label">Symbols</div>
+          <div class="puzzle-source" id="symbol-source"></div>
+        </div>
+        <div class="puzzle-col">
+          <div class="col-label">Meanings</div>
+          <div class="puzzle-target" id="symbol-target">
+            <div class="drop-slot" data-slot="1"><span class="slot-label">The Silent Oath</span></div>
+            <div class="drop-slot" data-slot="2"><span class="slot-label">Shared Prosperity</span></div>
+            <div class="drop-slot" data-slot="3"><span class="slot-label">Cultural Bridge</span></div>
+            <div class="drop-slot" data-slot="4"><span class="slot-label">Enduring Legacy</span></div>
+          </div>
         </div>
       </div>
 
-      <p id="feedback">Tip: Drag symbols to their matching descriptions. Correct pairings will reveal the cipher's secret.</p>
+      <div id="feedback" class="feedback-bar">
+        <span class="feedback-icon">&#128161;</span>
+        <span>Match each symbol to its veiled meaning. The clue from the Shattered Sanctuary reveals the truth &mdash; look closely.</span>
+      </div>
     </div>
   `;
 
   container.innerHTML = html;
+  attachClueToggle();
 
-  // Animate puzzle entrance
-  gsap.set('header', { opacity: 0, y: -30 });
-  gsap.set('.puzzle-layout', { opacity: 0, y: 30 });
+  gsap.set('.puzzle-header', { opacity: 0, y: -20 });
+  gsap.set('.clue-panel', { opacity: 0, y: 12 });
+  gsap.set('.puzzle-intro', { opacity: 0, y: 16 });
+  gsap.set('.puzzle-layout', { opacity: 0, y: 24 });
   gsap.set('#feedback', { opacity: 0 });
 
   const tl = gsap.timeline();
-  tl.to('header', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' })
+  tl.to('.puzzle-header', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
+    .to('.clue-panel', { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
+    .to('.puzzle-intro', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
     .to('.puzzle-layout', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
     .to('#feedback', { opacity: 1, duration: 0.4 }, '-=0.2');
 
-  document.getElementById('back-to-menu').addEventListener('click', () => {
-    if (typeof onBack === 'function') {
-      onBack();
-    }
+  document.getElementById('back-btn').addEventListener('click', () => {
+    if (typeof onBack === 'function') onBack();
   });
 
   const source = document.getElementById('symbol-source');
   const symbols = [
-    { id: 1, symbol: '🔗', label: 'Chain of Unity' },
-    { id: 2, symbol: '🌉', label: 'Bridge of Cultures' },
-    { id: 3, symbol: '🕯️', label: 'Light of Tradition' },
-    { id: 4, symbol: '🤝', label: 'Hands of Alliance' }
+    { id: 1, symbol: '&#128279;', label: 'Chain of Unity'      },
+    { id: 2, symbol: '&#127759;', label: 'Bridge of Cultures'  },
+    { id: 3, symbol: '&#128335;', label: 'Light of Tradition'  },
+    { id: 4, symbol: '&#129309;', label: 'Hands of Alliance'   }
   ];
 
-  symbols.forEach((symbolMeta, index) => {
-    const symbol = document.createElement('div');
-    symbol.className = 'piece';
-    symbol.draggable = true;
-    symbol.dataset.value = symbolMeta.id;
-    symbol.innerHTML = `<div style="font-size: 2rem; margin-bottom: 8px;">${symbolMeta.symbol}</div><div style="font-size: 0.9rem;">${symbolMeta.label}</div>`;
-    source.appendChild(symbol);
+  const shuffled = [...symbols].sort(() => Math.random() - 0.5);
 
-    // Stagger piece entrance
-    gsap.set(symbol, { opacity: 0, scale: 0.5, rotation: -10 });
-    gsap.to(symbol, {
-      opacity: 1,
-      scale: 1,
-      rotation: 0,
-      duration: 0.4,
-      delay: index * 0.1,
-      ease: 'back.out(1.7)'
-    });
+  shuffled.forEach((sym, index) => {
+    const el = document.createElement('div');
+    el.className = 'piece symbol-piece';
+    el.draggable = true;
+    el.dataset.value = sym.id;
+    el.innerHTML = `
+      <div class="symbol-icon">${sym.symbol}</div>
+      <div class="symbol-label">${sym.label}</div>
+    `;
+    source.appendChild(el);
 
-    symbol.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData('text/plain', symbolMeta.id.toString());
+    gsap.set(el, { opacity: 0, scale: 0.6, y: 20 });
+    gsap.to(el, { opacity: 1, scale: 1, y: 0, duration: 0.5, delay: index * 0.1, ease: 'back.out(1.7)' });
+
+    el.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', sym.id.toString());
       e.dataTransfer.effectAllowed = 'move';
-      gsap.to(symbol, { scale: 1.1, duration: 0.2, ease: 'power2.out' });
+      el.classList.add('dragging');
     });
-
-    symbol.addEventListener('dragend', () => {
-      gsap.to(symbol, { scale: 1, duration: 0.2, ease: 'power2.out' });
-    });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
   });
 
-  const solution = {
-    '1': '4', // Chain of Unity -> Hands of Alliance
-    '2': '3', // Bridge of Cultures -> Cultural Bridge
-    '3': '1', // Light of Tradition -> The Silent Oath
-    '4': '2'  // Hands of Alliance -> Shared Prosperity
-  };
+  // Logical solution matching the clue given by Puzzle 1:
+  // Slot 1 "The Silent Oath"   → id 4 Hands of Alliance  (a handshake IS an oath)
+  // Slot 2 "Shared Prosperity" → id 1 Chain of Unity      (chain = linked effort)
+  // Slot 3 "Cultural Bridge"   → id 2 Bridge of Cultures  (direct match)
+  // Slot 4 "Enduring Legacy"   → id 3 Light of Tradition  (flame = enduring memory)
+  const solution = { '1': '4', '2': '1', '3': '2', '4': '3' };
 
   let solved = 0;
+  let completed = false;
   const slots = document.querySelectorAll('.drop-slot');
 
   slots.forEach(slot => {
     slot.addEventListener('dragover', (e) => {
       e.preventDefault();
-      slot.classList.add('drag-over');
+      if (!slot.querySelector('.piece')) slot.classList.add('drag-over');
     });
-
-    slot.addEventListener('dragleave', () => {
-      slot.classList.remove('drag-over');
-    });
-
+    slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
     slot.addEventListener('drop', (e) => {
       e.preventDefault();
       slot.classList.remove('drag-over');
+      if (completed) return;
+
       const dragged = e.dataTransfer.getData('text/plain');
       if (!dragged) return;
+      const piece = document.querySelector(`.piece[data-value='${dragged}']`);
+      if (!piece) return;
 
-      const symbol = document.querySelector(`.piece[data-value='${dragged}']`);
-      if (!symbol) return;
+      const existing = slot.querySelector('.piece');
+      if (existing) document.getElementById('symbol-source').appendChild(existing);
 
-      // Animate symbol placement
-      gsap.to(symbol, {
-        x: slot.offsetLeft - symbol.offsetLeft,
-        y: slot.offsetTop - symbol.offsetTop,
-        duration: 0.3,
-        ease: 'power2.out',
-        onComplete: () => {
-          slot.appendChild(symbol);
-          gsap.set(symbol, { x: 0, y: 0 });
-        }
-      });
+      slot.appendChild(piece);
+      gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
 
       solved = 0;
       slots.forEach(s => {
         const child = s.querySelector('.piece');
         if (child && solution[s.dataset.slot] === child.dataset.value) {
-          solved += 1;
+          solved++;
           s.classList.add('correct');
-          gsap.to(s, { scale: 1.05, duration: 0.2, yoyo: true, repeat: 1 });
         } else {
           s.classList.remove('correct');
         }
       });
 
-      if (solved === slots.length) {
-        const feedback = document.getElementById('feedback');
-        feedback.innerHTML = `<strong>The cipher is broken.</strong><br><span>You've deciphered the second hidden bond: the symbolic alliances that transcended cultural divides.</span>`;
-        gsap.fromTo(feedback, { opacity: 0, y: 20, scale: 0.95 }, { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out' });
-
-        // Celebrate with symbol animations
-        gsap.to('.piece', {
-          scale: 1.1,
-          duration: 0.3,
-          yoyo: true,
-          repeat: 1,
-          stagger: 0.1,
-          ease: 'power2.out'
-        });
-
-        setTimeout(() => {
-          if (typeof onNext === 'function') {
-            onNext();
-          }
-        }, 2500);
-      }
+      if (solved === slots.length) handleComplete();
     });
   });
+
+  function handleComplete() {
+    completed = true;
+    gsap.to('.drop-slot.correct', {
+      scale: 1.04, duration: 0.3, yoyo: true, repeat: 1, stagger: 0.08
+    });
+
+    const feedbackEl = document.getElementById('feedback');
+    feedbackEl.innerHTML = `
+      <div class="feedback-success">
+        <div class="feedback-success-title">&#10022; The Cipher is Broken &#10022;</div>
+        <p>You've deciphered the second hidden bond: the symbolic alliances that transcended cultural divides.</p>
+        <div class="clue-reveal">
+          <div class="clue-reveal-label">&#128269; Clue Unlocked &mdash; Carry this into the final enigma</div>
+          <div class="clue-lines">
+            <div class="clue-line"><span class="clue-icon">&#11045;</span><span>Temple Lodge reaches to <em>Immigrant Traders</em></span></div>
+            <div class="clue-line"><span class="clue-icon">&#11045;</span><span>Temple Lodge anchors <em>Local Merchants</em></span></div>
+            <div class="clue-line"><span class="clue-icon">&#11045;</span><span>Immigrant Traders align with <em>Cultural Guardians</em></span></div>
+            <div class="clue-line"><span class="clue-icon">&#11045;</span><span>Local Merchants sustain <em>Cultural Guardians</em></span></div>
+          </div>
+        </div>
+      </div>
+    `;
+    gsap.fromTo('#feedback',
+      { opacity: 0, y: 16, scale: 0.97 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out' }
+    );
+
+    const nextClue = {
+      title: "The Cipher's Network Map",
+      lines: [
+        { icon: '&#11045;', text: 'Temple Lodge reaches to <em>Immigrant Traders</em>' },
+        { icon: '&#11045;', text: 'Temple Lodge anchors <em>Local Merchants</em>' },
+        { icon: '&#11045;', text: 'Immigrant Traders align with <em>Cultural Guardians</em>' },
+        { icon: '&#11045;', text: 'Local Merchants sustain <em>Cultural Guardians</em>' }
+      ]
+    };
+
+    setTimeout(() => {
+      if (typeof onNext === 'function') onNext(nextClue);
+    }, 4500);
+  }
 }
