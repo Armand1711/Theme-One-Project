@@ -66,7 +66,7 @@ export function initPuzzle3(container, clue, onBack, onNext) {
 
       <div id="feedback" class="feedback-bar">
         <span class="feedback-icon">&#128161;</span>
-        <span>Click a node to select it (it will glow green), then click another to draw the bond. The cipher's map shows you which connections to make.</span>
+        <span id="feedback-text">Click a node to select it (it glows green), then click another to draw the bond. The cipher's map shows which connections to forge.</span>
       </div>
     </div>
   `;
@@ -134,6 +134,19 @@ export function initPuzzle3(container, clue, onBack, onNext) {
         if (!alreadyExists) {
           connections.push({ from: fromId, to: toId });
           drawLine(selectedNode, node);
+
+          // Live progress update
+          const correctSoFar = correctConnections.filter(req =>
+            connections.some(c =>
+              (c.from === req.from && c.to === req.to) ||
+              (c.from === req.to   && c.to === req.from)
+            )
+          ).length;
+          if (correctSoFar < correctConnections.length) {
+            document.getElementById('feedback-text').textContent =
+              `${correctSoFar} of 4 bonds forged. Consult the cipher's map — trace every thread.`;
+          }
+
           checkCompletion();
         }
 
@@ -200,12 +213,22 @@ export function initPuzzle3(container, clue, onBack, onNext) {
       `;
       gsap.fromTo('#feedback',
         { opacity: 0, y: 16, scale: 0.97 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out' }
+        { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out',
+          onComplete: () => document.getElementById('feedback').scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        }
       );
 
       setTimeout(() => {
-        if (typeof onNext === 'function') onNext();
-      }, 3000);
+        const feedbackEl = document.getElementById('feedback');
+        const btn = document.createElement('button');
+        btn.className = 'continue-btn';
+        btn.innerHTML = 'See the Veiled Revelation &#8594;';
+        feedbackEl.querySelector('.feedback-success').appendChild(btn);
+        gsap.fromTo(btn, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' });
+        btn.addEventListener('click', () => {
+          if (typeof onNext === 'function') onNext();
+        });
+      }, 1200);
     }
   }
 }

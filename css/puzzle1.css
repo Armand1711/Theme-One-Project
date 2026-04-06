@@ -378,6 +378,45 @@
   font-size: 0.92rem;
 }
 
+/* Continue button — appears after puzzle completion */
+.continue-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #8c1f1f 0%, #6b1515 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(140,31,31,0.35);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Inter', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.continue-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+
+.continue-btn:hover::before { transform: translateX(100%); }
+.continue-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(140,31,31,0.5);
+  background: linear-gradient(135deg, #a02525 0%, #7b1f1f 100%);
+}
+.continue-btn:active { transform: translateY(0); }
+
 /* Clue reveal inside feedback */
 .clue-reveal {
   background: linear-gradient(135deg, #fffbf0 0%, #fef5d9 100%);

@@ -72,7 +72,7 @@ export function initPuzzle2(container, clue, onBack, onNext) {
 
       <div id="feedback" class="feedback-bar">
         <span class="feedback-icon">&#128161;</span>
-        <span>Match each symbol to its veiled meaning. The clue from the Shattered Sanctuary reveals the truth &mdash; look closely.</span>
+        <span id="feedback-text">Match each symbol to its veiled meaning. The clue from the Shattered Sanctuary reveals the truth &mdash; look closely.</span>
       </div>
     </div>
   `;
@@ -99,10 +99,10 @@ export function initPuzzle2(container, clue, onBack, onNext) {
 
   const source = document.getElementById('symbol-source');
   const symbols = [
-    { id: 1, symbol: '&#128279;', label: 'Chain of Unity'      },
-    { id: 2, symbol: '&#127759;', label: 'Bridge of Cultures'  },
-    { id: 3, symbol: '&#128335;', label: 'Light of Tradition'  },
-    { id: 4, symbol: '&#129309;', label: 'Hands of Alliance'   }
+    { id: 1, symbol: '🔗', label: 'Chain of Unity'     },
+    { id: 2, symbol: '🌉', label: 'Bridge of Cultures' },
+    { id: 3, symbol: '🕯️', label: 'Light of Tradition' },
+    { id: 4, symbol: '🤝', label: 'Hands of Alliance'  }
   ];
 
   const shuffled = [...symbols].sort(() => Math.random() - 0.5);
@@ -173,6 +173,15 @@ export function initPuzzle2(container, clue, onBack, onNext) {
         }
       });
 
+      // Live progress update
+      if (solved < slots.length) {
+        const placed = [...slots].filter(s => s.querySelector('.piece')).length;
+        document.getElementById('feedback-text').textContent =
+          placed === 0
+            ? 'Match each symbol to its veiled meaning. The clue from the Shattered Sanctuary reveals the truth — look closely.'
+            : `${solved} of 4 symbols correctly matched. Study the clue — the inscription reveals the answer.`;
+      }
+
       if (solved === slots.length) handleComplete();
     });
   });
@@ -191,31 +200,41 @@ export function initPuzzle2(container, clue, onBack, onNext) {
         <div class="clue-reveal">
           <div class="clue-reveal-label">&#128269; Clue Unlocked &mdash; Carry this into the final enigma</div>
           <div class="clue-lines">
-            <div class="clue-line"><span class="clue-icon">&#11045;</span><span>Temple Lodge reaches to <em>Immigrant Traders</em></span></div>
-            <div class="clue-line"><span class="clue-icon">&#11045;</span><span>Temple Lodge anchors <em>Local Merchants</em></span></div>
-            <div class="clue-line"><span class="clue-icon">&#11045;</span><span>Immigrant Traders align with <em>Cultural Guardians</em></span></div>
-            <div class="clue-line"><span class="clue-icon">&#11045;</span><span>Local Merchants sustain <em>Cultural Guardians</em></span></div>
+            <div class="clue-line"><span class="clue-icon">⬡</span><span>Temple Lodge reaches to <em>Immigrant Traders</em></span></div>
+            <div class="clue-line"><span class="clue-icon">⬡</span><span>Temple Lodge anchors <em>Local Merchants</em></span></div>
+            <div class="clue-line"><span class="clue-icon">⬡</span><span>Immigrant Traders align with <em>Cultural Guardians</em></span></div>
+            <div class="clue-line"><span class="clue-icon">⬡</span><span>Local Merchants sustain <em>Cultural Guardians</em></span></div>
           </div>
         </div>
       </div>
     `;
     gsap.fromTo('#feedback',
       { opacity: 0, y: 16, scale: 0.97 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out' }
+      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out',
+        onComplete: () => document.getElementById('feedback').scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }
     );
 
     const nextClue = {
       title: "The Cipher's Network Map",
       lines: [
-        { icon: '&#11045;', text: 'Temple Lodge reaches to <em>Immigrant Traders</em>' },
-        { icon: '&#11045;', text: 'Temple Lodge anchors <em>Local Merchants</em>' },
-        { icon: '&#11045;', text: 'Immigrant Traders align with <em>Cultural Guardians</em>' },
-        { icon: '&#11045;', text: 'Local Merchants sustain <em>Cultural Guardians</em>' }
+        { icon: '⬡', text: 'Temple Lodge reaches to <em>Immigrant Traders</em>' },
+        { icon: '⬡', text: 'Temple Lodge anchors <em>Local Merchants</em>' },
+        { icon: '⬡', text: 'Immigrant Traders align with <em>Cultural Guardians</em>' },
+        { icon: '⬡', text: 'Local Merchants sustain <em>Cultural Guardians</em>' }
       ]
     };
 
     setTimeout(() => {
-      if (typeof onNext === 'function') onNext(nextClue);
-    }, 4500);
+      const feedbackEl = document.getElementById('feedback');
+      const btn = document.createElement('button');
+      btn.className = 'continue-btn';
+      btn.innerHTML = 'Continue to Web of Whispers &#8594;';
+      feedbackEl.querySelector('.feedback-success').appendChild(btn);
+      gsap.fromTo(btn, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' });
+      btn.addEventListener('click', () => {
+        if (typeof onNext === 'function') onNext(nextClue);
+      });
+    }, 1200);
   }
 }

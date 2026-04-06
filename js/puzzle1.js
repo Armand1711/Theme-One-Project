@@ -33,7 +33,7 @@ export function initPuzzle1(container, onBack, onNext) {
 
       <div id="feedback" class="feedback-bar">
         <span class="feedback-icon">&#128161;</span>
-        <span>Drag each fragment into its rightful place. When the sanctuary is whole, a hidden bond will emerge from the shadows.</span>
+        <span id="feedback-text">Drag each fragment into its rightful place. When the sanctuary is whole, a hidden bond will emerge from the shadows.</span>
       </div>
     </div>
   `;
@@ -74,11 +74,6 @@ export function initPuzzle1(container, onBack, onNext) {
     piece.style.backgroundImage = `url(${imageUrl})`;
     piece.style.backgroundSize = '200% 200%';
     piece.style.backgroundPosition = `${pieceMeta.x} ${pieceMeta.y}`;
-
-    const label = document.createElement('div');
-    label.className = 'piece-label';
-    label.textContent = pieceMeta.label;
-    piece.appendChild(label);
 
     source.appendChild(piece);
 
@@ -135,6 +130,15 @@ export function initPuzzle1(container, onBack, onNext) {
         }
       });
 
+      // Live progress update
+      const placed = [...slots].filter(s => s.querySelector('.piece')).length;
+      if (solved < slots.length) {
+        document.getElementById('feedback-text').textContent =
+          placed === 0
+            ? 'Drag each fragment into its rightful place. When the sanctuary is whole, a hidden bond will emerge from the shadows.'
+            : `${solved} of 4 fragments correctly placed. Keep going — the sanctuary awaits restoration.`;
+      }
+
       if (solved === slots.length) handleComplete();
     });
   });
@@ -153,31 +157,42 @@ export function initPuzzle1(container, onBack, onNext) {
         <div class="clue-reveal">
           <div class="clue-reveal-label">&#128269; Clue Unlocked &mdash; Carry this into the next enigma</div>
           <div class="clue-lines">
-            <div class="clue-line"><span class="clue-icon">&#129309;</span><span>The clasped hand seals <em>The Silent Oath</em></span></div>
-            <div class="clue-line"><span class="clue-icon">&#128279;</span><span>The unbroken chain weaves <em>Shared Prosperity</em></span></div>
-            <div class="clue-line"><span class="clue-icon">&#127759;</span><span>The arched bridge spans <em>Cultural Divide</em></span></div>
-            <div class="clue-line"><span class="clue-icon">&#128335;</span><span>The undying flame guards <em>Enduring Legacy</em></span></div>
+            <div class="clue-line"><span class="clue-icon">🤝</span><span>The clasped hand seals <em>The Silent Oath</em></span></div>
+            <div class="clue-line"><span class="clue-icon">🔗</span><span>The unbroken chain weaves <em>Shared Prosperity</em></span></div>
+            <div class="clue-line"><span class="clue-icon">🌉</span><span>The arched bridge spans the <em>Cultural Bridge</em></span></div>
+            <div class="clue-line"><span class="clue-icon">🕯️</span><span>The undying flame guards the <em>Enduring Legacy</em></span></div>
           </div>
         </div>
       </div>
     `;
     gsap.fromTo('#feedback',
       { opacity: 0, y: 16, scale: 0.97 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out' }
+      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out',
+        onComplete: () => document.getElementById('feedback').scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }
     );
 
     const clue = {
       title: "The Sanctuary's Inscription",
       lines: [
-        { icon: '&#129309;', text: 'The clasped hand seals <em>The Silent Oath</em>' },
-        { icon: '&#128279;', text: 'The unbroken chain weaves <em>Shared Prosperity</em>' },
-        { icon: '&#127759;', text: 'The arched bridge spans <em>Cultural Bridge</em>' },
-        { icon: '&#128335;', text: 'The undying flame guards <em>Enduring Legacy</em>' }
+        { icon: '🤝', text: 'The clasped hand seals <em>The Silent Oath</em>' },
+        { icon: '🔗', text: 'The unbroken chain weaves <em>Shared Prosperity</em>' },
+        { icon: '🌉', text: 'The arched bridge spans the <em>Cultural Bridge</em>' },
+        { icon: '🕯️', text: 'The undying flame guards the <em>Enduring Legacy</em>' }
       ]
     };
 
+    // Append a Continue button after a short delay so user can read the clue
     setTimeout(() => {
-      if (typeof onNext === 'function') onNext(clue);
-    }, 4500);
+      const feedbackEl = document.getElementById('feedback');
+      const btn = document.createElement('button');
+      btn.className = 'continue-btn';
+      btn.innerHTML = 'Continue to Symbol Cipher &#8594;';
+      feedbackEl.querySelector('.feedback-success').appendChild(btn);
+      gsap.fromTo(btn, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' });
+      btn.addEventListener('click', () => {
+        if (typeof onNext === 'function') onNext(clue);
+      });
+    }, 1200);
   }
 }
