@@ -12,28 +12,30 @@ export function initPuzzle1(container, onBack, onNext) {
 
       <div class="puzzle-intro">
         <div class="puzzle-tag">Drag &amp; Restore</div>
-        <p class="puzzle-description">The facade of Kimberley's 1886 Union Masonic Temple has fractured across time. Reassemble the four fragments to unveil the first hidden bond — the silent pact of mutual aid that held the immigrant enclave together in the diamond fields. <em>Restore the sanctuary to unlock a clue for the next enigma.</em></p>
+        <p class="puzzle-description">The facade of Kimberley's 1886 Union Masonic Temple has fractured across time. Six fragments of its Roman Corinthian architecture lie scattered. Reassemble them in their rightful order to unveil the first hidden bond &mdash; the silent pact of mutual aid that held the immigrant enclave together in the diamond fields. <em>Restore the sanctuary to unlock a clue for the next enigma.</em></p>
       </div>
 
       <div class="puzzle-layout">
         <div class="puzzle-col">
           <div class="col-label">Fragments</div>
-          <div class="puzzle-source" id="puzzle-source"></div>
+          <div class="puzzle-source grid-3" id="puzzle-source"></div>
         </div>
         <div class="puzzle-col">
           <div class="col-label">Sanctuary</div>
-          <div class="puzzle-target" id="puzzle-target">
-            <div class="drop-slot" data-slot="1"><span class="slot-label">Temple Base</span></div>
-            <div class="drop-slot" data-slot="2"><span class="slot-label">Center Arch</span></div>
-            <div class="drop-slot" data-slot="3"><span class="slot-label">Relic Wall</span></div>
-            <div class="drop-slot" data-slot="4"><span class="slot-label">Heritage Roof</span></div>
+          <div class="puzzle-target grid-3" id="puzzle-target">
+            <div class="drop-slot" data-slot="1"><span class="slot-label">North-West</span></div>
+            <div class="drop-slot" data-slot="2"><span class="slot-label">Temple Crown</span></div>
+            <div class="drop-slot" data-slot="3"><span class="slot-label">North-East</span></div>
+            <div class="drop-slot" data-slot="4"><span class="slot-label">West Colonnade</span></div>
+            <div class="drop-slot" data-slot="5"><span class="slot-label">Lodge Threshold</span></div>
+            <div class="drop-slot" data-slot="6"><span class="slot-label">East Colonnade</span></div>
           </div>
         </div>
       </div>
 
       <div id="feedback" class="feedback-bar">
-        <span class="feedback-icon">&#128161;</span>
-        <span id="feedback-text">Drag each fragment into its rightful place. When the sanctuary is whole, a hidden bond will emerge from the shadows.</span>
+        <span class="feedback-icon">&#128269;</span>
+        <span id="feedback-text">Drag each fragment into its rightful place. When the sanctuary stands whole, the first hidden bond will emerge from the shadows.</span>
       </div>
     </div>
   `;
@@ -41,29 +43,34 @@ export function initPuzzle1(container, onBack, onNext) {
   container.innerHTML = html;
 
   gsap.set('.puzzle-header', { opacity: 0, y: -20 });
-  gsap.set('.puzzle-intro', { opacity: 0, y: 16 });
-  gsap.set('.puzzle-layout', { opacity: 0, y: 24 });
-  gsap.set('#feedback', { opacity: 0 });
+  gsap.set('.puzzle-intro',  { opacity: 0, y: 16  });
+  gsap.set('.puzzle-layout', { opacity: 0, y: 24  });
+  gsap.set('#feedback',      { opacity: 0 });
 
   const tl = gsap.timeline();
   tl.to('.puzzle-header', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
-    .to('.puzzle-intro', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
+    .to('.puzzle-intro',  { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
     .to('.puzzle-layout', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
-    .to('#feedback', { opacity: 1, duration: 0.4 }, '-=0.2');
+    .to('#feedback',      { opacity: 1, duration: 0.4 }, '-=0.2');
 
   document.getElementById('back-btn').addEventListener('click', () => {
     if (typeof onBack === 'function') onBack();
   });
 
   const imageUrl = '../assets/PT-Masonic_Temple-1888.jpg';
+
+  // 6-piece jigsaw: 3 columns × 2 rows
+  // backgroundSize '300% 200%' → x: 0%/50%/100%, y: 0%/100%
   const pieceDefs = [
-    { id: 1, label: 'Temple Base',   x: '0%',  y: '0%'  },
-    { id: 2, label: 'Center Arch',   x: '50%', y: '0%'  },
-    { id: 3, label: 'Relic Wall',    x: '0%',  y: '50%' },
-    { id: 4, label: 'Heritage Roof', x: '50%', y: '50%' }
+    { id: 1, x: '0%',   y: '0%'   },
+    { id: 2, x: '50%',  y: '0%'   },
+    { id: 3, x: '100%', y: '0%'   },
+    { id: 4, x: '0%',   y: '100%' },
+    { id: 5, x: '50%',  y: '100%' },
+    { id: 6, x: '100%', y: '100%' }
   ];
 
-  const source = document.getElementById('puzzle-source');
+  const source   = document.getElementById('puzzle-source');
   const shuffled = [...pieceDefs].sort(() => Math.random() - 0.5);
   const pieceEls = [];
 
@@ -72,8 +79,8 @@ export function initPuzzle1(container, onBack, onNext) {
     piece.className = 'piece';
     piece.draggable = true;
     piece.dataset.value = pieceMeta.id;
-    piece.style.backgroundImage = `url(${imageUrl})`;
-    piece.style.backgroundSize = '200% 200%';
+    piece.style.backgroundImage    = `url(${imageUrl})`;
+    piece.style.backgroundSize     = '300% 200%';
     piece.style.backgroundPosition = `${pieceMeta.x} ${pieceMeta.y}`;
 
     source.appendChild(piece);
@@ -82,7 +89,7 @@ export function initPuzzle1(container, onBack, onNext) {
     gsap.set(piece, { opacity: 0, scale: 0.6, rotation: Math.random() * 14 - 7 });
     gsap.to(piece, {
       opacity: 1, scale: 1, rotation: 0,
-      duration: 0.5, delay: index * 0.1, ease: 'back.out(1.7)'
+      duration: 0.5, delay: index * 0.08, ease: 'back.out(1.7)'
     });
 
     piece.addEventListener('dragstart', (e) => {
@@ -93,10 +100,10 @@ export function initPuzzle1(container, onBack, onNext) {
     piece.addEventListener('dragend', () => piece.classList.remove('dragging'));
   });
 
-  const solution = { '1': '1', '2': '2', '3': '3', '4': '4' };
-  let solved = 0;
+  const solution = { '1': '1', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6' };
+  let solved    = 0;
   let completed = false;
-  const slots = document.querySelectorAll('.drop-slot');
+  const slots   = document.querySelectorAll('.drop-slot');
 
   function handleSlotDrop(piece, slot) {
     if (completed) return;
@@ -123,8 +130,8 @@ export function initPuzzle1(container, onBack, onNext) {
     if (solved < slots.length) {
       document.getElementById('feedback-text').textContent =
         placed === 0
-          ? 'Drag each fragment into its rightful place. When the sanctuary is whole, a hidden bond will emerge from the shadows.'
-          : `${solved} of 4 fragments correctly placed. Keep going — the sanctuary awaits restoration.`;
+          ? 'Drag each fragment into its rightful place. When the sanctuary stands whole, the first hidden bond will emerge from the shadows.'
+          : `${solved} of 6 fragments correctly placed. Keep going — the sanctuary awaits restoration.`;
     }
 
     if (solved === slots.length) handleComplete();
@@ -149,30 +156,23 @@ export function initPuzzle1(container, onBack, onNext) {
 
   // Touch drag support for mobile
   pieceEls.forEach(piece => {
-    let clone = null;
+    let clone   = null;
     let offsetX = 0, offsetY = 0;
 
     piece.addEventListener('touchstart', (e) => {
       if (completed) return;
       e.preventDefault();
       const touch = e.touches[0];
-      const rect = piece.getBoundingClientRect();
+      const rect  = piece.getBoundingClientRect();
       offsetX = touch.clientX - rect.left;
       offsetY = touch.clientY - rect.top;
 
       clone = piece.cloneNode(true);
       Object.assign(clone.style, {
-        position: 'fixed',
-        left: rect.left + 'px',
-        top: rect.top + 'px',
-        width: rect.width + 'px',
-        height: rect.height + 'px',
-        opacity: '0.85',
-        pointerEvents: 'none',
-        zIndex: '9999',
-        margin: '0',
-        transform: 'none',
-        transition: 'none'
+        position: 'fixed', left: rect.left + 'px', top: rect.top + 'px',
+        width: rect.width + 'px', height: rect.height + 'px',
+        opacity: '0.85', pointerEvents: 'none', zIndex: '9999',
+        margin: '0', transform: 'none', transition: 'none'
       });
       document.body.appendChild(clone);
       piece.classList.add('dragging');
@@ -183,20 +183,17 @@ export function initPuzzle1(container, onBack, onNext) {
       e.preventDefault();
       const touch = e.touches[0];
       clone.style.left = (touch.clientX - offsetX) + 'px';
-      clone.style.top = (touch.clientY - offsetY) + 'px';
+      clone.style.top  = (touch.clientY - offsetY) + 'px';
     }, { passive: false });
 
     piece.addEventListener('touchend', (e) => {
       if (!clone) return;
       const touch = e.changedTouches[0];
-      clone.remove();
-      clone = null;
+      clone.remove(); clone = null;
       piece.classList.remove('dragging');
-
       piece.style.visibility = 'hidden';
       const el = document.elementFromPoint(touch.clientX, touch.clientY);
       piece.style.visibility = '';
-
       if (!el) return;
       const slot = el.closest('.drop-slot');
       if (slot) handleSlotDrop(piece, slot);
@@ -206,14 +203,14 @@ export function initPuzzle1(container, onBack, onNext) {
   function handleComplete() {
     completed = true;
     gsap.to('.drop-slot.correct', {
-      scale: 1.04, duration: 0.3, yoyo: true, repeat: 1, stagger: 0.08
+      scale: 1.04, duration: 0.3, yoyo: true, repeat: 1, stagger: 0.06
     });
 
     const feedbackEl = document.getElementById('feedback');
     feedbackEl.innerHTML = `
       <div class="feedback-success">
         <div class="feedback-success-title">&#10022; The Sanctuary Stands Whole &#10022;</div>
-        <p>You've uncovered the first hidden bond: the silent pact of mutual aid that wove the community together.</p>
+        <p>You&rsquo;ve uncovered the first hidden bond: the silent pact of mutual aid. Seven lodges from three nations pooled their debentures to raise this Roman Corinthian facade on Dutoitspan Road &mdash; a covenant forged in the diamond fields.</p>
         <div class="clue-reveal">
           <div class="clue-reveal-label">&#128269; Clue Unlocked &mdash; Carry this into the next enigma</div>
           <div class="clue-lines">
@@ -243,11 +240,10 @@ export function initPuzzle1(container, onBack, onNext) {
     };
 
     setTimeout(() => {
-      const feedbackEl = document.getElementById('feedback');
       const btn = document.createElement('button');
       btn.className = 'continue-btn';
       btn.innerHTML = 'Continue to Symbol Cipher &#8594;';
-      feedbackEl.querySelector('.feedback-success').appendChild(btn);
+      document.querySelector('.feedback-success').appendChild(btn);
       gsap.fromTo(btn, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' });
       btn.addEventListener('click', () => {
         if (typeof onNext === 'function') onNext(clue);

@@ -265,12 +265,14 @@ export function initPuzzle2(container, clue, onBack, onNext) {
         <div class="feedback-success-title">&#10022; The Cipher is Broken &#10022;</div>
         <p>You've deciphered the second hidden bond: the symbolic alliances that transcended cultural divides.</p>
         <div class="clue-reveal">
-          <div class="clue-reveal-label">&#128269; Clue Unlocked &mdash; Carry this into the final enigma</div>
+          <div class="clue-reveal-label">&#128279; Cipher Map Unlocked &mdash; The Lodge Network</div>
           <div class="clue-lines">
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Temple Lodge reaches to <em>Immigrant Traders</em></span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Temple Lodge anchors <em>Local Merchants</em></span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Immigrant Traders align with <em>Cultural Guardians</em></span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Local Merchants sustain <em>Cultural Guardians</em></span></div>
+            <div class="clue-line"><span class="clue-icon">⬡</span><span>Union Temple binds the <em>English Craft</em></span></div>
+            <div class="clue-line"><span class="clue-icon">⬡</span><span>Union Temple shelters the <em>Scottish Chapter</em></span></div>
+            <div class="clue-line"><span class="clue-icon">⬡</span><span>Union Temple welcomes the <em>Dutch Brethren</em></span></div>
+            <div class="clue-line"><span class="clue-icon">⬡</span><span>English Craft trades with the <em>Diamond Traders</em></span></div>
+            <div class="clue-line"><span class="clue-icon">⬡</span><span>Diamond Traders deal with the <em>Dutch Brethren</em></span></div>
+            <div class="clue-line"><span class="clue-icon">⬡</span><span>Dutch Brethren keep faith with the <em>Scottish Chapter</em></span></div>
           </div>
         </div>
       </div>
@@ -283,12 +285,14 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     );
 
     const nextClue = {
-      title: "The Cipher's Network Map",
+      title: "The Lodge Network Map — Six Hidden Bonds",
       lines: [
-        { icon: '⬡', text: 'Temple Lodge reaches to <em>Immigrant Traders</em>' },
-        { icon: '⬡', text: 'Temple Lodge anchors <em>Local Merchants</em>' },
-        { icon: '⬡', text: 'Immigrant Traders align with <em>Cultural Guardians</em>' },
-        { icon: '⬡', text: 'Local Merchants sustain <em>Cultural Guardians</em>' }
+        { icon: '⬡', text: 'Union Temple binds the <em>English Craft</em>' },
+        { icon: '⬡', text: 'Union Temple shelters the <em>Scottish Chapter</em>' },
+        { icon: '⬡', text: 'Union Temple welcomes the <em>Dutch Brethren</em>' },
+        { icon: '⬡', text: 'English Craft trades with the <em>Diamond Traders</em>' },
+        { icon: '⬡', text: 'Diamond Traders deal with the <em>Dutch Brethren</em>' },
+        { icon: '⬡', text: 'Dutch Brethren keep faith with the <em>Scottish Chapter</em>' }
       ]
     };
 

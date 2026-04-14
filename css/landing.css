@@ -562,6 +562,67 @@ body {
   line-height: 1.7;
 }
 
+/* Discovery bar — address/date strip */
+.reflection-discovery-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+  padding: 14px 24px;
+  background: rgba(201,162,39,0.07);
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: var(--border-radius-sm);
+}
+
+.rdb-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  color: var(--color-text-light);
+  font-family: var(--secondary-font);
+}
+
+.rdb-icon { font-size: 1rem; }
+.rdb-sep  { color: rgba(201,162,39,0.4); font-size: 1.1rem; }
+
+/* Historical note — Siege of Kimberley fact */
+.reflection-historical-note {
+  background: linear-gradient(135deg, #1a0f0a 0%, #0f0906 100%);
+  border: 1px solid rgba(201,162,39,0.22);
+  border-left: 3px solid var(--color-gold);
+  border-radius: 0 var(--border-radius-sm) var(--border-radius-sm) 0;
+  padding: 20px 24px;
+  margin: 0 auto 40px;
+  max-width: 760px;
+  text-align: left;
+}
+
+.rhn-eyebrow {
+  font-size: 0.68rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  font-weight: 700;
+  margin-bottom: 10px;
+  font-family: var(--secondary-font);
+}
+
+.reflection-historical-note p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(232,217,194,0.75);
+  line-height: 1.65;
+  font-family: var(--secondary-font);
+}
+
+.reflection-cta-group {
+  display: flex;
+  justify-content: center;
+}
+
 /* Bond cards */
 .bonds-grid {
   display: grid;
