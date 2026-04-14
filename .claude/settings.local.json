@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node --check js/main.js js/landing.js js/puzzleMenu.js js/puzzle1.js js/puzzle2.js js/puzzle3.js js/reflection.js)"
+      "Bash(node --check js/main.js js/landing.js js/puzzleMenu.js js/puzzle1.js js/puzzle2.js js/puzzle3.js js/reflection.js)",
+      "Bash(node --check js/puzzle1.js)",
+      "Bash(node --check js/puzzle2.js)",
+      "WebSearch"
     ]
   }
 }

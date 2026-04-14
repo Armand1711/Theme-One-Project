@@ -51,7 +51,7 @@ export function initPuzzle3(container, clue, onBack, onNext) {
 
       <div class="puzzle-intro">
         <div class="puzzle-tag">Connect &amp; Reveal</div>
-        <p class="puzzle-description">Invisible threads connect the enclave. Click a node to select it, then click another to draw the hidden bond between them. The cipher's map reveals which connections must be forged.</p>
+        <p class="puzzle-description">The 1886 Union Masonic Temple stood at the centre of a web of trust binding Kimberley's immigrant enclave. Map the invisible bonds between its key groups — tap a node to select it, then tap another to draw the hidden connection. The cipher's map shows which threads must be forged.</p>
       </div>
 
       <div class="puzzle-layout network-layout">

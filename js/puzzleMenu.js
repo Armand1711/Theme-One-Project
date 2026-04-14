@@ -5,7 +5,7 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
     {
       num: '01',
       title: 'Shattered Sanctuary',
-      desc: "Reassemble the temple's broken visage to glimpse the first veiled connection.",
+      desc: "Reassemble the fractured facade of the 1886 Union Masonic Temple to reveal the first hidden bond forged in Kimberley's diamond fields.",
       tag: 'Drag & Restore',
       unlocked: true,
       complete: completedPuzzles >= 1
@@ -13,7 +13,7 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
     {
       num: '02',
       title: 'Symbol Cipher',
-      desc: 'Decipher ancient emblems to unlock the second hidden bond.',
+      desc: "Decode the lodge's encoded emblems — each symbol conceals a pact etched into the temple's archive. Unlock the second hidden bond.",
       tag: 'Decode & Match',
       unlocked: completedPuzzles >= 1,
       complete: completedPuzzles >= 2
@@ -21,7 +21,7 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
     {
       num: '03',
       title: 'Web of Whispers',
-      desc: 'Trace the invisible threads that bound the enclave together.',
+      desc: 'Map the invisible web of trust that connected the temple, traders, merchants, and cultural guardians in 1886 Kimberley.',
       tag: 'Connect & Reveal',
       unlocked: completedPuzzles >= 2,
       complete: completedPuzzles >= 3
@@ -38,7 +38,7 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
             <span class="eyebrow-line"></span>
           </div>
           <h1>UNRAVEL THE MYSTERY</h1>
-          <p>Four riddles await. Each solved unveils a fragment of the hidden bonds that once wove a community together in secrecy.</p>
+          <p>Three enigmas await. Each solved unveils a hidden bond that once wove Kimberley's immigrant community together within the walls of the 1886 Union Masonic Temple.</p>
         </header>
 
         <div class="menu-progress">

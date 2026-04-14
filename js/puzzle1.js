@@ -12,7 +12,7 @@ export function initPuzzle1(container, onBack, onNext) {
 
       <div class="puzzle-intro">
         <div class="puzzle-tag">Drag &amp; Restore</div>
-        <p class="puzzle-description">The temple's visage is shattered into four enigmatic pieces. Reassemble them to unveil the first hidden bond that sustained the enclave. <em>Solving this will unlock a clue for the next enigma.</em></p>
+        <p class="puzzle-description">The facade of Kimberley's 1886 Union Masonic Temple has fractured across time. Reassemble the four fragments to unveil the first hidden bond — the silent pact of mutual aid that held the immigrant enclave together in the diamond fields. <em>Restore the sanctuary to unlock a clue for the next enigma.</em></p>
       </div>
 
       <div class="puzzle-layout">
@@ -56,7 +56,7 @@ export function initPuzzle1(container, onBack, onNext) {
   });
 
   const imageUrl = '../assets/PT-Masonic_Temple-1888.jpg';
-  const pieces = [
+  const pieceDefs = [
     { id: 1, label: 'Temple Base',   x: '0%',  y: '0%'  },
     { id: 2, label: 'Center Arch',   x: '50%', y: '0%'  },
     { id: 3, label: 'Relic Wall',    x: '0%',  y: '50%' },
@@ -64,7 +64,8 @@ export function initPuzzle1(container, onBack, onNext) {
   ];
 
   const source = document.getElementById('puzzle-source');
-  const shuffled = [...pieces].sort(() => Math.random() - 0.5);
+  const shuffled = [...pieceDefs].sort(() => Math.random() - 0.5);
+  const pieceEls = [];
 
   shuffled.forEach((pieceMeta, index) => {
     const piece = document.createElement('div');
@@ -76,6 +77,7 @@ export function initPuzzle1(container, onBack, onNext) {
     piece.style.backgroundPosition = `${pieceMeta.x} ${pieceMeta.y}`;
 
     source.appendChild(piece);
+    pieceEls.push(piece);
 
     gsap.set(piece, { opacity: 0, scale: 0.6, rotation: Math.random() * 14 - 7 });
     gsap.to(piece, {
@@ -96,6 +98,38 @@ export function initPuzzle1(container, onBack, onNext) {
   let completed = false;
   const slots = document.querySelectorAll('.drop-slot');
 
+  function handleSlotDrop(piece, slot) {
+    if (completed) return;
+    slot.classList.remove('drag-over');
+
+    const existing = slot.querySelector('.piece');
+    if (existing) source.appendChild(existing);
+
+    slot.appendChild(piece);
+    gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
+
+    solved = 0;
+    slots.forEach(s => {
+      const child = s.querySelector('.piece');
+      if (child && solution[s.dataset.slot] === child.dataset.value) {
+        solved++;
+        s.classList.add('correct');
+      } else {
+        s.classList.remove('correct');
+      }
+    });
+
+    const placed = [...slots].filter(s => s.querySelector('.piece')).length;
+    if (solved < slots.length) {
+      document.getElementById('feedback-text').textContent =
+        placed === 0
+          ? 'Drag each fragment into its rightful place. When the sanctuary is whole, a hidden bond will emerge from the shadows.'
+          : `${solved} of 4 fragments correctly placed. Keep going — the sanctuary awaits restoration.`;
+    }
+
+    if (solved === slots.length) handleComplete();
+  }
+
   slots.forEach(slot => {
     slot.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -104,43 +138,69 @@ export function initPuzzle1(container, onBack, onNext) {
     slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
     slot.addEventListener('drop', (e) => {
       e.preventDefault();
-      slot.classList.remove('drag-over');
       if (completed) return;
-
       const dragged = e.dataTransfer.getData('text/plain');
       if (!dragged) return;
       const piece = document.querySelector(`.piece[data-value='${dragged}']`);
       if (!piece) return;
-
-      // If slot already has a piece, send it back to source
-      const existing = slot.querySelector('.piece');
-      if (existing) document.getElementById('puzzle-source').appendChild(existing);
-
-      slot.appendChild(piece);
-      gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
-
-      solved = 0;
-      slots.forEach(s => {
-        const child = s.querySelector('.piece');
-        if (child && solution[s.dataset.slot] === child.dataset.value) {
-          solved++;
-          s.classList.add('correct');
-        } else {
-          s.classList.remove('correct');
-        }
-      });
-
-      // Live progress update
-      const placed = [...slots].filter(s => s.querySelector('.piece')).length;
-      if (solved < slots.length) {
-        document.getElementById('feedback-text').textContent =
-          placed === 0
-            ? 'Drag each fragment into its rightful place. When the sanctuary is whole, a hidden bond will emerge from the shadows.'
-            : `${solved} of 4 fragments correctly placed. Keep going — the sanctuary awaits restoration.`;
-      }
-
-      if (solved === slots.length) handleComplete();
+      handleSlotDrop(piece, slot);
     });
+  });
+
+  // Touch drag support for mobile
+  pieceEls.forEach(piece => {
+    let clone = null;
+    let offsetX = 0, offsetY = 0;
+
+    piece.addEventListener('touchstart', (e) => {
+      if (completed) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const rect = piece.getBoundingClientRect();
+      offsetX = touch.clientX - rect.left;
+      offsetY = touch.clientY - rect.top;
+
+      clone = piece.cloneNode(true);
+      Object.assign(clone.style, {
+        position: 'fixed',
+        left: rect.left + 'px',
+        top: rect.top + 'px',
+        width: rect.width + 'px',
+        height: rect.height + 'px',
+        opacity: '0.85',
+        pointerEvents: 'none',
+        zIndex: '9999',
+        margin: '0',
+        transform: 'none',
+        transition: 'none'
+      });
+      document.body.appendChild(clone);
+      piece.classList.add('dragging');
+    }, { passive: false });
+
+    piece.addEventListener('touchmove', (e) => {
+      if (!clone) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      clone.style.left = (touch.clientX - offsetX) + 'px';
+      clone.style.top = (touch.clientY - offsetY) + 'px';
+    }, { passive: false });
+
+    piece.addEventListener('touchend', (e) => {
+      if (!clone) return;
+      const touch = e.changedTouches[0];
+      clone.remove();
+      clone = null;
+      piece.classList.remove('dragging');
+
+      piece.style.visibility = 'hidden';
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      piece.style.visibility = '';
+
+      if (!el) return;
+      const slot = el.closest('.drop-slot');
+      if (slot) handleSlotDrop(piece, slot);
+    }, { passive: false });
   });
 
   function handleComplete() {
@@ -182,7 +242,6 @@ export function initPuzzle1(container, onBack, onNext) {
       ]
     };
 
-    // Append a Continue button after a short delay so user can read the clue
     setTimeout(() => {
       const feedbackEl = document.getElementById('feedback');
       const btn = document.createElement('button');

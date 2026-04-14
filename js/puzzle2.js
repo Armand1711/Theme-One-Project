@@ -51,7 +51,7 @@ export function initPuzzle2(container, clue, onBack, onNext) {
 
       <div class="puzzle-intro">
         <div class="puzzle-tag">Decode &amp; Match</div>
-        <p class="puzzle-description">Ancient emblems whisper their secrets. Match each symbol to its veiled meaning — the inscription from the sanctuary holds the key. <em>The cipher, when broken, reveals the map for the final enigma.</em></p>
+        <p class="puzzle-description">The lodge's archive holds four encoded emblems, each concealing a bond forged within the 1886 Union Masonic Temple. Match each symbol to its veiled meaning — the inscription recovered from the sanctuary reveals the truth. <em>Decode the cipher to unlock the map for the final enigma.</em></p>
       </div>
 
       <div class="puzzle-layout">
@@ -98,14 +98,21 @@ export function initPuzzle2(container, clue, onBack, onNext) {
   });
 
   const source = document.getElementById('symbol-source');
+
+  const SVG_CHAIN = `<svg class="symbol-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="36" height="16" rx="8" stroke="#5e0b15" stroke-width="2.5"/><rect x="20" y="22" width="16" height="28" rx="8" stroke="#5e0b15" stroke-width="2.5"/><circle cx="28" cy="23" r="3" fill="#c9a227" opacity="0.75"/></svg>`;
+  const SVG_BRIDGE = `<svg class="symbol-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="4" y1="52" x2="52" y2="52" stroke="#5e0b15" stroke-width="2.5" stroke-linecap="round"/><rect x="7" y="30" width="10" height="22" rx="1" stroke="#5e0b15" stroke-width="2"/><rect x="39" y="30" width="10" height="22" rx="1" stroke="#5e0b15" stroke-width="2"/><path d="M7 30 Q7 8 28 8 Q49 8 49 30" stroke="#5e0b15" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="28" cy="9" r="3.5" fill="#c9a227"/></svg>`;
+  const SVG_CANDLE = `<svg class="symbol-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 4C28 4 21 16 21 22C21 26.4 24.1 30 28 30C31.9 30 35 26.4 35 22C35 16 28 4 28 4Z" stroke="#5e0b15" stroke-width="2.5" fill="#c9a227" fill-opacity="0.28"/><path d="M28 14C25 19 25 22 25 22" stroke="#5e0b15" stroke-width="1.5" stroke-linecap="round"/><line x1="28" y1="22" x2="28" y2="30" stroke="#5e0b15" stroke-width="2" stroke-linecap="round"/><rect x="22" y="30" width="12" height="16" rx="2" stroke="#5e0b15" stroke-width="2"/><rect x="15" y="46" width="26" height="6" rx="3" stroke="#5e0b15" stroke-width="2"/></svg>`;
+  const SVG_HANDS = `<svg class="symbol-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="8" y1="50" x2="24" y2="28" stroke="#5e0b15" stroke-width="4.5" stroke-linecap="round"/><line x1="48" y1="50" x2="32" y2="28" stroke="#5e0b15" stroke-width="4.5" stroke-linecap="round"/><ellipse cx="28" cy="26" rx="10" ry="7" stroke="#5e0b15" stroke-width="2.5" fill="#c9a227" fill-opacity="0.2"/><path d="M20 26 Q17 18 22 14" stroke="#5e0b15" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M36 26 Q39 18 34 14" stroke="#5e0b15" stroke-width="2" stroke-linecap="round" fill="none"/></svg>`;
+
   const symbols = [
-    { id: 1, symbol: '🔗', label: 'Chain of Unity'     },
-    { id: 2, symbol: '🌉', label: 'Bridge of Cultures' },
-    { id: 3, symbol: '🕯️', label: 'Light of Tradition' },
-    { id: 4, symbol: '🤝', label: 'Hands of Alliance'  }
+    { id: 1, svgIcon: SVG_CHAIN,  label: 'Chain of Unity'     },
+    { id: 2, svgIcon: SVG_BRIDGE, label: 'Bridge of Cultures' },
+    { id: 3, svgIcon: SVG_CANDLE, label: 'Light of Tradition' },
+    { id: 4, svgIcon: SVG_HANDS,  label: 'Hands of Alliance'  }
   ];
 
   const shuffled = [...symbols].sort(() => Math.random() - 0.5);
+  const pieceEls = [];
 
   shuffled.forEach((sym, index) => {
     const el = document.createElement('div');
@@ -113,10 +120,11 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     el.draggable = true;
     el.dataset.value = sym.id;
     el.innerHTML = `
-      <div class="symbol-icon">${sym.symbol}</div>
+      <div class="symbol-icon">${sym.svgIcon}</div>
       <div class="symbol-label">${sym.label}</div>
     `;
     source.appendChild(el);
+    pieceEls.push(el);
 
     gsap.set(el, { opacity: 0, scale: 0.6, y: 20 });
     gsap.to(el, { opacity: 1, scale: 1, y: 0, duration: 0.5, delay: index * 0.1, ease: 'back.out(1.7)' });
@@ -140,6 +148,38 @@ export function initPuzzle2(container, clue, onBack, onNext) {
   let completed = false;
   const slots = document.querySelectorAll('.drop-slot');
 
+  function handleSlotDrop(piece, slot) {
+    if (completed) return;
+    slot.classList.remove('drag-over');
+
+    const existing = slot.querySelector('.piece');
+    if (existing) source.appendChild(existing);
+
+    slot.appendChild(piece);
+    gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
+
+    solved = 0;
+    slots.forEach(s => {
+      const child = s.querySelector('.piece');
+      if (child && solution[s.dataset.slot] === child.dataset.value) {
+        solved++;
+        s.classList.add('correct');
+      } else {
+        s.classList.remove('correct');
+      }
+    });
+
+    if (solved < slots.length) {
+      const placed = [...slots].filter(s => s.querySelector('.piece')).length;
+      document.getElementById('feedback-text').textContent =
+        placed === 0
+          ? 'Match each symbol to its veiled meaning. The clue from the Shattered Sanctuary reveals the truth — look closely.'
+          : `${solved} of 4 symbols correctly matched. Study the clue — the inscription reveals the answer.`;
+    }
+
+    if (solved === slots.length) handleComplete();
+  }
+
   slots.forEach(slot => {
     slot.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -148,42 +188,69 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
     slot.addEventListener('drop', (e) => {
       e.preventDefault();
-      slot.classList.remove('drag-over');
       if (completed) return;
-
       const dragged = e.dataTransfer.getData('text/plain');
       if (!dragged) return;
       const piece = document.querySelector(`.piece[data-value='${dragged}']`);
       if (!piece) return;
-
-      const existing = slot.querySelector('.piece');
-      if (existing) document.getElementById('symbol-source').appendChild(existing);
-
-      slot.appendChild(piece);
-      gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
-
-      solved = 0;
-      slots.forEach(s => {
-        const child = s.querySelector('.piece');
-        if (child && solution[s.dataset.slot] === child.dataset.value) {
-          solved++;
-          s.classList.add('correct');
-        } else {
-          s.classList.remove('correct');
-        }
-      });
-
-      // Live progress update
-      if (solved < slots.length) {
-        const placed = [...slots].filter(s => s.querySelector('.piece')).length;
-        document.getElementById('feedback-text').textContent =
-          placed === 0
-            ? 'Match each symbol to its veiled meaning. The clue from the Shattered Sanctuary reveals the truth — look closely.'
-            : `${solved} of 4 symbols correctly matched. Study the clue — the inscription reveals the answer.`;
-      }
-
-      if (solved === slots.length) handleComplete();
+      handleSlotDrop(piece, slot);
     });
+  });
+
+  // Touch drag support for mobile
+  pieceEls.forEach(piece => {
+    let clone = null;
+    let offsetX = 0, offsetY = 0;
+
+    piece.addEventListener('touchstart', (e) => {
+      if (completed) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const rect = piece.getBoundingClientRect();
+      offsetX = touch.clientX - rect.left;
+      offsetY = touch.clientY - rect.top;
+
+      clone = piece.cloneNode(true);
+      Object.assign(clone.style, {
+        position: 'fixed',
+        left: rect.left + 'px',
+        top: rect.top + 'px',
+        width: rect.width + 'px',
+        height: rect.height + 'px',
+        opacity: '0.85',
+        pointerEvents: 'none',
+        zIndex: '9999',
+        margin: '0',
+        transform: 'none',
+        transition: 'none'
+      });
+      document.body.appendChild(clone);
+      piece.classList.add('dragging');
+    }, { passive: false });
+
+    piece.addEventListener('touchmove', (e) => {
+      if (!clone) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      clone.style.left = (touch.clientX - offsetX) + 'px';
+      clone.style.top = (touch.clientY - offsetY) + 'px';
+    }, { passive: false });
+
+    piece.addEventListener('touchend', (e) => {
+      if (!clone) return;
+      const touch = e.changedTouches[0];
+      clone.remove();
+      clone = null;
+      piece.classList.remove('dragging');
+
+      piece.style.visibility = 'hidden';
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      piece.style.visibility = '';
+
+      if (!el) return;
+      const slot = el.closest('.drop-slot');
+      if (slot) handleSlotDrop(piece, slot);
+    }, { passive: false });
   });
 
   function handleComplete() {
