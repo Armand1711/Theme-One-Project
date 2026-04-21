@@ -114,12 +114,23 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
     });
   });
 
-  // Animate header + progress only (no GSAP on cards = no opacity:0 risk)
+  // Kill any lingering tweens on the app container so nothing bleeds into the menu
+  try { gsap.killTweensOf(app); } catch (e) {}
+
   try {
-    gsap.from('.menu-header',  { opacity: 0, y: -24, duration: 0.6, ease: 'power2.out' });
-    gsap.from('.menu-progress',{ opacity: 0, y: 16,  duration: 0.5, ease: 'power2.out', delay: 0.15 });
-    gsap.from('.menu-card',    { opacity: 0, y: 30,  duration: 0.5, ease: 'power2.out', stagger: 0.1, delay: 0.25 });
+    gsap.fromTo('.menu-header',
+      { opacity: 0, y: -24 },
+      { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
+    );
+    gsap.fromTo('.menu-progress',
+      { opacity: 0, y: 16 },
+      { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.15 }
+    );
+    gsap.fromTo('.menu-card',
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.1, delay: 0.25 }
+    );
   } catch (e) {
-    // GSAP unavailable — cards are still fully visible and clickable without animation
+    // GSAP unavailable — CSS opacity:1 fallback keeps cards visible
   }
 }

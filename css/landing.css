@@ -386,6 +386,7 @@ body {
   background: linear-gradient(135deg, rgba(201,162,39,0.06) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.4s;
+  pointer-events: none;
 }
 
 .menu-card:not(.locked):hover::before { opacity: 1; }
@@ -487,6 +488,8 @@ body {
 
 /* Play button inside each card */
 .card-play-btn {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;

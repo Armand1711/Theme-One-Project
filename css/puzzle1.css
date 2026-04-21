@@ -364,6 +364,21 @@
 /* Hide label when piece is placed */
 .drop-slot:has(.piece) .slot-label { display: none; }
 
+/* Make placed piece fill the slot completely */
+.drop-slot:has(.piece) {
+  padding: 0;
+  overflow: hidden;
+  align-items: stretch;
+}
+
+.drop-slot > .piece {
+  width: 100%;
+  min-height: 110px;
+  border-radius: 8px;
+  flex: 1;
+  align-self: stretch;
+}
+
 .drop-slot.drag-over {
   border-color: #2d7b5e;
   background: linear-gradient(135deg, #e2f9f0, #d0f4e8);
@@ -371,9 +386,19 @@
 }
 
 .drop-slot.correct {
-  border-color: #1f8d26;
+  border-color: #18a820;
   border-style: solid;
-  background: linear-gradient(135deg, #eaf8e9, #d9f2d5);
+  border-width: 3px;
+  background: linear-gradient(135deg, #d4f5d0, #b8edaf);
+  box-shadow: 0 0 0 3px rgba(24,168,32,0.25), inset 0 0 12px rgba(24,168,32,0.1);
+}
+
+.drop-slot.wrong {
+  border-color: #c0281e;
+  border-style: solid;
+  border-width: 3px;
+  background: linear-gradient(135deg, #fce8e6, #f9d0cc);
+  box-shadow: 0 0 0 3px rgba(192,40,30,0.22), inset 0 0 12px rgba(192,40,30,0.08);
 }
 
 /* ═══════════════════════════════════════════════════════

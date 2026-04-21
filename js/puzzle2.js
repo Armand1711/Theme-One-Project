@@ -215,6 +215,40 @@ export function initPuzzle2(container, clue, onBack, onNext) {
   let completed = false;
   const slots   = document.querySelectorAll('.drop-slot');
 
+  function recalcSlots() {
+    solved = 0;
+    slots.forEach(s => {
+      const child = s.querySelector('.piece');
+      if (child && solution[s.dataset.slot] === child.dataset.value) {
+        solved++;
+        s.classList.add('correct');
+        s.classList.remove('wrong');
+      } else if (child) {
+        s.classList.add('wrong');
+        s.classList.remove('correct');
+      } else {
+        s.classList.remove('correct', 'wrong');
+      }
+    });
+
+    const placed = [...slots].filter(s => s.querySelector('.piece')).length;
+    if (solved < slots.length) {
+      document.getElementById('feedback-text').textContent =
+        placed === 0
+          ? 'Drag each symbol to its meaning. Open the clue panel above if you need a hint.'
+          : `${solved} of 4 symbols correctly matched. Keep going.`;
+    }
+
+    if (solved === slots.length) handleComplete();
+  }
+
+  function returnToSource(piece) {
+    if (completed) return;
+    source.appendChild(piece);
+    gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.25, ease: 'back.out(1.7)' });
+    recalcSlots();
+  }
+
   function handleSlotDrop(piece, slot) {
     if (completed) return;
     slot.classList.remove('drag-over');
@@ -224,27 +258,7 @@ export function initPuzzle2(container, clue, onBack, onNext) {
 
     slot.appendChild(piece);
     gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
-
-    solved = 0;
-    slots.forEach(s => {
-      const child = s.querySelector('.piece');
-      if (child && solution[s.dataset.slot] === child.dataset.value) {
-        solved++;
-        s.classList.add('correct');
-      } else {
-        s.classList.remove('correct');
-      }
-    });
-
-    if (solved < slots.length) {
-      const placed = [...slots].filter(s => s.querySelector('.piece')).length;
-      document.getElementById('feedback-text').textContent =
-        placed === 0
-          ? 'Drag each symbol to its meaning. Open the clue panel above if you need a hint.'
-          : `${solved} of 4 symbols correctly matched. Keep going.`;
-    }
-
-    if (solved === slots.length) handleComplete();
+    recalcSlots();
   }
 
   slots.forEach(slot => {
@@ -262,6 +276,18 @@ export function initPuzzle2(container, clue, onBack, onNext) {
       if (!piece) return;
       handleSlotDrop(piece, slot);
     });
+  });
+
+  // Allow dropping pieces back onto the source panel
+  source.addEventListener('dragover', (e) => { e.preventDefault(); });
+  source.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (completed) return;
+    const dragged = e.dataTransfer.getData('text/plain');
+    if (!dragged) return;
+    const piece = document.querySelector(`.piece[data-value='${dragged}']`);
+    if (!piece || !piece.closest('.drop-slot')) return;
+    returnToSource(piece);
   });
 
   // Touch drag support
@@ -306,7 +332,11 @@ export function initPuzzle2(container, clue, onBack, onNext) {
       piece.style.visibility = '';
       if (!el) return;
       const slot = el.closest('.drop-slot');
-      if (slot) handleSlotDrop(piece, slot);
+      if (slot) {
+        handleSlotDrop(piece, slot);
+      } else if (el.closest('#symbol-source') && piece.closest('.drop-slot')) {
+        returnToSource(piece);
+      }
     }, { passive: false });
   });
 
