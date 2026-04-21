@@ -371,11 +371,12 @@ body {
   border-radius: var(--border-radius);
   padding: 28px 24px;
   text-align: left;
-  cursor: pointer;
   color: var(--color-dark-text);
   transition: var(--transition);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .menu-card::before {
@@ -387,34 +388,19 @@ body {
   transition: opacity 0.4s;
 }
 
-.menu-card:not([disabled]):hover::before { opacity: 1; }
-.menu-card:not([disabled]):hover {
+.menu-card:not(.locked):hover::before { opacity: 1; }
+.menu-card:not(.locked):hover {
   border-color: rgba(201,162,39,0.45);
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 20px rgba(201,162,39,0.1);
 }
 
-.menu-card.active {
-  border-color: var(--color-gold);
-  background: rgba(201,162,39,0.07);
-  box-shadow: 0 0 0 1px var(--color-gold), 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(201,162,39,0.15);
-}
-
 .menu-card.locked {
   opacity: 0.38;
-  cursor: not-allowed;
-}
-.menu-card.locked:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: rgba(201,162,39,0.18);
+  pointer-events: none;
 }
 
 .menu-card.complete { border-color: rgba(31,141,38,0.35); }
-.menu-card.complete.active {
-  border-color: #1f8d26;
-  box-shadow: 0 0 0 1px #1f8d26, 0 12px 40px rgba(0,0,0,0.4);
-}
 
 .card-status { margin-bottom: 16px; }
 
@@ -453,8 +439,6 @@ body {
   line-height: 1;
   margin-bottom: 8px;
 }
-.menu-card.active .card-num { opacity: 0.8; }
-
 .card-title {
   font-family: var(--primary-font);
   font-size: 1.18rem;
@@ -463,21 +447,96 @@ body {
   margin-bottom: 10px;
 }
 
-.card-desc {
-  font-size: 0.86rem;
-  color: rgba(232,217,194,0.55);
-  line-height: 1.55;
-  margin-bottom: 16px;
-}
-
 .card-tag {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   letter-spacing: 1px;
   text-transform: uppercase;
   color: var(--color-gold);
-  opacity: 0.55;
+  opacity: 0.7;
+  margin-bottom: 10px;
 }
-.menu-card.active .card-tag { opacity: 1; }
+
+.card-desc {
+  font-size: 0.86rem;
+  color: rgba(232,217,194,0.65);
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+
+/* How-to hint inside card */
+.card-how {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: rgba(201,162,39,0.75);
+  background: rgba(201,162,39,0.06);
+  border: 1px solid rgba(201,162,39,0.14);
+  border-radius: 8px;
+  padding: 9px 12px;
+  margin-bottom: 18px;
+  line-height: 1.45;
+  flex: 1;
+}
+
+.card-how-icon {
+  font-size: 0.65rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* Play button inside each card */
+.card-play-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 20px;
+  background: linear-gradient(135deg, #8c1f1f 0%, #6b1515 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(140,31,31,0.4);
+  transition: all 0.22s;
+  font-family: 'Inter', sans-serif;
+  margin-top: auto;
+}
+
+.card-play-btn:hover {
+  background: linear-gradient(135deg, #a02525 0%, #7b1f1f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(140,31,31,0.55);
+}
+
+.card-locked-msg {
+  font-size: 0.78rem;
+  color: rgba(232,217,194,0.3);
+  text-align: center;
+  padding: 12px 0 4px;
+  font-style: italic;
+  margin-top: auto;
+}
+
+/* Masonic compass decoration in menu header */
+.menu-masonic-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+
+.menu-masonic-icon {
+  width: 48px;
+  height: 42px;
+  opacity: 0.55;
+  flex-shrink: 0;
+}
 
 /* Actions */
 .menu-actions { display: flex; justify-content: center; }

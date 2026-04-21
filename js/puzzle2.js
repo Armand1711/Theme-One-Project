@@ -1,3 +1,59 @@
+const MODAL_MASONIC = `<svg class="modal-masonic-svg" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <line x1="40" y1="6" x2="16" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="40" y1="6" x2="64" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M18 50 Q40 43 62 50" stroke="#c9a227" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <line x1="16" y1="24" x2="16" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="16" y1="62" x2="64" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="40" cy="6" r="2.5" fill="#c9a227"/>
+</svg>`;
+
+function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onContinue }) {
+  const modal = document.createElement('div');
+  modal.className = 'completion-modal';
+  modal.id = 'completion-modal';
+  modal.innerHTML = `
+    <div class="completion-modal-card">
+      <div class="modal-masonic-row">${MODAL_MASONIC}</div>
+      <div class="modal-solved-badge">&#10022; Solved &#10022;</div>
+      <h2 class="modal-title">${title}</h2>
+      <p class="modal-body">${body}</p>
+      ${clueLines ? `
+        <div class="modal-clue">
+          <div class="modal-clue-label">${clueLabel}</div>
+          <div class="modal-clue-lines">
+            ${clueLines.map(l => `
+              <div class="modal-clue-line">
+                <span class="modal-clue-icon">${l.icon}</span>
+                <span>${l.text}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+      <button class="modal-continue-btn" id="modal-continue">
+        ${btnLabel} <span class="btn-arrow">&#8594;</span>
+      </button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  gsap.fromTo(modal,
+    { opacity: 0 },
+    { opacity: 1, duration: 0.35, ease: 'power2.out' }
+  );
+  gsap.fromTo('.completion-modal-card',
+    { opacity: 0, y: 40, scale: 0.94 },
+    { opacity: 1, y: 0, scale: 1, duration: 0.5, delay: 0.1, ease: 'back.out(1.7)' }
+  );
+
+  document.getElementById('modal-continue').addEventListener('click', () => {
+    gsap.to(modal, {
+      opacity: 0, duration: 0.25, ease: 'power2.in',
+      onComplete: () => { modal.remove(); onContinue(); }
+    });
+  });
+}
+
 function buildCluePanel(clue, sourceLabel) {
   if (!clue) return '';
   return `
@@ -51,7 +107,16 @@ export function initPuzzle2(container, clue, onBack, onNext) {
 
       <div class="puzzle-intro">
         <div class="puzzle-tag">Decode &amp; Match</div>
-        <p class="puzzle-description">The lodge's archive holds four encoded emblems, each concealing a bond forged within the 1886 Union Masonic Temple. Match each symbol to its veiled meaning — the inscription recovered from the sanctuary reveals the truth. <em>Decode the cipher to unlock the map for the final enigma.</em></p>
+        <p class="puzzle-description">Four Masonic symbols were used as a secret language inside the 1886 Union Masonic Temple. Each symbol stands for one of the bonds that held the community together. Match every symbol to its meaning.</p>
+      </div>
+
+      <div class="how-to-play">
+        <div class="htp-title">&#9670; How to Play</div>
+        <ol class="htp-steps">
+          <li>Look at the <strong>Symbols</strong> on the left — each one has a name below it.</li>
+          <li>Drag a symbol and drop it onto the <strong>Meaning</strong> you think it represents on the right.</li>
+          <li>Use the clue from Enigma 01 to help you decode each one.</li>
+        </ol>
       </div>
 
       <div class="puzzle-layout">
@@ -71,8 +136,8 @@ export function initPuzzle2(container, clue, onBack, onNext) {
       </div>
 
       <div id="feedback" class="feedback-bar">
-        <span class="feedback-icon">&#128161;</span>
-        <span id="feedback-text">Match each symbol to its veiled meaning. The clue from the Shattered Sanctuary reveals the truth &mdash; look closely.</span>
+        <span class="feedback-icon">&#9670;</span>
+        <span id="feedback-text">Drag each symbol to its meaning. Open the clue panel above if you need a hint.</span>
       </div>
     </div>
   `;
@@ -81,17 +146,19 @@ export function initPuzzle2(container, clue, onBack, onNext) {
   attachClueToggle();
 
   gsap.set('.puzzle-header', { opacity: 0, y: -20 });
-  gsap.set('.clue-panel', { opacity: 0, y: 12 });
-  gsap.set('.puzzle-intro', { opacity: 0, y: 16 });
-  gsap.set('.puzzle-layout', { opacity: 0, y: 24 });
-  gsap.set('#feedback', { opacity: 0 });
+  gsap.set('.clue-panel',    { opacity: 0, y: 12  });
+  gsap.set('.puzzle-intro',  { opacity: 0, y: 16  });
+  gsap.set('.how-to-play',   { opacity: 0, y: 12  });
+  gsap.set('.puzzle-layout', { opacity: 0, y: 24  });
+  gsap.set('#feedback',      { opacity: 0 });
 
   const tl = gsap.timeline();
   tl.to('.puzzle-header', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
-    .to('.clue-panel', { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
-    .to('.puzzle-intro', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
+    .to('.clue-panel',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
+    .to('.puzzle-intro',  { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
+    .to('.how-to-play',   { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
     .to('.puzzle-layout', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
-    .to('#feedback', { opacity: 1, duration: 0.4 }, '-=0.2');
+    .to('#feedback',      { opacity: 1, duration: 0.4 }, '-=0.2');
 
   document.getElementById('back-btn').addEventListener('click', () => {
     if (typeof onBack === 'function') onBack();
@@ -99,10 +166,10 @@ export function initPuzzle2(container, clue, onBack, onNext) {
 
   const source = document.getElementById('symbol-source');
 
-  const SVG_CHAIN = `<svg class="symbol-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="36" height="16" rx="8" stroke="#5e0b15" stroke-width="2.5"/><rect x="20" y="22" width="16" height="28" rx="8" stroke="#5e0b15" stroke-width="2.5"/><circle cx="28" cy="23" r="3" fill="#c9a227" opacity="0.75"/></svg>`;
+  const SVG_CHAIN  = `<svg class="symbol-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="36" height="16" rx="8" stroke="#5e0b15" stroke-width="2.5"/><rect x="20" y="22" width="16" height="28" rx="8" stroke="#5e0b15" stroke-width="2.5"/><circle cx="28" cy="23" r="3" fill="#c9a227" opacity="0.75"/></svg>`;
   const SVG_BRIDGE = `<svg class="symbol-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="4" y1="52" x2="52" y2="52" stroke="#5e0b15" stroke-width="2.5" stroke-linecap="round"/><rect x="7" y="30" width="10" height="22" rx="1" stroke="#5e0b15" stroke-width="2"/><rect x="39" y="30" width="10" height="22" rx="1" stroke="#5e0b15" stroke-width="2"/><path d="M7 30 Q7 8 28 8 Q49 8 49 30" stroke="#5e0b15" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="28" cy="9" r="3.5" fill="#c9a227"/></svg>`;
   const SVG_CANDLE = `<svg class="symbol-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 4C28 4 21 16 21 22C21 26.4 24.1 30 28 30C31.9 30 35 26.4 35 22C35 16 28 4 28 4Z" stroke="#5e0b15" stroke-width="2.5" fill="#c9a227" fill-opacity="0.28"/><path d="M28 14C25 19 25 22 25 22" stroke="#5e0b15" stroke-width="1.5" stroke-linecap="round"/><line x1="28" y1="22" x2="28" y2="30" stroke="#5e0b15" stroke-width="2" stroke-linecap="round"/><rect x="22" y="30" width="12" height="16" rx="2" stroke="#5e0b15" stroke-width="2"/><rect x="15" y="46" width="26" height="6" rx="3" stroke="#5e0b15" stroke-width="2"/></svg>`;
-  const SVG_HANDS = `<svg class="symbol-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="8" y1="50" x2="24" y2="28" stroke="#5e0b15" stroke-width="4.5" stroke-linecap="round"/><line x1="48" y1="50" x2="32" y2="28" stroke="#5e0b15" stroke-width="4.5" stroke-linecap="round"/><ellipse cx="28" cy="26" rx="10" ry="7" stroke="#5e0b15" stroke-width="2.5" fill="#c9a227" fill-opacity="0.2"/><path d="M20 26 Q17 18 22 14" stroke="#5e0b15" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M36 26 Q39 18 34 14" stroke="#5e0b15" stroke-width="2" stroke-linecap="round" fill="none"/></svg>`;
+  const SVG_HANDS  = `<svg class="symbol-svg" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="8" y1="50" x2="24" y2="28" stroke="#5e0b15" stroke-width="4.5" stroke-linecap="round"/><line x1="48" y1="50" x2="32" y2="28" stroke="#5e0b15" stroke-width="4.5" stroke-linecap="round"/><ellipse cx="28" cy="26" rx="10" ry="7" stroke="#5e0b15" stroke-width="2.5" fill="#c9a227" fill-opacity="0.2"/><path d="M20 26 Q17 18 22 14" stroke="#5e0b15" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M36 26 Q39 18 34 14" stroke="#5e0b15" stroke-width="2" stroke-linecap="round" fill="none"/></svg>`;
 
   const symbols = [
     { id: 1, svgIcon: SVG_CHAIN,  label: 'Chain of Unity'     },
@@ -137,16 +204,16 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     el.addEventListener('dragend', () => el.classList.remove('dragging'));
   });
 
-  // Logical solution matching the clue given by Puzzle 1:
-  // Slot 1 "The Silent Oath"   → id 4 Hands of Alliance  (a handshake IS an oath)
+  // Solution:
+  // Slot 1 "The Silent Oath"   → id 4 Hands of Alliance  (handshake = oath)
   // Slot 2 "Shared Prosperity" → id 1 Chain of Unity      (chain = linked effort)
   // Slot 3 "Cultural Bridge"   → id 2 Bridge of Cultures  (direct match)
-  // Slot 4 "Enduring Legacy"   → id 3 Light of Tradition  (flame = enduring memory)
+  // Slot 4 "Enduring Legacy"   → id 3 Light of Tradition  (flame = memory)
   const solution = { '1': '4', '2': '1', '3': '2', '4': '3' };
 
-  let solved = 0;
+  let solved    = 0;
   let completed = false;
-  const slots = document.querySelectorAll('.drop-slot');
+  const slots   = document.querySelectorAll('.drop-slot');
 
   function handleSlotDrop(piece, slot) {
     if (completed) return;
@@ -173,8 +240,8 @@ export function initPuzzle2(container, clue, onBack, onNext) {
       const placed = [...slots].filter(s => s.querySelector('.piece')).length;
       document.getElementById('feedback-text').textContent =
         placed === 0
-          ? 'Match each symbol to its veiled meaning. The clue from the Shattered Sanctuary reveals the truth — look closely.'
-          : `${solved} of 4 symbols correctly matched. Study the clue — the inscription reveals the answer.`;
+          ? 'Drag each symbol to its meaning. Open the clue panel above if you need a hint.'
+          : `${solved} of 4 symbols correctly matched. Keep going.`;
     }
 
     if (solved === slots.length) handleComplete();
@@ -197,7 +264,7 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     });
   });
 
-  // Touch drag support for mobile
+  // Touch drag support
   pieceEls.forEach(piece => {
     let clone = null;
     let offsetX = 0, offsetY = 0;
@@ -206,23 +273,16 @@ export function initPuzzle2(container, clue, onBack, onNext) {
       if (completed) return;
       e.preventDefault();
       const touch = e.touches[0];
-      const rect = piece.getBoundingClientRect();
+      const rect  = piece.getBoundingClientRect();
       offsetX = touch.clientX - rect.left;
       offsetY = touch.clientY - rect.top;
 
       clone = piece.cloneNode(true);
       Object.assign(clone.style, {
-        position: 'fixed',
-        left: rect.left + 'px',
-        top: rect.top + 'px',
-        width: rect.width + 'px',
-        height: rect.height + 'px',
-        opacity: '0.85',
-        pointerEvents: 'none',
-        zIndex: '9999',
-        margin: '0',
-        transform: 'none',
-        transition: 'none'
+        position: 'fixed', left: rect.left + 'px', top: rect.top + 'px',
+        width: rect.width + 'px', height: rect.height + 'px',
+        opacity: '0.85', pointerEvents: 'none', zIndex: '9999',
+        margin: '0', transform: 'none', transition: 'none'
       });
       document.body.appendChild(clone);
       piece.classList.add('dragging');
@@ -233,20 +293,17 @@ export function initPuzzle2(container, clue, onBack, onNext) {
       e.preventDefault();
       const touch = e.touches[0];
       clone.style.left = (touch.clientX - offsetX) + 'px';
-      clone.style.top = (touch.clientY - offsetY) + 'px';
+      clone.style.top  = (touch.clientY - offsetY) + 'px';
     }, { passive: false });
 
     piece.addEventListener('touchend', (e) => {
       if (!clone) return;
       const touch = e.changedTouches[0];
-      clone.remove();
-      clone = null;
+      clone.remove(); clone = null;
       piece.classList.remove('dragging');
-
       piece.style.visibility = 'hidden';
       const el = document.elementFromPoint(touch.clientX, touch.clientY);
       piece.style.visibility = '';
-
       if (!el) return;
       const slot = el.closest('.drop-slot');
       if (slot) handleSlotDrop(piece, slot);
@@ -255,37 +312,15 @@ export function initPuzzle2(container, clue, onBack, onNext) {
 
   function handleComplete() {
     completed = true;
+
     gsap.to('.drop-slot.correct', {
       scale: 1.04, duration: 0.3, yoyo: true, repeat: 1, stagger: 0.08
     });
 
-    const feedbackEl = document.getElementById('feedback');
-    feedbackEl.innerHTML = `
-      <div class="feedback-success">
-        <div class="feedback-success-title">&#10022; The Cipher is Broken &#10022;</div>
-        <p>You've deciphered the second hidden bond: the symbolic alliances that transcended cultural divides.</p>
-        <div class="clue-reveal">
-          <div class="clue-reveal-label">&#128279; Cipher Map Unlocked &mdash; The Lodge Network</div>
-          <div class="clue-lines">
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Union Temple binds the <em>English Craft</em></span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Union Temple shelters the <em>Scottish Chapter</em></span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Union Temple welcomes the <em>Dutch Brethren</em></span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>English Craft trades with the <em>Diamond Traders</em></span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Diamond Traders deal with the <em>Dutch Brethren</em></span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Dutch Brethren keep faith with the <em>Scottish Chapter</em></span></div>
-          </div>
-        </div>
-      </div>
-    `;
-    gsap.fromTo('#feedback',
-      { opacity: 0, y: 16, scale: 0.97 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out',
-        onComplete: () => document.getElementById('feedback').scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-      }
-    );
+    document.getElementById('feedback-text').textContent = 'All 4 symbols decoded — the cipher is broken!';
 
     const nextClue = {
-      title: "The Lodge Network Map — Six Hidden Bonds",
+      title: 'The Lodge Network Map — Six Hidden Bonds',
       lines: [
         { icon: '⬡', text: 'Union Temple binds the <em>English Craft</em>' },
         { icon: '⬡', text: 'Union Temple shelters the <em>Scottish Chapter</em>' },
@@ -297,15 +332,16 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     };
 
     setTimeout(() => {
-      const feedbackEl = document.getElementById('feedback');
-      const btn = document.createElement('button');
-      btn.className = 'continue-btn';
-      btn.innerHTML = 'Continue to Web of Whispers &#8594;';
-      feedbackEl.querySelector('.feedback-success').appendChild(btn);
-      gsap.fromTo(btn, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' });
-      btn.addEventListener('click', () => {
-        if (typeof onNext === 'function') onNext(nextClue);
+      showCompletionModal({
+        title: 'The Cipher is Broken',
+        body: "You've decoded the second hidden bond: the symbolic alliances that bridged cultural divides. From Scotland to the Cape Dutch settlements, Masonic emblems created a shared language that turned strangers into brothers.",
+        clueLabel: '&#128279; Map Unlocked — use this in the final enigma',
+        clueLines: nextClue.lines,
+        btnLabel: 'Continue to Web of Whispers',
+        onContinue: () => {
+          if (typeof onNext === 'function') onNext(nextClue);
+        }
       });
-    }, 1200);
+    }, 600);
   }
 }

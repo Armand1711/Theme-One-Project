@@ -1,3 +1,60 @@
+// Masonic compass-and-square SVG for modal header
+const MODAL_MASONIC = `<svg class="modal-masonic-svg" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <line x1="40" y1="6" x2="16" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="40" y1="6" x2="64" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M18 50 Q40 43 62 50" stroke="#c9a227" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <line x1="16" y1="24" x2="16" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="16" y1="62" x2="64" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="40" cy="6" r="2.5" fill="#c9a227"/>
+</svg>`;
+
+function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onContinue }) {
+  const modal = document.createElement('div');
+  modal.className = 'completion-modal';
+  modal.id = 'completion-modal';
+  modal.innerHTML = `
+    <div class="completion-modal-card">
+      <div class="modal-masonic-row">${MODAL_MASONIC}</div>
+      <div class="modal-solved-badge">&#10022; Solved &#10022;</div>
+      <h2 class="modal-title">${title}</h2>
+      <p class="modal-body">${body}</p>
+      ${clueLines ? `
+        <div class="modal-clue">
+          <div class="modal-clue-label">${clueLabel}</div>
+          <div class="modal-clue-lines">
+            ${clueLines.map(l => `
+              <div class="modal-clue-line">
+                <span class="modal-clue-icon">${l.icon}</span>
+                <span>${l.text}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+      <button class="modal-continue-btn" id="modal-continue">
+        ${btnLabel} <span class="btn-arrow">&#8594;</span>
+      </button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  gsap.fromTo(modal,
+    { opacity: 0 },
+    { opacity: 1, duration: 0.35, ease: 'power2.out' }
+  );
+  gsap.fromTo('.completion-modal-card',
+    { opacity: 0, y: 40, scale: 0.94 },
+    { opacity: 1, y: 0, scale: 1, duration: 0.5, delay: 0.1, ease: 'back.out(1.7)' }
+  );
+
+  document.getElementById('modal-continue').addEventListener('click', () => {
+    gsap.to(modal, {
+      opacity: 0, duration: 0.25, ease: 'power2.in',
+      onComplete: () => { modal.remove(); onContinue(); }
+    });
+  });
+}
+
 export function initPuzzle1(container, onBack, onNext) {
   const html = `
     <div id="screen-puzzle1" class="screen active">
@@ -12,7 +69,16 @@ export function initPuzzle1(container, onBack, onNext) {
 
       <div class="puzzle-intro">
         <div class="puzzle-tag">Drag &amp; Restore</div>
-        <p class="puzzle-description">The facade of Kimberley's 1886 Union Masonic Temple has fractured across time. Six fragments of its Roman Corinthian architecture lie scattered. Reassemble them in their rightful order to unveil the first hidden bond &mdash; the silent pact of mutual aid that held the immigrant enclave together in the diamond fields. <em>Restore the sanctuary to unlock a clue for the next enigma.</em></p>
+        <p class="puzzle-description">The facade of the 1886 Union Masonic Temple has fractured across time. Six pieces of its Roman Corinthian architecture lie scattered. Put them back in the right order to reveal the first hidden bond.</p>
+      </div>
+
+      <div class="how-to-play">
+        <div class="htp-title">&#9670; How to Play</div>
+        <ol class="htp-steps">
+          <li>Pick up a piece from the <strong>Fragments</strong> panel on the left.</li>
+          <li>Drag it across and drop it into the slot it belongs in on the <strong>Sanctuary</strong> panel.</li>
+          <li>Place all 6 pieces correctly to reveal the first hidden bond.</li>
+        </ol>
       </div>
 
       <div class="puzzle-layout">
@@ -34,8 +100,8 @@ export function initPuzzle1(container, onBack, onNext) {
       </div>
 
       <div id="feedback" class="feedback-bar">
-        <span class="feedback-icon">&#128269;</span>
-        <span id="feedback-text">Drag each fragment into its rightful place. When the sanctuary stands whole, the first hidden bond will emerge from the shadows.</span>
+        <span class="feedback-icon">&#9670;</span>
+        <span id="feedback-text">Drag each piece into its slot. The image will guide you — look at the edges.</span>
       </div>
     </div>
   `;
@@ -44,12 +110,14 @@ export function initPuzzle1(container, onBack, onNext) {
 
   gsap.set('.puzzle-header', { opacity: 0, y: -20 });
   gsap.set('.puzzle-intro',  { opacity: 0, y: 16  });
+  gsap.set('.how-to-play',   { opacity: 0, y: 12  });
   gsap.set('.puzzle-layout', { opacity: 0, y: 24  });
   gsap.set('#feedback',      { opacity: 0 });
 
   const tl = gsap.timeline();
   tl.to('.puzzle-header', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
     .to('.puzzle-intro',  { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
+    .to('.how-to-play',   { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
     .to('.puzzle-layout', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
     .to('#feedback',      { opacity: 1, duration: 0.4 }, '-=0.2');
 
@@ -60,7 +128,6 @@ export function initPuzzle1(container, onBack, onNext) {
   const imageUrl = '../assets/PT-Masonic_Temple-1888.jpg';
 
   // 6-piece jigsaw: 3 columns × 2 rows
-  // backgroundSize '300% 200%' → x: 0%/50%/100%, y: 0%/100%
   const pieceDefs = [
     { id: 1, x: '0%',   y: '0%'   },
     { id: 2, x: '50%',  y: '0%'   },
@@ -130,8 +197,8 @@ export function initPuzzle1(container, onBack, onNext) {
     if (solved < slots.length) {
       document.getElementById('feedback-text').textContent =
         placed === 0
-          ? 'Drag each fragment into its rightful place. When the sanctuary stands whole, the first hidden bond will emerge from the shadows.'
-          : `${solved} of 6 fragments correctly placed. Keep going — the sanctuary awaits restoration.`;
+          ? 'Drag each piece into its slot. The image will guide you — look at the edges.'
+          : `${solved} of 6 pieces in the right place. Keep going.`;
     }
 
     if (solved === slots.length) handleComplete();
@@ -202,32 +269,14 @@ export function initPuzzle1(container, onBack, onNext) {
 
   function handleComplete() {
     completed = true;
+
+    // Flash all correct slots gold
     gsap.to('.drop-slot.correct', {
       scale: 1.04, duration: 0.3, yoyo: true, repeat: 1, stagger: 0.06
     });
 
-    const feedbackEl = document.getElementById('feedback');
-    feedbackEl.innerHTML = `
-      <div class="feedback-success">
-        <div class="feedback-success-title">&#10022; The Sanctuary Stands Whole &#10022;</div>
-        <p>You&rsquo;ve uncovered the first hidden bond: the silent pact of mutual aid. Seven lodges from three nations pooled their debentures to raise this Roman Corinthian facade on Dutoitspan Road &mdash; a covenant forged in the diamond fields.</p>
-        <div class="clue-reveal">
-          <div class="clue-reveal-label">&#128269; Clue Unlocked &mdash; Carry this into the next enigma</div>
-          <div class="clue-lines">
-            <div class="clue-line"><span class="clue-icon">🤝</span><span>The clasped hand seals <em>The Silent Oath</em></span></div>
-            <div class="clue-line"><span class="clue-icon">🔗</span><span>The unbroken chain weaves <em>Shared Prosperity</em></span></div>
-            <div class="clue-line"><span class="clue-icon">🌉</span><span>The arched bridge spans the <em>Cultural Bridge</em></span></div>
-            <div class="clue-line"><span class="clue-icon">🕯️</span><span>The undying flame guards the <em>Enduring Legacy</em></span></div>
-          </div>
-        </div>
-      </div>
-    `;
-    gsap.fromTo('#feedback',
-      { opacity: 0, y: 16, scale: 0.97 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out',
-        onComplete: () => document.getElementById('feedback').scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-      }
-    );
+    // Update inline feedback
+    document.getElementById('feedback-text').textContent = 'All 6 pieces placed — the sanctuary stands whole!';
 
     const clue = {
       title: "The Sanctuary's Inscription",
@@ -240,14 +289,16 @@ export function initPuzzle1(container, onBack, onNext) {
     };
 
     setTimeout(() => {
-      const btn = document.createElement('button');
-      btn.className = 'continue-btn';
-      btn.innerHTML = 'Continue to Symbol Cipher &#8594;';
-      document.querySelector('.feedback-success').appendChild(btn);
-      gsap.fromTo(btn, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' });
-      btn.addEventListener('click', () => {
-        if (typeof onNext === 'function') onNext(clue);
+      showCompletionModal({
+        title: 'The Sanctuary Stands Whole',
+        body: "You've uncovered the first hidden bond: the silent pact of mutual aid. Seven lodges from three nations pooled their resources to raise this Roman Corinthian building on Dutoitspan Road — a covenant forged in the diamond fields.",
+        clueLabel: '&#128269; Clue Unlocked — carry this into the next enigma',
+        clueLines: clue.lines,
+        btnLabel: 'Continue to Symbol Cipher',
+        onContinue: () => {
+          if (typeof onNext === 'function') onNext(clue);
+        }
       });
-    }, 1200);
+    }, 600);
   }
 }

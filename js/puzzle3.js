@@ -1,10 +1,66 @@
+const MODAL_MASONIC = `<svg class="modal-masonic-svg" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <line x1="40" y1="6" x2="16" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="40" y1="6" x2="64" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M18 50 Q40 43 62 50" stroke="#c9a227" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <line x1="16" y1="24" x2="16" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
+  <line x1="16" y1="62" x2="64" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
+  <circle cx="40" cy="6" r="2.5" fill="#c9a227"/>
+</svg>`;
+
+function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onContinue }) {
+  const modal = document.createElement('div');
+  modal.className = 'completion-modal';
+  modal.id = 'completion-modal';
+  modal.innerHTML = `
+    <div class="completion-modal-card">
+      <div class="modal-masonic-row">${MODAL_MASONIC}</div>
+      <div class="modal-solved-badge">&#10022; Solved &#10022;</div>
+      <h2 class="modal-title">${title}</h2>
+      <p class="modal-body">${body}</p>
+      ${clueLines ? `
+        <div class="modal-clue">
+          <div class="modal-clue-label">${clueLabel}</div>
+          <div class="modal-clue-lines">
+            ${clueLines.map(l => `
+              <div class="modal-clue-line">
+                <span class="modal-clue-icon">${l.icon}</span>
+                <span>${l.text}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+      <button class="modal-continue-btn" id="modal-continue">
+        ${btnLabel} <span class="btn-arrow">&#8594;</span>
+      </button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  gsap.fromTo(modal,
+    { opacity: 0 },
+    { opacity: 1, duration: 0.35, ease: 'power2.out' }
+  );
+  gsap.fromTo('.completion-modal-card',
+    { opacity: 0, y: 40, scale: 0.94 },
+    { opacity: 1, y: 0, scale: 1, duration: 0.5, delay: 0.1, ease: 'back.out(1.7)' }
+  );
+
+  document.getElementById('modal-continue').addEventListener('click', () => {
+    gsap.to(modal, {
+      opacity: 0, duration: 0.25, ease: 'power2.in',
+      onComplete: () => { modal.remove(); onContinue(); }
+    });
+  });
+}
+
 function buildCluePanel(clue, sourceLabel) {
   if (!clue) return '';
   return `
     <div class="clue-panel" id="clue-panel">
       <button class="clue-toggle" id="clue-toggle">
         <span class="clue-toggle-icon">&#128269;</span>
-        <span>Cipher Map from ${sourceLabel}</span>
+        <span>Connection Map from ${sourceLabel}</span>
         <span class="clue-chevron" id="clue-chevron">&#9660;</span>
       </button>
       <div class="clue-body" id="clue-body">
@@ -21,16 +77,16 @@ function buildCluePanel(clue, sourceLabel) {
 }
 
 function attachClueToggle() {
-  const toggle = document.getElementById('clue-toggle');
+  const toggle  = document.getElementById('clue-toggle');
   if (!toggle) return;
-  const body   = document.getElementById('clue-body');
+  const body    = document.getElementById('clue-body');
   const chevron = document.getElementById('clue-chevron');
   let open = false;
   body.style.display = 'none';
   toggle.addEventListener('click', () => {
     open = !open;
     body.style.display = open ? 'block' : 'none';
-    chevron.innerHTML = open ? '&#9650;' : '&#9660;';
+    chevron.innerHTML  = open ? '&#9650;' : '&#9660;';
     if (open) gsap.fromTo(body, { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.3 });
   });
 }
@@ -51,38 +107,43 @@ export function initPuzzle3(container, clue, onBack, onNext) {
 
       <div class="puzzle-intro">
         <div class="puzzle-tag">Connect &amp; Reveal</div>
-        <p class="puzzle-description">The 1886 Union Masonic Temple stood at the centre of a web of trust binding Kimberley's immigrant enclave. Seven lodges from three nations shared its floor — but not every bond was equal. Use the cipher's map to forge the hidden connections. Select a node, then select another to draw the bond. <em>Only true bonds will hold.</em></p>
+        <p class="puzzle-description">Seven lodges from three nations shared the 1886 Union Masonic Temple in Kimberley. Not every group was connected — only six true bonds existed. Draw those bonds on the map to reveal the web of trust.</p>
+      </div>
+
+      <div class="how-to-play">
+        <div class="htp-title">&#9670; How to Play</div>
+        <ol class="htp-steps">
+          <li><strong>Click and drag</strong> from one circle to another to draw a bond between them.</li>
+          <li>A gold line means the bond is correct. A red flash means no bond exists there.</li>
+          <li>Use the connection map from Enigma 02 above — it tells you exactly which bonds to draw.</li>
+        </ol>
       </div>
 
       <div class="puzzle-layout network-layout">
         <div class="network-canvas" id="network-canvas">
           <div class="network-node" data-node="1"
-               data-label="Union Temple"
-               data-tooltip="Built 1886–89 on Dutoitspan Road. National Monument 1990."
+               data-tooltip="Built 1886–89. National Monument 1990. Shared home of seven lodges."
                style="left:50%;top:12%;">Union Temple</div>
           <div class="network-node" data-node="2"
-               data-label="English Craft"
-               data-tooltip="Cosmopolitan Lodge No.1574, founded 1872 — the first lodge in Kimberley."
+               data-tooltip="Cosmopolitan Lodge No.1574 — the first lodge in Kimberley, founded 1872."
                style="left:84%;top:38%;">English Craft</div>
           <div class="network-node" data-node="3"
-               data-label="Diamond Traders"
-               data-tooltip="Merchants of Dutoitspan Road, opposite the synagogue — financiers of the temple."
+               data-tooltip="Merchants of Dutoitspan Road who financed the temple with debentures."
                style="left:71%;top:78%;">Diamond Traders</div>
           <div class="network-node" data-node="4"
-               data-label="Dutch Brethren"
-               data-tooltip="Peace &amp; Harmony Lodge, Netherlandic Constitution — immigrants from the Cape Dutch community."
+               data-tooltip="Peace &amp; Harmony Lodge — Cape Dutch immigrants, Netherlandic Constitution."
                style="left:29%;top:78%;">Dutch Brethren</div>
           <div class="network-node" data-node="5"
-               data-label="Scottish Chapter"
-               data-tooltip="Athole Lodge, Scottish Constitution — Scots who followed the diamond rush from Cape Colony."
+               data-tooltip="Athole Lodge, Scottish Constitution — followed the diamond rush from Cape Colony."
                style="left:16%;top:38%;">Scottish Chapter</div>
           <svg class="network-lines" id="network-lines"></svg>
+          <div class="network-drag-hint" id="drag-hint">Click and drag from a node to begin</div>
         </div>
       </div>
 
       <div id="feedback" class="feedback-bar">
-        <span class="feedback-icon">&#128269;</span>
-        <span id="feedback-text">Select a node to begin. Open the cipher map — each hidden bond tells part of the story.</span>
+        <span class="feedback-icon">&#9670;</span>
+        <span id="feedback-text">Click and drag from one circle to another to draw a bond. Open the map above to see which bonds to draw.</span>
       </div>
     </div>
   `;
@@ -93,6 +154,7 @@ export function initPuzzle3(container, clue, onBack, onNext) {
   gsap.set('.puzzle-header',  { opacity: 0, y: -20 });
   gsap.set('.clue-panel',     { opacity: 0, y: 12  });
   gsap.set('.puzzle-intro',   { opacity: 0, y: 16  });
+  gsap.set('.how-to-play',    { opacity: 0, y: 12  });
   gsap.set('.network-canvas', { opacity: 0, y: 24  });
   gsap.set('.network-node',   { opacity: 0, scale: 0.7 });
   gsap.set('#feedback',       { opacity: 0 });
@@ -101,24 +163,27 @@ export function initPuzzle3(container, clue, onBack, onNext) {
   tl.to('.puzzle-header',  { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
     .to('.clue-panel',     { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
     .to('.puzzle-intro',   { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
+    .to('.how-to-play',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
     .to('.network-canvas', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
     .to('.network-node',   { opacity: 1, scale: 1, duration: 0.4, stagger: 0.1, ease: 'back.out(1.7)' }, '-=0.2')
     .to('#feedback',       { opacity: 1, duration: 0.4 }, '-=0.2');
 
   document.getElementById('back-btn').addEventListener('click', () => {
+    cleanup();
     if (typeof onBack === 'function') onBack();
   });
 
   const canvas   = document.getElementById('network-canvas');
   const linesSvg = document.getElementById('network-lines');
   const nodes    = document.querySelectorAll('.network-node');
-  let selectedNode = null;
-  let connections  = [];
-  let completed    = false;
+  const dragHint = document.getElementById('drag-hint');
 
-  // 6 historically-grounded required connections forming a pentagonal web:
-  // Temple(1) → English(2), Temple(1) → Scottish(5), Temple(1) → Dutch(4)
-  // English(2) → Diamonds(3), Diamonds(3) → Dutch(4), Dutch(4) → Scottish(5)
+  let dragStartNode = null;
+  let previewLine   = null;
+  let connections   = [];
+  let completed     = false;
+
+  // 6 historically-grounded bonds
   const correctConnections = [
     { from: 1, to: 2 },
     { from: 1, to: 5 },
@@ -128,7 +193,7 @@ export function initPuzzle3(container, clue, onBack, onNext) {
     { from: 4, to: 5 }
   ];
 
-  // Show tooltip on hover
+  // Add historical tooltips
   nodes.forEach(node => {
     const tip = document.createElement('div');
     tip.className = 'node-tooltip';
@@ -136,122 +201,198 @@ export function initPuzzle3(container, clue, onBack, onNext) {
     node.appendChild(tip);
   });
 
-  nodes.forEach(node => {
-    node.addEventListener('click', () => {
-      if (completed) return;
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+  function getCenter(node) {
+    const r  = node.getBoundingClientRect();
+    const cr = canvas.getBoundingClientRect();
+    return {
+      x: r.left + r.width  / 2 - cr.left,
+      y: r.top  + r.height / 2 - cr.top
+    };
+  }
 
-      if (!selectedNode) {
-        selectedNode = node;
-        node.classList.add('selected');
-        gsap.to(node, { scale: 1.1, duration: 0.2, ease: 'back.out(1.7)' });
+  function createPreviewLine(x1, y1) {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x1); line.setAttribute('y2', y1);
+    line.setAttribute('stroke', '#5e0b15');
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('stroke-dasharray', '6 4');
+    line.setAttribute('stroke-linecap', 'round');
+    line.setAttribute('opacity', '0.55');
+    line.id = 'preview-line';
+    linesSvg.appendChild(line);
+    return line;
+  }
 
-      } else if (selectedNode === node) {
-        node.classList.remove('selected');
-        gsap.to(node, { scale: 1, duration: 0.2 });
-        selectedNode = null;
+  function startDrag(node) {
+    if (completed || dragStartNode) return;
+    dragStartNode = node;
+    node.classList.add('selected');
+    gsap.to(node, { scale: 1.1, duration: 0.15, ease: 'back.out(1.7)' });
+    const c = getCenter(node);
+    previewLine = createPreviewLine(c.x, c.y);
+    dragHint.style.opacity = '0';
+    document.body.style.cursor = 'crosshair';
+  }
 
-      } else {
-        const fromId = parseInt(selectedNode.dataset.node);
-        const toId   = parseInt(node.dataset.node);
+  function updatePreview(clientX, clientY) {
+    if (!previewLine) return;
+    const cr = canvas.getBoundingClientRect();
+    previewLine.setAttribute('x2', clientX - cr.left);
+    previewLine.setAttribute('y2', clientY - cr.top);
+  }
 
-        const alreadyExists = connections.some(c =>
-          (c.from === fromId && c.to === toId) || (c.from === toId && c.to === fromId)
-        );
+  function endDrag(clientX, clientY) {
+    if (!dragStartNode) return;
 
-        if (!alreadyExists) {
-          const isCorrect = correctConnections.some(req =>
-            (req.from === fromId && req.to === toId) || (req.from === toId && req.to === fromId)
-          );
+    // Capture start node and clear state before any async work
+    const startNode = dragStartNode;
+    dragStartNode = null;
+    document.body.style.cursor = '';
 
-          if (isCorrect) {
-            connections.push({ from: fromId, to: toId });
-            drawLine(selectedNode, node);
-            selectedNode.classList.add('bonded');
-            node.classList.add('bonded');
+    if (previewLine) { previewLine.remove(); previewLine = null; }
+    startNode.classList.remove('selected');
+    gsap.to(startNode, { scale: 1, duration: 0.15 });
 
-            const correctSoFar = connections.length;
-            if (correctSoFar < correctConnections.length) {
-              document.getElementById('feedback-text').textContent =
-                `${correctSoFar} of 6 bonds forged. The web is taking shape — consult the cipher's map.`;
-            }
-            checkCompletion();
-          } else {
-            drawWrongLine(selectedNode, node);
-            const feedbackText = document.getElementById('feedback-text');
-            feedbackText.textContent = 'No bond exists here — the archives hold no record of this connection.';
-            setTimeout(() => {
-              if (!completed) {
-                feedbackText.textContent =
-                  `${connections.length} of 6 bonds forged. Consult the cipher's map — every thread must be true.`;
-              }
-            }, 1800);
-          }
-        }
+    // Temporarily hide start node so elementFromPoint can find what's underneath
+    startNode.style.pointerEvents = 'none';
+    const el = document.elementFromPoint(clientX, clientY);
+    startNode.style.pointerEvents = '';
+    const targetNode = el?.closest('.network-node');
 
-        selectedNode.classList.remove('selected');
-        gsap.to(selectedNode, { scale: 1, duration: 0.2 });
-        selectedNode = null;
+    if (targetNode && targetNode !== startNode) {
+      attemptConnection(startNode, targetNode);
+    }
+  }
+
+  function attemptConnection(fromNode, toNode) {
+    const fromId = parseInt(fromNode.dataset.node);
+    const toId   = parseInt(toNode.dataset.node);
+
+    const alreadyExists = connections.some(c =>
+      (c.from === fromId && c.to === toId) || (c.from === toId && c.to === fromId)
+    );
+    if (alreadyExists) return;
+
+    const isCorrect = correctConnections.some(req =>
+      (req.from === fromId && req.to === toId) || (req.from === toId && req.to === fromId)
+    );
+
+    if (isCorrect) {
+      connections.push({ from: fromId, to: toId });
+      drawLine(fromNode, toNode);
+      fromNode.classList.add('bonded');
+      toNode.classList.add('bonded');
+      const count = connections.length;
+      if (count < correctConnections.length) {
+        document.getElementById('feedback-text').textContent =
+          `${count} of 6 bonds drawn. Keep going — open the map if you need a clue.`;
       }
+      checkCompletion();
+    } else {
+      drawWrongLine(fromNode, toNode);
+      const ft = document.getElementById('feedback-text');
+      ft.textContent = 'No bond exists between those two — try a different connection.';
+      setTimeout(() => {
+        if (!completed) {
+          ft.textContent = `${connections.length} of 6 bonds drawn. Open the map above for guidance.`;
+        }
+      }, 1800);
+    }
+  }
+
+  // ─── Mouse drag (document-level, added on mousedown, removed on mouseup) ──
+  function onMouseMove(e) { updatePreview(e.clientX, e.clientY); }
+  function onMouseUp(e) {
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup',   onMouseUp);
+    endDrag(e.clientX, e.clientY);
+  }
+
+  nodes.forEach(node => {
+    node.addEventListener('mousedown', (e) => {
+      if (completed) return;
+      e.preventDefault();
+      startDrag(node);
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup',   onMouseUp);
     });
   });
 
+  // ─── Touch drag (document-level, added on touchstart, removed on touchend) ─
+  function onTouchMove(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    updatePreview(touch.clientX, touch.clientY);
+  }
+  function onTouchEnd(e) {
+    document.removeEventListener('touchmove', onTouchMove);
+    document.removeEventListener('touchend',  onTouchEnd);
+    const touch = e.changedTouches[0];
+    endDrag(touch.clientX, touch.clientY);
+  }
+
+  nodes.forEach(node => {
+    node.addEventListener('touchstart', (e) => {
+      if (completed) return;
+      e.preventDefault();
+      startDrag(node);
+      document.addEventListener('touchmove', onTouchMove, { passive: false });
+      document.addEventListener('touchend',  onTouchEnd);
+    }, { passive: false });
+  });
+
+  // ─── Line drawing ──────────────────────────────────────────────────────────
   function drawLine(node1, node2) {
-    const r1 = node1.getBoundingClientRect();
-    const r2 = node2.getBoundingClientRect();
-    const cr = canvas.getBoundingClientRect();
-
-    const x1 = r1.left + r1.width  / 2 - cr.left;
-    const y1 = r1.top  + r1.height / 2 - cr.top;
-    const x2 = r2.left + r2.width  / 2 - cr.left;
-    const y2 = r2.top  + r2.height / 2 - cr.top;
-
+    const c1 = getCenter(node1);
+    const c2 = getCenter(node2);
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('x1', c1.x); line.setAttribute('y1', c1.y);
+    line.setAttribute('x2', c2.x); line.setAttribute('y2', c2.y);
     line.setAttribute('stroke', '#b28d5a');
     line.setAttribute('stroke-width', '2.5');
     line.setAttribute('stroke-linecap', 'round');
     linesSvg.appendChild(line);
-
     const length = line.getTotalLength();
     gsap.fromTo(line,
       { strokeDasharray: length, strokeDashoffset: length },
-      { strokeDashoffset: 0, duration: 0.6, ease: 'power2.out' }
+      { strokeDashoffset: 0, duration: 0.55, ease: 'power2.out' }
     );
   }
 
   function drawWrongLine(node1, node2) {
-    const r1 = node1.getBoundingClientRect();
-    const r2 = node2.getBoundingClientRect();
-    const cr = canvas.getBoundingClientRect();
-
-    const x1 = r1.left + r1.width  / 2 - cr.left;
-    const y1 = r1.top  + r1.height / 2 - cr.top;
-    const x2 = r2.left + r2.width  / 2 - cr.left;
-    const y2 = r2.top  + r2.height / 2 - cr.top;
-
+    const c1 = getCenter(node1);
+    const c2 = getCenter(node2);
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('x1', c1.x); line.setAttribute('y1', c1.y);
+    line.setAttribute('x2', c2.x); line.setAttribute('y2', c2.y);
     line.setAttribute('stroke', '#8b2020');
     line.setAttribute('stroke-width', '2');
     line.setAttribute('stroke-linecap', 'round');
     line.setAttribute('stroke-dasharray', '6 5');
     linesSvg.appendChild(line);
-
     gsap.fromTo(line,
-      { opacity: 0.75 },
+      { opacity: 0.8 },
       { opacity: 0, duration: 1.4, ease: 'power2.in', onComplete: () => line.remove() }
     );
-
-    // Brief red flash on both nodes
     gsap.to([node1, node2], {
-      boxShadow: '0 0 18px rgba(139,32,32,0.55)',
+      boxShadow: '0 0 18px rgba(139,32,32,0.6)',
       duration: 0.15, yoyo: true, repeat: 1,
       onComplete: () => gsap.set([node1, node2], { clearProps: 'boxShadow' })
     });
   }
 
+  // ─── Cleanup (remove document listeners if user navigates away) ────────────
+  function cleanup() {
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup',   onMouseUp);
+    document.removeEventListener('touchmove', onTouchMove);
+    document.removeEventListener('touchend',  onTouchEnd);
+    document.body.style.cursor = '';
+  }
+
+  // ─── Completion ────────────────────────────────────────────────────────────
   function checkCompletion() {
     const correctCount = correctConnections.filter(req =>
       connections.some(c =>
@@ -259,62 +400,45 @@ export function initPuzzle3(container, clue, onBack, onNext) {
         (c.from === req.to   && c.to === req.from)
       )
     ).length;
-
     if (correctCount < correctConnections.length) return;
 
     completed = true;
+    cleanup();
 
-    // All lines turn gold with a ripple
-    const allLines = document.querySelectorAll('#network-lines line');
-    allLines.forEach((line, i) => {
+    document.querySelectorAll('#network-lines line').forEach((line, i) => {
       gsap.to(line, {
         attr: { stroke: '#c9a227', 'stroke-width': 3.5 },
-        duration: 0.5, delay: i * 0.08, ease: 'power2.out'
+        duration: 0.5, delay: i * 0.07, ease: 'power2.out'
       });
     });
 
     gsap.to('.network-node', {
       borderColor: '#c9a227',
       background: 'linear-gradient(135deg,#fffbf0 0%,#fef5d9 100%)',
-      boxShadow: '0 0 20px rgba(201,162,39,0.3)',
+      boxShadow: '0 0 22px rgba(201,162,39,0.35)',
       duration: 0.5, stagger: 0.08, ease: 'power2.out'
     });
 
-    const feedbackEl = document.getElementById('feedback');
-    feedbackEl.innerHTML = `
-      <div class="feedback-success">
-        <div class="feedback-success-title">&#10022; The Web is Complete &#10022;</div>
-        <p>The hidden network stands revealed. Seven lodges from three nations — English, Scottish, and Dutch — shared one floor, one oath, and one building on Dutoitspan Road. This is the web of trust that built Kimberley's 1886 Union Masonic Temple.</p>
-        <div class="clue-reveal" style="margin-top:14px;">
-          <div class="clue-reveal-label">&#128279; The Six Bonds of the Enclave</div>
-          <div class="clue-lines">
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Union Temple anchored the <em>English Craft</em> — its founding lodges</span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Union Temple sheltered the <em>Scottish Chapter</em> — Athole Lodge, Scottish Constitution</span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Union Temple welcomed the <em>Dutch Brethren</em> — Peace &amp; Harmony Lodge</span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>English Craft traded with the <em>Diamond Traders</em> of Dutoitspan Road</span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Diamond Traders financed the <em>Dutch Brethren's</em> debentures</span></div>
-            <div class="clue-line"><span class="clue-icon">⬡</span><span>Dutch Brethren kept faith with the <em>Scottish Chapter</em></span></div>
-          </div>
-        </div>
-      </div>
-    `;
-
-    gsap.fromTo('#feedback',
-      { opacity: 0, y: 16, scale: 0.97 },
-      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power2.out',
-        onComplete: () => document.getElementById('feedback').scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-      }
-    );
+    document.getElementById('feedback-text').textContent = 'All 6 bonds drawn — the web is complete!';
 
     setTimeout(() => {
-      const btn = document.createElement('button');
-      btn.className = 'continue-btn';
-      btn.innerHTML = 'See the Veiled Revelation &#8594;';
-      document.querySelector('.feedback-success').appendChild(btn);
-      gsap.fromTo(btn, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: 'back.out(1.7)' });
-      btn.addEventListener('click', () => {
-        if (typeof onNext === 'function') onNext();
+      showCompletionModal({
+        title: 'The Web is Complete',
+        body: "You have mapped the hidden network. Seven lodges from three nations — English, Scottish, and Dutch — shared one floor, one oath, and one building on Dutoitspan Road. This invisible web of trust is what built Kimberley's 1886 Union Masonic Temple.",
+        clueLabel: '&#128279; The Six Bonds of the Enclave',
+        clueLines: [
+          { icon: '⬡', text: 'Union Temple anchored the <em>English Craft</em> — its founding lodges' },
+          { icon: '⬡', text: 'Union Temple sheltered the <em>Scottish Chapter</em> — Athole Lodge' },
+          { icon: '⬡', text: 'Union Temple welcomed the <em>Dutch Brethren</em> — Peace &amp; Harmony Lodge' },
+          { icon: '⬡', text: 'English Craft traded with the <em>Diamond Traders</em> of Dutoitspan Road' },
+          { icon: '⬡', text: "Diamond Traders financed the <em>Dutch Brethren's</em> debentures" },
+          { icon: '⬡', text: 'Dutch Brethren kept faith with the <em>Scottish Chapter</em>' }
+        ],
+        btnLabel: 'See the Full Discovery',
+        onContinue: () => {
+          if (typeof onNext === 'function') onNext();
+        }
       });
-    }, 1400);
+    }, 800);
   }
 }
