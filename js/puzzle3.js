@@ -100,7 +100,13 @@ export function initPuzzle3(container, clue, onBack, onNext) {
           <div class="puzzle-step">Enigma 03 of 03</div>
           <h1>Web of Whispers</h1>
         </div>
-        <div class="puzzle-header-right"></div>
+        <div class="puzzle-header-right">
+          <div class="health-bar" id="health-bar">
+            <span class="heart active">&#9829;</span>
+            <span class="heart active">&#9829;</span>
+            <span class="heart active">&#9829;</span>
+          </div>
+        </div>
       </div>
 
       ${buildCluePanel(clue, 'Symbol Cipher')}
@@ -123,19 +129,19 @@ export function initPuzzle3(container, clue, onBack, onNext) {
         <div class="network-canvas" id="network-canvas">
           <div class="network-node" data-node="1"
                data-tooltip="Built 1886–89. National Monument 1990. Shared home of seven lodges."
-               style="left:50%;top:12%;">Union Temple</div>
+               style="left:50%;top:12%;">Union Temple<span class="node-bond-count" data-badge="1">0/3</span></div>
           <div class="network-node" data-node="2"
                data-tooltip="Cosmopolitan Lodge No.1574 — the first lodge in Kimberley, founded 1872."
-               style="left:84%;top:38%;">English Craft</div>
+               style="left:84%;top:38%;">English Craft<span class="node-bond-count" data-badge="2">0/2</span></div>
           <div class="network-node" data-node="3"
                data-tooltip="Merchants of Dutoitspan Road who financed the temple with debentures."
-               style="left:71%;top:78%;">Diamond Traders</div>
+               style="left:71%;top:78%;">Diamond Traders<span class="node-bond-count" data-badge="3">0/2</span></div>
           <div class="network-node" data-node="4"
                data-tooltip="Peace &amp; Harmony Lodge — Cape Dutch immigrants, Netherlandic Constitution."
-               style="left:29%;top:78%;">Dutch Brethren</div>
+               style="left:29%;top:78%;">Dutch Brethren<span class="node-bond-count" data-badge="4">0/3</span></div>
           <div class="network-node" data-node="5"
                data-tooltip="Athole Lodge, Scottish Constitution — followed the diamond rush from Cape Colony."
-               style="left:16%;top:38%;">Scottish Chapter</div>
+               style="left:16%;top:38%;">Scottish Chapter<span class="node-bond-count" data-badge="5">0/2</span></div>
           <svg class="network-lines" id="network-lines"></svg>
           <div class="network-drag-hint" id="drag-hint">Click and drag from a node to begin</div>
         </div>
@@ -150,6 +156,76 @@ export function initPuzzle3(container, clue, onBack, onNext) {
 
   container.innerHTML = html;
   attachClueToggle();
+
+  // ── Health system ────────────────────────────────────────────────────────────
+  let lives = 3;
+  const MAX_LIVES = 3;
+  let correctStreak = 0;
+
+  function renderHearts() {
+    const bar = document.getElementById('health-bar');
+    if (!bar) return;
+    bar.innerHTML = '';
+    for (let i = 1; i <= MAX_LIVES; i++) {
+      const h = document.createElement('span');
+      h.className = 'heart' + (i <= lives ? ' active' : ' lost');
+      h.innerHTML = i <= lives ? '&#9829;' : '&#9825;';
+      bar.appendChild(h);
+    }
+  }
+
+  function loseLife() {
+    if (lives <= 0 || completed) return;
+    correctStreak = 0;
+    lives--;
+    renderHearts();
+    gsap.fromTo('#health-bar', { x: -7 }, { x: 0, duration: 0.45, ease: 'elastic.out(1,0.3)' });
+    if (lives === 0) setTimeout(handleGameOver, 600);
+  }
+
+  function gainLife() {
+    if (lives >= MAX_LIVES || completed) return;
+    lives++;
+    renderHearts();
+    const hearts = document.querySelectorAll('.heart');
+    const gained = hearts[lives - 1];
+    if (gained) gsap.fromTo(gained, { scale: 0 }, { scale: 1, duration: 0.4, ease: 'back.out(2.5)' });
+    document.getElementById('feedback-text').textContent = '+1 life restored — keep drawing!';
+    setTimeout(() => {
+      if (!completed) {
+        document.getElementById('feedback-text').textContent =
+          `${connections.length} of 6 bonds drawn. Open the map above for guidance.`;
+      }
+    }, 1600);
+  }
+
+  function checkStreak() {
+    correctStreak++;
+    if (correctStreak >= 2 && lives < MAX_LIVES) { correctStreak = 0; gainLife(); }
+  }
+
+  function handleGameOver() {
+    cleanup();
+    const overlay = document.createElement('div');
+    overlay.className = 'game-over-overlay';
+    overlay.innerHTML = `
+      <div class="game-over-card">
+        <div class="game-over-icon">&#9825;</div>
+        <h2 class="game-over-title">No Lives Remaining</h2>
+        <p class="game-over-body">The web eludes you — but every initiate may try once more.</p>
+        <button class="game-over-btn" id="try-again-btn">Try Again &#8629;</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.35 });
+    gsap.fromTo('.game-over-card', { opacity: 0, scale: 0.85, y: 30 },
+      { opacity: 1, scale: 1, y: 0, duration: 0.45, delay: 0.1, ease: 'back.out(1.7)' });
+    document.getElementById('try-again-btn').addEventListener('click', () => {
+      overlay.remove();
+      initPuzzle3(container, clue, onBack, onNext);
+    });
+  }
+  // ────────────────────────────────────────────────────────────────────────────
 
   gsap.set('.puzzle-header',  { opacity: 0, y: -20 });
   gsap.set('.clue-panel',     { opacity: 0, y: 12  });
@@ -200,6 +276,23 @@ export function initPuzzle3(container, clue, onBack, onNext) {
     tip.textContent = node.dataset.tooltip;
     node.appendChild(tip);
   });
+
+  // Max bonds per node derived from correctConnections
+  const maxBonds = {};
+  nodes.forEach(n => { maxBonds[parseInt(n.dataset.node)] = 0; });
+  correctConnections.forEach(({ from, to }) => { maxBonds[from]++; maxBonds[to]++; });
+
+  function updateBadges() {
+    nodes.forEach(node => {
+      const id = parseInt(node.dataset.node);
+      const current = connections.filter(c => c.from === id || c.to === id).length;
+      const badge = node.querySelector('.node-bond-count');
+      if (badge) {
+        badge.textContent = `${current}/${maxBonds[id]}`;
+        badge.classList.toggle('badge-full', current === maxBonds[id]);
+      }
+    });
+  }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
   function getCenter(node) {
@@ -284,6 +377,8 @@ export function initPuzzle3(container, clue, onBack, onNext) {
       drawLine(fromNode, toNode);
       fromNode.classList.add('bonded');
       toNode.classList.add('bonded');
+      updateBadges();
+      checkStreak();
       const count = connections.length;
       if (count < correctConnections.length) {
         document.getElementById('feedback-text').textContent =
@@ -291,6 +386,7 @@ export function initPuzzle3(container, clue, onBack, onNext) {
       }
       checkCompletion();
     } else {
+      loseLife();
       drawWrongLine(fromNode, toNode);
       const ft = document.getElementById('feedback-text');
       ft.textContent = 'No bond exists between those two — try a different connection.';

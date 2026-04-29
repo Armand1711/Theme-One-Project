@@ -100,7 +100,13 @@ export function initPuzzle2(container, clue, onBack, onNext) {
           <div class="puzzle-step">Enigma 02 of 03</div>
           <h1>Symbol Cipher</h1>
         </div>
-        <div class="puzzle-header-right"></div>
+        <div class="puzzle-header-right">
+          <div class="health-bar" id="health-bar">
+            <span class="heart active">&#9829;</span>
+            <span class="heart active">&#9829;</span>
+            <span class="heart active">&#9829;</span>
+          </div>
+        </div>
       </div>
 
       ${buildCluePanel(clue, 'Shattered Sanctuary')}
@@ -144,6 +150,77 @@ export function initPuzzle2(container, clue, onBack, onNext) {
 
   container.innerHTML = html;
   attachClueToggle();
+
+  // ── Health system ────────────────────────────────────────────────────────────
+  let lives = 3;
+  const MAX_LIVES = 3;
+  let correctStreak = 0;
+
+  function renderHearts() {
+    const bar = document.getElementById('health-bar');
+    if (!bar) return;
+    bar.innerHTML = '';
+    for (let i = 1; i <= MAX_LIVES; i++) {
+      const h = document.createElement('span');
+      h.className = 'heart' + (i <= lives ? ' active' : ' lost');
+      h.innerHTML = i <= lives ? '&#9829;' : '&#9825;';
+      bar.appendChild(h);
+    }
+  }
+
+  function loseLife() {
+    if (lives <= 0 || completed) return;
+    correctStreak = 0;
+    lives--;
+    renderHearts();
+    gsap.fromTo('#health-bar', { x: -7 }, { x: 0, duration: 0.45, ease: 'elastic.out(1,0.3)' });
+    if (lives === 0) setTimeout(handleGameOver, 600);
+  }
+
+  function gainLife() {
+    if (lives >= MAX_LIVES || completed) return;
+    lives++;
+    renderHearts();
+    const hearts = document.querySelectorAll('.heart');
+    const gained = hearts[lives - 1];
+    if (gained) gsap.fromTo(gained, { scale: 0 }, { scale: 1, duration: 0.4, ease: 'back.out(2.5)' });
+    document.getElementById('feedback-text').textContent = '+1 life restored — keep decoding!';
+    setTimeout(() => {
+      if (!completed) {
+        const placed = [...document.querySelectorAll('.drop-slot')].filter(s => s.querySelector('.piece')).length;
+        document.getElementById('feedback-text').textContent =
+          placed === 0 ? 'Drag each symbol to its meaning. Open the clue panel above if you need a hint.'
+                       : `${solved} of 4 symbols correctly matched. Keep going.`;
+      }
+    }, 1600);
+  }
+
+  function checkStreak() {
+    correctStreak++;
+    if (correctStreak >= 2 && lives < MAX_LIVES) { correctStreak = 0; gainLife(); }
+  }
+
+  function handleGameOver() {
+    const overlay = document.createElement('div');
+    overlay.className = 'game-over-overlay';
+    overlay.innerHTML = `
+      <div class="game-over-card">
+        <div class="game-over-icon">&#9825;</div>
+        <h2 class="game-over-title">No Lives Remaining</h2>
+        <p class="game-over-body">The cipher defeats you — but every initiate may try once more.</p>
+        <button class="game-over-btn" id="try-again-btn">Try Again &#8629;</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.35 });
+    gsap.fromTo('.game-over-card', { opacity: 0, scale: 0.85, y: 30 },
+      { opacity: 1, scale: 1, y: 0, duration: 0.45, delay: 0.1, ease: 'back.out(1.7)' });
+    document.getElementById('try-again-btn').addEventListener('click', () => {
+      overlay.remove();
+      initPuzzle2(container, clue, onBack, onNext);
+    });
+  }
+  // ────────────────────────────────────────────────────────────────────────────
 
   gsap.set('.puzzle-header', { opacity: 0, y: -20 });
   gsap.set('.clue-panel',    { opacity: 0, y: 12  });
@@ -259,6 +336,9 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     slot.appendChild(piece);
     gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
     recalcSlots();
+
+    if (slot.classList.contains('correct')) checkStreak();
+    else if (slot.classList.contains('wrong')) loseLife();
   }
 
   slots.forEach(slot => {

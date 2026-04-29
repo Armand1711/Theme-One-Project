@@ -43,9 +43,9 @@ body {
   min-height: 100vh;
   background-image:
     linear-gradient(to bottom,
-      rgba(10,5,2,0.60) 0%,
-      rgba(10,5,2,0.35) 40%,
-      rgba(10,5,2,0.80) 100%),
+      rgba(10,5,2,0.72) 0%,
+      rgba(10,5,2,0.58) 40%,
+      rgba(10,5,2,0.85) 100%),
     url('../assets/PT-Masonic_Temple-1888.jpg');
   background-size: cover;
   background-position: center;
@@ -128,9 +128,13 @@ body {
   line-height: 1.05;
   letter-spacing: -0.02em;
   margin: 0 0 24px;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.7), 0 0 60px rgba(0,0,0,0.4);
 }
 
-.hero-title-accent { color: var(--color-gold); }
+.hero-title-accent {
+  color: #e8c040;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.8), 0 0 40px rgba(201,162,39,0.35);
+}
 
 .hero-tagline {
   font-size: clamp(0.95rem, 2.5vw, 1.15rem);

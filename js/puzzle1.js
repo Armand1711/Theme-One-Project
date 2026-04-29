@@ -64,7 +64,13 @@ export function initPuzzle1(container, onBack, onNext) {
           <div class="puzzle-step">Enigma 01 of 03</div>
           <h1>Shattered Sanctuary</h1>
         </div>
-        <div class="puzzle-header-right"></div>
+        <div class="puzzle-header-right">
+          <div class="health-bar" id="health-bar">
+            <span class="heart active">&#9829;</span>
+            <span class="heart active">&#9829;</span>
+            <span class="heart active">&#9829;</span>
+          </div>
+        </div>
       </div>
 
       <div class="puzzle-intro">
@@ -108,6 +114,77 @@ export function initPuzzle1(container, onBack, onNext) {
 
   container.innerHTML = html;
 
+  // ── Health system ────────────────────────────────────────────────────────────
+  let lives = 3;
+  const MAX_LIVES = 3;
+  let correctStreak = 0;
+
+  function renderHearts() {
+    const bar = document.getElementById('health-bar');
+    if (!bar) return;
+    bar.innerHTML = '';
+    for (let i = 1; i <= MAX_LIVES; i++) {
+      const h = document.createElement('span');
+      h.className = 'heart' + (i <= lives ? ' active' : ' lost');
+      h.innerHTML = i <= lives ? '&#9829;' : '&#9825;';
+      bar.appendChild(h);
+    }
+  }
+
+  function loseLife() {
+    if (lives <= 0 || completed) return;
+    correctStreak = 0;
+    lives--;
+    renderHearts();
+    gsap.fromTo('#health-bar', { x: -7 }, { x: 0, duration: 0.45, ease: 'elastic.out(1,0.3)' });
+    if (lives === 0) setTimeout(handleGameOver, 600);
+  }
+
+  function gainLife() {
+    if (lives >= MAX_LIVES || completed) return;
+    lives++;
+    renderHearts();
+    const hearts = document.querySelectorAll('.heart');
+    const gained = hearts[lives - 1];
+    if (gained) gsap.fromTo(gained, { scale: 0 }, { scale: 1, duration: 0.4, ease: 'back.out(2.5)' });
+    document.getElementById('feedback-text').textContent = '+1 life restored — keep going!';
+    setTimeout(() => {
+      if (!completed) {
+        const placed = [...document.querySelectorAll('.drop-slot')].filter(s => s.querySelector('.piece')).length;
+        document.getElementById('feedback-text').textContent =
+          placed === 0 ? 'Drag each piece into its slot. The image will guide you — look at the edges.'
+                       : `${solved} of 6 pieces in the right place. Keep going.`;
+      }
+    }, 1600);
+  }
+
+  function checkStreak() {
+    correctStreak++;
+    if (correctStreak >= 2 && lives < MAX_LIVES) { correctStreak = 0; gainLife(); }
+  }
+
+  function handleGameOver() {
+    const overlay = document.createElement('div');
+    overlay.className = 'game-over-overlay';
+    overlay.innerHTML = `
+      <div class="game-over-card">
+        <div class="game-over-icon">&#9825;</div>
+        <h2 class="game-over-title">No Lives Remaining</h2>
+        <p class="game-over-body">The sanctuary resists you — but every initiate may try once more.</p>
+        <button class="game-over-btn" id="try-again-btn">Try Again &#8629;</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.35 });
+    gsap.fromTo('.game-over-card', { opacity: 0, scale: 0.85, y: 30 },
+      { opacity: 1, scale: 1, y: 0, duration: 0.45, delay: 0.1, ease: 'back.out(1.7)' });
+    document.getElementById('try-again-btn').addEventListener('click', () => {
+      overlay.remove();
+      initPuzzle1(container, onBack, onNext);
+    });
+  }
+  // ────────────────────────────────────────────────────────────────────────────
+
   gsap.set('.puzzle-header', { opacity: 0, y: -20 });
   gsap.set('.puzzle-intro',  { opacity: 0, y: 16  });
   gsap.set('.how-to-play',   { opacity: 0, y: 12  });
@@ -141,6 +218,19 @@ export function initPuzzle1(container, onBack, onNext) {
   const shuffled = [...pieceDefs].sort(() => Math.random() - 0.5);
   const pieceEls = [];
 
+  // Create fixed holder cells first so the grid never reflows when pieces leave
+  pieceDefs.forEach(def => {
+    const holder = document.createElement('div');
+    holder.className = 'source-holder';
+    holder.dataset.holderId = def.id;
+    source.appendChild(holder);
+  });
+
+  function sendBackToSource(piece) {
+    const holder = source.querySelector(`.source-holder[data-holder-id="${piece.dataset.value}"]`);
+    if (holder) holder.appendChild(piece);
+  }
+
   shuffled.forEach((pieceMeta, index) => {
     const piece = document.createElement('div');
     piece.className = 'piece';
@@ -150,7 +240,7 @@ export function initPuzzle1(container, onBack, onNext) {
     piece.style.backgroundSize     = '300% 200%';
     piece.style.backgroundPosition = `${pieceMeta.x} ${pieceMeta.y}`;
 
-    source.appendChild(piece);
+    sendBackToSource(piece);
     pieceEls.push(piece);
 
     gsap.set(piece, { opacity: 0, scale: 0.6, rotation: Math.random() * 14 - 7 });
@@ -201,7 +291,7 @@ export function initPuzzle1(container, onBack, onNext) {
 
   function returnToSource(piece) {
     if (completed) return;
-    source.appendChild(piece);
+    sendBackToSource(piece);
     gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.25, ease: 'back.out(1.7)' });
     recalcSlots();
   }
@@ -211,11 +301,14 @@ export function initPuzzle1(container, onBack, onNext) {
     slot.classList.remove('drag-over');
 
     const existing = slot.querySelector('.piece');
-    if (existing) source.appendChild(existing);
+    if (existing) sendBackToSource(existing);
 
     slot.appendChild(piece);
     gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
     recalcSlots();
+
+    if (slot.classList.contains('correct')) checkStreak();
+    else if (slot.classList.contains('wrong')) loseLife();
   }
 
   slots.forEach(slot => {
