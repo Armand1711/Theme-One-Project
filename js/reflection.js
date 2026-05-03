@@ -90,6 +90,7 @@ export function initReflection(app, onRestart) {
   `;
 
   app.innerHTML = html;
+  window.scrollTo(0, 0);
 
   gsap.set('.reflection-eyebrow',         { opacity: 0, y: -20 });
   gsap.set('#screen-reflection h1',       { opacity: 0, y: 30, scale: 0.95 });

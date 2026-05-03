@@ -54,41 +54,41 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
   });
 }
 
-function buildCluePanel(clue, sourceLabel) {
-  if (!clue) return '';
-  return `
-    <div class="clue-panel" id="clue-panel">
-      <button class="clue-toggle" id="clue-toggle">
-        <span class="clue-toggle-icon">&#128269;</span>
-        <span>Clue from ${sourceLabel}</span>
-        <span class="clue-chevron" id="clue-chevron">&#9660;</span>
-      </button>
-      <div class="clue-body" id="clue-body">
-        <div class="clue-title">${clue.title}</div>
+function showCluePopup(clue) {
+  if (!clue) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'clue-popup-overlay';
+  overlay.innerHTML = `
+    <div class="clue-popup-card">
+      <div class="clue-popup-header">
+        <h2 class="clue-popup-title">${clue.title}</h2>
+        <button class="clue-popup-close" id="clue-popup-close">&#215;</button>
+      </div>
+      <div class="clue-popup-label">&#128279; Hint from Puzzle 1 — Shattered Sanctuary</div>
+      <div class="clue-popup-body">
         ${clue.lines.map(l => `
-          <div class="clue-line">
-            <span class="clue-icon">${l.icon}</span>
+          <div class="clue-popup-line">
+            <span class="clue-popup-line-icon">${l.icon}</span>
             <span>${l.text}</span>
           </div>
         `).join('')}
       </div>
+      <button class="clue-popup-dismiss" id="clue-popup-dismiss">Got it — back to the puzzle</button>
     </div>
   `;
-}
-
-function attachClueToggle() {
-  const toggle = document.getElementById('clue-toggle');
-  if (!toggle) return;
-  const body = document.getElementById('clue-body');
-  const chevron = document.getElementById('clue-chevron');
-  let open = false;
-  body.style.display = 'none';
-  toggle.addEventListener('click', () => {
-    open = !open;
-    body.style.display = open ? 'block' : 'none';
-    chevron.innerHTML = open ? '&#9650;' : '&#9660;';
-    if (open) gsap.fromTo(body, { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.3 });
-  });
+  document.body.appendChild(overlay);
+  gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' });
+  gsap.fromTo('.clue-popup-card',
+    { opacity: 0, y: 30, scale: 0.95 },
+    { opacity: 1, y: 0, scale: 1, duration: 0.4, delay: 0.05, ease: 'back.out(1.7)' }
+  );
+  function closePopup() {
+    gsap.to(overlay, { opacity: 0, duration: 0.25, ease: 'power2.in',
+      onComplete: () => overlay.remove() });
+  }
+  document.getElementById('clue-popup-close').addEventListener('click', closePopup);
+  document.getElementById('clue-popup-dismiss').addEventListener('click', closePopup);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
 }
 
 export function initPuzzle2(container, clue, onBack, onNext) {
@@ -98,9 +98,11 @@ export function initPuzzle2(container, clue, onBack, onNext) {
         <button class="back-btn" id="back-btn">&#8592; Back</button>
         <div class="puzzle-header-center">
           <div class="puzzle-step">Enigma 02 of 03</div>
+          <div class="header-rule-line"><span></span><span class="hrl-diamond">&#9670;</span><span></span></div>
           <h1>Symbol Cipher</h1>
         </div>
         <div class="puzzle-header-right">
+          ${clue ? `<button class="clue-header-btn" id="clue-btn">&#128269; Hint</button>` : ''}
           <div class="health-bar" id="health-bar">
             <span class="heart active">&#9829;</span>
             <span class="heart active">&#9829;</span>
@@ -109,20 +111,28 @@ export function initPuzzle2(container, clue, onBack, onNext) {
         </div>
       </div>
 
-      ${buildCluePanel(clue, 'Shattered Sanctuary')}
-
       <div class="puzzle-intro">
         <div class="puzzle-tag">Decode &amp; Match</div>
-        <p class="puzzle-description">Four Masonic symbols were used as a secret language inside the 1886 Union Masonic Temple. Each symbol stands for one of the bonds that held the community together. Match every symbol to its meaning.</p>
+        <p class="puzzle-description">Freemasons used symbols as a shared language that worked across different nationalities and cultures. Four of those symbols each stand for a different bond that held the seven lodges together. Your job is to match each symbol to the right meaning.</p>
       </div>
 
       <div class="how-to-play">
         <div class="htp-title">&#9670; How to Play</div>
         <ol class="htp-steps">
-          <li>Look at the <strong>Symbols</strong> on the left — each one has a name below it.</li>
+          <li>Look at the <strong>Symbols</strong> panel on the left — each symbol has a name below it.</li>
           <li>Drag a symbol and drop it onto the <strong>Meaning</strong> you think it represents on the right.</li>
-          <li>Use the clue from Enigma 01 to help you decode each one.</li>
+          <li>If you get stuck, press the <strong>Hint</strong> button in the header to see the clue.</li>
         </ol>
+      </div>
+
+      <div class="masonic-section-rule">
+        <span></span>
+        <div class="msr-centre">
+          <span class="msr-dot"></span>
+          <span class="msr-line"></span>
+          <span class="msr-dot"></span>
+        </div>
+        <span></span>
       </div>
 
       <div class="puzzle-layout">
@@ -143,13 +153,17 @@ export function initPuzzle2(container, clue, onBack, onNext) {
 
       <div id="feedback" class="feedback-bar">
         <span class="feedback-icon">&#9670;</span>
-        <span id="feedback-text">Drag each symbol to its meaning. Open the clue panel above if you need a hint.</span>
+        <span id="feedback-text">Drag each symbol to its meaning. Use the hint button if you need help.</span>
       </div>
     </div>
   `;
 
   container.innerHTML = html;
-  attachClueToggle();
+  window.scrollTo(0, 0);
+
+  if (clue) {
+    document.getElementById('clue-btn')?.addEventListener('click', () => showCluePopup(clue));
+  }
 
   // ── Health system ────────────────────────────────────────────────────────────
   let lives = 3;
@@ -189,7 +203,7 @@ export function initPuzzle2(container, clue, onBack, onNext) {
       if (!completed) {
         const placed = [...document.querySelectorAll('.drop-slot')].filter(s => s.querySelector('.piece')).length;
         document.getElementById('feedback-text').textContent =
-          placed === 0 ? 'Drag each symbol to its meaning. Open the clue panel above if you need a hint.'
+          placed === 0 ? 'Drag each symbol to its meaning. Use the hint button if you need help.'
                        : `${solved} of 4 symbols correctly matched. Keep going.`;
       }
     }, 1600);
@@ -222,20 +236,18 @@ export function initPuzzle2(container, clue, onBack, onNext) {
   }
   // ────────────────────────────────────────────────────────────────────────────
 
-  gsap.set('.puzzle-header', { opacity: 0, y: -20 });
-  gsap.set('.clue-panel',    { opacity: 0, y: 12  });
-  gsap.set('.puzzle-intro',  { opacity: 0, y: 16  });
-  gsap.set('.how-to-play',   { opacity: 0, y: 12  });
-  gsap.set('.puzzle-layout', { opacity: 0, y: 24  });
-  gsap.set('#feedback',      { opacity: 0 });
+  gsap.set('.puzzle-header',  { opacity: 0, y: -20 });
+  gsap.set('.puzzle-intro',   { opacity: 0, y: 16  });
+  gsap.set('.how-to-play',    { opacity: 0, y: 12  });
+  gsap.set('.puzzle-layout',  { opacity: 0, y: 24  });
+  gsap.set('#feedback',       { opacity: 0 });
 
   const tl = gsap.timeline();
-  tl.to('.puzzle-header', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
-    .to('.clue-panel',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
-    .to('.puzzle-intro',  { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
-    .to('.how-to-play',   { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
-    .to('.puzzle-layout', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
-    .to('#feedback',      { opacity: 1, duration: 0.4 }, '-=0.2');
+  tl.to('.puzzle-header',  { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
+    .to('.puzzle-intro',   { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
+    .to('.how-to-play',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
+    .to('.puzzle-layout',  { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
+    .to('#feedback',       { opacity: 1, duration: 0.4 }, '-=0.2');
 
   document.getElementById('back-btn').addEventListener('click', () => {
     if (typeof onBack === 'function') onBack();
@@ -312,7 +324,7 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     if (solved < slots.length) {
       document.getElementById('feedback-text').textContent =
         placed === 0
-          ? 'Drag each symbol to its meaning. Open the clue panel above if you need a hint.'
+          ? 'Drag each symbol to its meaning. Use the hint button if you need help.'
           : `${solved} of 4 symbols correctly matched. Keep going.`;
     }
 

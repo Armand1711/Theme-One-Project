@@ -54,41 +54,41 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
   });
 }
 
-function buildCluePanel(clue, sourceLabel) {
-  if (!clue) return '';
-  return `
-    <div class="clue-panel" id="clue-panel">
-      <button class="clue-toggle" id="clue-toggle">
-        <span class="clue-toggle-icon">&#128269;</span>
-        <span>Connection Map from ${sourceLabel}</span>
-        <span class="clue-chevron" id="clue-chevron">&#9660;</span>
-      </button>
-      <div class="clue-body" id="clue-body">
-        <div class="clue-title">${clue.title}</div>
+function showCluePopup(clue) {
+  if (!clue) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'clue-popup-overlay';
+  overlay.innerHTML = `
+    <div class="clue-popup-card">
+      <div class="clue-popup-header">
+        <h2 class="clue-popup-title">${clue.title}</h2>
+        <button class="clue-popup-close" id="clue-popup-close">&#215;</button>
+      </div>
+      <div class="clue-popup-label">&#128279; Connection map from Puzzle 2 — Symbol Cipher</div>
+      <div class="clue-popup-body">
         ${clue.lines.map(l => `
-          <div class="clue-line">
-            <span class="clue-icon">${l.icon}</span>
+          <div class="clue-popup-line">
+            <span class="clue-popup-line-icon">${l.icon}</span>
             <span>${l.text}</span>
           </div>
         `).join('')}
       </div>
+      <button class="clue-popup-dismiss" id="clue-popup-dismiss">Got it — back to the puzzle</button>
     </div>
   `;
-}
-
-function attachClueToggle() {
-  const toggle  = document.getElementById('clue-toggle');
-  if (!toggle) return;
-  const body    = document.getElementById('clue-body');
-  const chevron = document.getElementById('clue-chevron');
-  let open = false;
-  body.style.display = 'none';
-  toggle.addEventListener('click', () => {
-    open = !open;
-    body.style.display = open ? 'block' : 'none';
-    chevron.innerHTML  = open ? '&#9650;' : '&#9660;';
-    if (open) gsap.fromTo(body, { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.3 });
-  });
+  document.body.appendChild(overlay);
+  gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' });
+  gsap.fromTo('.clue-popup-card',
+    { opacity: 0, y: 30, scale: 0.95 },
+    { opacity: 1, y: 0, scale: 1, duration: 0.4, delay: 0.05, ease: 'back.out(1.7)' }
+  );
+  function closePopup() {
+    gsap.to(overlay, { opacity: 0, duration: 0.25, ease: 'power2.in',
+      onComplete: () => overlay.remove() });
+  }
+  document.getElementById('clue-popup-close').addEventListener('click', closePopup);
+  document.getElementById('clue-popup-dismiss').addEventListener('click', closePopup);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
 }
 
 export function initPuzzle3(container, clue, onBack, onNext) {
@@ -98,9 +98,11 @@ export function initPuzzle3(container, clue, onBack, onNext) {
         <button class="back-btn" id="back-btn">&#8592; Back</button>
         <div class="puzzle-header-center">
           <div class="puzzle-step">Enigma 03 of 03</div>
+          <div class="header-rule-line"><span></span><span class="hrl-diamond">&#9670;</span><span></span></div>
           <h1>Web of Whispers</h1>
         </div>
         <div class="puzzle-header-right">
+          ${clue ? `<button class="clue-header-btn" id="clue-btn">&#128269; Hint</button>` : ''}
           <div class="health-bar" id="health-bar">
             <span class="heart active">&#9829;</span>
             <span class="heart active">&#9829;</span>
@@ -108,8 +110,6 @@ export function initPuzzle3(container, clue, onBack, onNext) {
           </div>
         </div>
       </div>
-
-      ${buildCluePanel(clue, 'Symbol Cipher')}
 
       <div class="puzzle-intro">
         <div class="puzzle-tag">Connect &amp; Reveal</div>
@@ -121,8 +121,18 @@ export function initPuzzle3(container, clue, onBack, onNext) {
         <ol class="htp-steps">
           <li><strong>Click and drag</strong> from one circle to another to draw a bond between them.</li>
           <li>A gold line means the bond is correct. A red flash means no bond exists there.</li>
-          <li>Use the connection map from Enigma 02 above — it tells you exactly which bonds to draw.</li>
+          <li>Press the <strong>Hint</strong> button in the header to see the connection map from Puzzle 2.</li>
         </ol>
+      </div>
+
+      <div class="masonic-section-rule">
+        <span></span>
+        <div class="msr-centre">
+          <span class="msr-dot"></span>
+          <span class="msr-line"></span>
+          <span class="msr-dot"></span>
+        </div>
+        <span></span>
       </div>
 
       <div class="puzzle-layout network-layout">
@@ -149,13 +159,17 @@ export function initPuzzle3(container, clue, onBack, onNext) {
 
       <div id="feedback" class="feedback-bar">
         <span class="feedback-icon">&#9670;</span>
-        <span id="feedback-text">Click and drag from one circle to another to draw a bond. Open the map above to see which bonds to draw.</span>
+        <span id="feedback-text">Click and drag from one circle to another to draw a bond. Use the hint button if you need a clue.</span>
       </div>
     </div>
   `;
 
   container.innerHTML = html;
-  attachClueToggle();
+  window.scrollTo(0, 0);
+
+  if (clue) {
+    document.getElementById('clue-btn')?.addEventListener('click', () => showCluePopup(clue));
+  }
 
   // ── Health system ────────────────────────────────────────────────────────────
   let lives = 3;
@@ -194,7 +208,7 @@ export function initPuzzle3(container, clue, onBack, onNext) {
     setTimeout(() => {
       if (!completed) {
         document.getElementById('feedback-text').textContent =
-          `${connections.length} of 6 bonds drawn. Open the map above for guidance.`;
+          `${connections.length} of 6 bonds drawn. Use the hint button for guidance.`;
       }
     }, 1600);
   }
@@ -228,7 +242,6 @@ export function initPuzzle3(container, clue, onBack, onNext) {
   // ────────────────────────────────────────────────────────────────────────────
 
   gsap.set('.puzzle-header',  { opacity: 0, y: -20 });
-  gsap.set('.clue-panel',     { opacity: 0, y: 12  });
   gsap.set('.puzzle-intro',   { opacity: 0, y: 16  });
   gsap.set('.how-to-play',    { opacity: 0, y: 12  });
   gsap.set('.network-canvas', { opacity: 0, y: 24  });
@@ -237,7 +250,6 @@ export function initPuzzle3(container, clue, onBack, onNext) {
 
   const tl = gsap.timeline();
   tl.to('.puzzle-header',  { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
-    .to('.clue-panel',     { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
     .to('.puzzle-intro',   { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
     .to('.how-to-play',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
     .to('.network-canvas', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
@@ -382,7 +394,7 @@ export function initPuzzle3(container, clue, onBack, onNext) {
       const count = connections.length;
       if (count < correctConnections.length) {
         document.getElementById('feedback-text').textContent =
-          `${count} of 6 bonds drawn. Keep going — open the map if you need a clue.`;
+          `${count} of 6 bonds drawn. Keep going — use the hint button if you need a clue.`;
       }
       checkCompletion();
     } else {
@@ -392,7 +404,7 @@ export function initPuzzle3(container, clue, onBack, onNext) {
       ft.textContent = 'No bond exists between those two — try a different connection.';
       setTimeout(() => {
         if (!completed) {
-          ft.textContent = `${connections.length} of 6 bonds drawn. Open the map above for guidance.`;
+          ft.textContent = `${connections.length} of 6 bonds drawn. Use the hint button for guidance.`;
         }
       }, 1800);
     }

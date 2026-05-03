@@ -5,8 +5,8 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
     {
       num: '01',
       title: 'Shattered Sanctuary',
-      desc: 'The facade of the 1886 Union Masonic Temple has been broken apart. Drag each piece back into its correct position to restore the building.',
-      how: 'Drag a piece from the left panel — drop it into the matching slot on the right.',
+      desc: 'The 1886 Union Masonic Temple on Dutoitspan Road was built in the Roman Corinthian style by immigrant communities pooling their resources. Six photographic fragments of its facade are scattered — place each piece in the correct position to reconstruct what they built.',
+      how: 'Drag a fragment from the left panel and drop it into its matching slot on the right.',
       tag: 'Drag & Restore',
       unlocked: true,
       complete: completedPuzzles >= 1
@@ -14,8 +14,8 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
     {
       num: '02',
       title: 'Symbol Cipher',
-      desc: "Four Masonic symbols are encoded in the lodge's archive. Each one hides the name of a bond forged inside the temple. Match every symbol to its meaning.",
-      how: 'Drag a symbol from the left — drop it onto the meaning that fits on the right.',
+      desc: 'Freemasons used a shared system of symbols as a language that crossed national and cultural boundaries. Four of these symbols each represent a different bond that held the seven lodges together. Match every symbol to the value it stands for.',
+      how: 'Drag each symbol from the left and drop it onto the meaning you think it represents on the right.',
       tag: 'Decode & Match',
       unlocked: completedPuzzles >= 1,
       complete: completedPuzzles >= 2
@@ -23,8 +23,8 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
     {
       num: '03',
       title: 'Web of Whispers',
-      desc: 'Seven lodges from three nations shared one building in Kimberley. Draw the hidden connections between them to reveal the web of trust.',
-      how: 'Click and drag from one circle to another to draw a bond between them.',
+      desc: 'The seven lodges in Kimberley were not all equally connected. Historical records reveal six specific bonds — ties of shared membership, trade, and ritual — linking certain lodges while leaving others separate. Draw those connections to reveal the real network of trust.',
+      how: 'Click and drag from one lodge to another to draw a bond between them.',
       tag: 'Connect & Reveal',
       unlocked: completedPuzzles >= 2,
       complete: completedPuzzles >= 3
@@ -49,13 +49,13 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
             ${COMPASS}
             <div class="menu-eyebrow">
               <span class="eyebrow-line"></span>
-              <span>The Enigma Path</span>
+              <span>1886 Union Masonic Temple &middot; Kimberley</span>
               <span class="eyebrow-line"></span>
             </div>
             ${COMPASS}
           </div>
-          <h1>CHOOSE YOUR ENIGMA</h1>
-          <p>Three puzzles guard the hidden history of the 1886 Union Masonic Temple. Solve each one to uncover the bonds that built Kimberley's immigrant community.</p>
+          <h1>THREE PUZZLES &middot; ONE STORY</h1>
+          <p>Each puzzle reveals a different layer of how seven Masonic lodges from Scotland, England, and the Netherlands built a community together in Kimberley&rsquo;s diamond fields. Work through them in order to build the full picture.</p>
         </header>
 
         <div class="menu-progress">
@@ -102,6 +102,7 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
 
   // Write the HTML first — event wiring comes AFTER, with no GSAP in between
   app.innerHTML = html;
+  window.scrollTo(0, 0);
 
   // Wire every play button directly — idx maps to puzzle number
   const starters = [onStartPuzzle1, onStartPuzzle2, onStartPuzzle3];

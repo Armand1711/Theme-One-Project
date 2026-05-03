@@ -1,170 +1,302 @@
-/* puzzle1.css — styles for all three puzzle screens */
+/* puzzle1.css — Masonic lodge atmosphere for all three puzzle screens */
 
 /* ═══════════════════════════════════════════════════════
-   PUZZLE SCREENS — shared background
+   PUZZLE SCREENS — dark lodge chamber
 ═══════════════════════════════════════════════════════ */
 #screen-puzzle1,
 #screen-puzzle2,
 #screen-puzzle3 {
   min-height: 100vh;
-  background-color: #f0e8d8;
+  background-color: #060402;
+  /* Subtle tessellated Masonic floor — alternating diamonds */
   background-image:
-    linear-gradient(180deg, rgba(245,240,232,0.97) 0%, rgba(232,217,194,0.97) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M16 4 L28 16 L16 28 L4 16Z' fill='none' stroke='%23c9a227' stroke-width='0.6' opacity='0.35'/%3E%3C/svg%3E");
+    linear-gradient(45deg,  rgba(201,162,39,0.05) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(201,162,39,0.05) 25%, transparent 25%),
+    linear-gradient(45deg,  transparent 75%, rgba(201,162,39,0.05) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(201,162,39,0.05) 75%);
+  background-size: 40px 40px;
+  background-position: 0 0, 0 20px, 20px -20px, -20px 0;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+/* Full-height atmospheric vignette — light emanates from top center */
+#screen-puzzle1::before,
+#screen-puzzle2::before,
+#screen-puzzle3::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%,
+    rgba(201,162,39,0.04) 0%,
+    transparent 55%),
+    radial-gradient(ellipse at 50% 50%, transparent 20%, rgba(0,0,0,0.45) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* All direct content above the vignette */
+#screen-puzzle1 > *,
+#screen-puzzle2 > *,
+#screen-puzzle3 > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ═══════════════════════════════════════════════════════
-   PUZZLE HEADER — dark bar
+   PUZZLE HEADER — lodge sanctuary entrance
 ═══════════════════════════════════════════════════════ */
 .puzzle-header {
-  background: linear-gradient(135deg, #1a0f0a 0%, #0f0906 100%);
-  padding: 14px 28px;
+  background: linear-gradient(180deg, #1c1008 0%, #120a04 100%);
+  padding: 14px 28px 16px;
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 16px;
-  border-bottom: 1px solid rgba(201,162,39,0.15);
+  border-bottom: 1px solid rgba(201,162,39,0.28);
+  box-shadow: 0 1px 0 rgba(201,162,39,0.07),
+              0 6px 32px rgba(0,0,0,0.7);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
-.puzzle-header-center { text-align: center; }
+.puzzle-header-center {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
 
 .puzzle-step {
-  font-size: 0.66rem;
-  letter-spacing: 2.5px;
+  font-size: 0.6rem;
+  letter-spacing: 3.5px;
   text-transform: uppercase;
-  color: #c9a227;
-  opacity: 0.7;
-  margin-bottom: 3px;
+  color: rgba(201,162,39,0.6);
+  font-family: 'Inter', sans-serif;
 }
 
-.puzzle-header h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(1.1rem, 3vw, 1.55rem);
-  font-weight: 700;
-  color: #f5e8c8;
-  margin: 0;
-}
-
-.puzzle-header-right { min-width: 100px; display: flex; justify-content: flex-end; }
-
-.back-btn {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.14);
-  color: rgba(255,255,255,0.65);
-  border-radius: 8px;
-  padding: 9px 16px;
-  font-weight: 500;
-  font-size: 0.86rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.back-btn:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.28);
-  color: #fff;
-}
-
-/* ═══════════════════════════════════════════════════════
-   CLUE PANEL
-═══════════════════════════════════════════════════════ */
-.clue-panel {
-  background: linear-gradient(135deg, #fffbf0 0%, #fef5d9 100%);
-  border-left: 3px solid #c9a227;
-  margin: 20px 28px 0;
-  border-radius: 0 8px 8px 0;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(201,162,39,0.12);
-}
-
-.clue-toggle {
+/* Ornate rule flanking the puzzle title */
+.header-rule-line {
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 13px 18px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 0.86rem;
-  font-weight: 600;
-  color: #7a5c00;
-  text-align: left;
-  transition: background 0.2s;
-  font-family: 'Inter', sans-serif;
+  justify-content: center;
 }
 
-.clue-toggle:hover { background: rgba(201,162,39,0.1); }
-.clue-toggle-icon  { font-size: 1rem; }
-.clue-toggle span:nth-child(2) { flex: 1; }
-
-.clue-chevron {
-  font-size: 0.72rem;
-  opacity: 0.65;
+.header-rule-line span:not(.hrl-diamond) {
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,162,39,0.5));
 }
 
-.clue-body {
-  padding: 4px 18px 16px;
+.header-rule-line span:first-child {
+  background: linear-gradient(to left, transparent, rgba(201,162,39,0.5));
 }
 
-.clue-title {
-  font-size: 0.66rem;
+.hrl-diamond {
+  color: rgba(201,162,39,0.55);
+  font-size: 0.42rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.puzzle-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.05rem, 2.8vw, 1.5rem);
   font-weight: 700;
-  color: #7a5c00;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 12px;
-  opacity: 0.8;
+  color: #f5e8c8;
+  margin: 0;
+  letter-spacing: 0.8px;
+  text-shadow: 0 0 40px rgba(201,162,39,0.2), 0 2px 8px rgba(0,0,0,0.9);
 }
 
-.clue-line {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 0.86rem;
-  color: #5c4400;
-  margin-bottom: 7px;
-  line-height: 1.45;
-  font-family: 'Inter', sans-serif;
-}
-
-.clue-icon { flex-shrink: 0; font-size: 1rem; }
-
-/* ═══════════════════════════════════════════════════════
-   PUZZLE INTRO BAR
-═══════════════════════════════════════════════════════ */
-.puzzle-intro {
-  padding: 18px 28px 12px;
+/* Right section: hint button above health bar */
+.puzzle-header-right {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 8px;
 }
 
-.puzzle-tag {
-  display: inline-block;
-  background: linear-gradient(135deg, #8c1f1f 0%, #6b1515 100%);
-  color: #fff;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.68rem;
+/* Hint button inside header */
+.clue-header-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 13px;
+  background: transparent;
+  border: 1px solid rgba(201,162,39,0.38);
+  border-radius: 4px;
+  color: rgba(201,162,39,0.75);
+  font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: 0.8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+
+.clue-header-btn:hover {
+  background: rgba(201,162,39,0.1);
+  border-color: rgba(201,162,39,0.75);
+  color: #c9a227;
+  box-shadow: 0 0 16px rgba(201,162,39,0.15);
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.52);
+  border-radius: 5px;
+  padding: 8px 16px;
+  font-weight: 500;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
+}
+
+.back-btn:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.85);
+}
+
+/* ═══════════════════════════════════════════════════════
+   PUZZLE INTRO BAR — lodge proclamation
+═══════════════════════════════════════════════════════ */
+.puzzle-intro {
+  padding: 22px 32px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(180deg, #180e06 0%, #0e0804 100%);
+  border-bottom: 1px solid rgba(201,162,39,0.1);
+}
+
+.puzzle-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: rgba(201,162,39,0.7);
+  padding: 0;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 3px;
   text-transform: uppercase;
   width: fit-content;
+  font-family: 'Inter', sans-serif;
+}
+
+.puzzle-tag::before {
+  content: '';
+  display: block;
+  width: 16px;
+  height: 1px;
+  background: rgba(201,162,39,0.45);
 }
 
 .puzzle-description {
-  color: #654230;
-  font-size: 0.93rem;
-  line-height: 1.65;
+  color: rgba(232,217,194,0.68);
+  font-size: 0.92rem;
+  line-height: 1.7;
   margin: 0;
-  max-width: 720px;
+  max-width: 680px;
+  font-family: 'Inter', sans-serif;
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════════════════════
+   HOW TO PLAY — lodge initiation notice
+═══════════════════════════════════════════════════════ */
+.how-to-play {
+  margin: 0 28px;
+  padding: 16px 22px;
+  background: rgba(201,162,39,0.03);
+  border: 1px solid rgba(201,162,39,0.14);
+  border-left: 2px solid rgba(201,162,39,0.5);
+  border-radius: 0 8px 8px 0;
+}
+
+.htp-title {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(201,162,39,0.65);
+  margin-bottom: 11px;
+  font-family: 'Inter', sans-serif;
+}
+
+.htp-steps {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.htp-steps li {
+  font-size: 0.83rem;
+  color: rgba(232,217,194,0.62);
+  line-height: 1.55;
+  font-family: 'Inter', sans-serif;
+}
+
+.htp-steps li strong {
+  color: rgba(232,217,194,0.88);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════
+   MASONIC SECTION RULE — ceremonial divider
+═══════════════════════════════════════════════════════ */
+.masonic-section-rule {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 18px 28px;
+}
+
+.masonic-section-rule span {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(201,162,39,0.3), transparent);
+  display: block;
+}
+
+.masonic-section-rule .msr-centre {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 18px;
+  flex-shrink: 0;
+}
+
+.msr-dot {
+  width: 5px;
+  height: 5px;
+  background: rgba(201,162,39,0.45);
+  transform: rotate(45deg);
+  display: block;
+  flex-shrink: 0;
+}
+
+.msr-line {
+  width: 22px;
+  height: 1px;
+  background: rgba(201,162,39,0.35);
+  display: block;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -173,8 +305,8 @@
 .puzzle-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  padding: 16px 28px 0;
+  gap: 22px;
+  padding: 0 28px 0;
   flex: 1;
   align-items: start;
 }
@@ -187,28 +319,34 @@
   gap: 10px;
 }
 
+/* Col label — full Masonic rule treatment */
 .col-label {
-  font-size: 0.68rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #7a5230;
-  font-weight: 700;
-  padding: 0 4px 8px;
-  border-bottom: 1px solid rgba(201,162,39,0.3);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(201,162,39,0.6);
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  padding-bottom: 2px;
+}
+
+.col-label::before,
+.col-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  display: block;
 }
 
 .col-label::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: #c9a227;
-  transform: rotate(45deg);
-  display: inline-block;
-  opacity: 0.65;
-  flex-shrink: 0;
+  background: linear-gradient(to right, transparent, rgba(201,162,39,0.35));
+}
+
+.col-label::after {
+  background: linear-gradient(to left, transparent, rgba(201,162,39,0.35));
 }
 
 /* 3-column override for 6-piece puzzle */
@@ -217,32 +355,41 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
-/* Source + Target zones */
+/* Source + Target zones — lodge chamber panels */
 .puzzle-source {
-  padding: 18px;
-  background: linear-gradient(135deg, #fff 0%, #f6ece2 100%);
-  border: 2px dashed #c4a882;
-  border-radius: 16px;
+  padding: 14px;
+  background: linear-gradient(160deg, #1c1208 0%, #130b04 100%);
+  border: 1px solid rgba(201,162,39,0.22);
+  border-radius: 12px;
   min-height: 268px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  gap: 10px;
+  box-shadow: 0 8px 36px rgba(0,0,0,0.7),
+              inset 0 1px 0 rgba(201,162,39,0.09),
+              inset 0 0 80px rgba(0,0,0,0.4);
+  /* Outer frame: subtle double-border effect */
+  outline: 1px solid rgba(201,162,39,0.08);
+  outline-offset: 5px;
 }
 
 .puzzle-target {
-  padding: 18px;
-  background: linear-gradient(135deg, #fffdf8 0%, #f5e8d8 100%);
-  border: 2px dashed #a06a3a;
-  border-radius: 16px;
+  padding: 14px;
+  background: linear-gradient(160deg, #180e04 0%, #100804 100%);
+  border: 1px solid rgba(201,162,39,0.18);
+  border-radius: 12px;
   min-height: 268px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  gap: 10px;
+  box-shadow: 0 8px 36px rgba(0,0,0,0.7),
+              inset 0 1px 0 rgba(201,162,39,0.07),
+              inset 0 0 80px rgba(0,0,0,0.4);
+  outline: 1px solid rgba(201,162,39,0.06);
+  outline-offset: 5px;
 }
 
-/* Fixed-size holder cells in source panel — grid never reflows when a piece leaves */
+/* Fixed-size holder cells — grid never reflows when a piece leaves */
 .source-holder {
   min-height: 112px;
   display: flex;
@@ -259,8 +406,8 @@
 ═══════════════════════════════════════════════════════ */
 .piece {
   min-height: 112px;
-  border: 2px solid rgba(94,11,21,0.22);
-  border-radius: 10px;
+  border: 1px solid rgba(201,162,39,0.3);
+  border-radius: 9px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -270,57 +417,67 @@
   user-select: none;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background-size: 200% 200%;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6);
   position: relative;
   overflow: hidden;
 }
 
-/* gradient overlay so label is readable over image */
 .piece::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.5));
+  background: linear-gradient(to bottom, transparent 35%, rgba(0,0,0,0.72));
   pointer-events: none;
 }
 
 .piece:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-  border-color: #5e0b15;
+  transform: translateY(-4px) scale(1.025);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.75),
+              0 0 0 1px rgba(201,162,39,0.5);
+  border-color: #c9a227;
 }
 
 .piece.dragging {
   cursor: grabbing;
-  opacity: 0.65;
-  transform: scale(0.96);
+  opacity: 0.6;
+  transform: scale(0.95);
 }
 
 .piece-label {
   position: relative;
   z-index: 1;
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 700;
   color: #fff;
   text-align: center;
-  letter-spacing: 0.3px;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 8px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,0.9);
   padding: 0 6px;
   font-family: 'Inter', sans-serif;
+  text-transform: uppercase;
 }
 
-/* Symbol pieces (Puzzle 2) */
+/* ═══════════════════════════════════════════════════════
+   SYMBOL PIECES (Puzzle 2)
+═══════════════════════════════════════════════════════ */
 .symbol-piece {
-  background: linear-gradient(135deg, #fff 0%, #f8f0e4 100%) !important;
+  background: linear-gradient(160deg, #241608 0%, #180e04 100%) !important;
   background-size: auto !important;
-  border: 2px solid rgba(94,11,21,0.18);
+  border: 1px solid rgba(201,162,39,0.28);
   flex-direction: column;
   justify-content: center;
-  padding: 16px 10px 14px;
-  gap: 8px;
+  padding: 18px 10px 14px;
+  gap: 10px;
 }
 
 .symbol-piece::after { display: none; }
+
+.symbol-piece:hover {
+  border-color: rgba(201,162,39,0.7);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.7),
+              0 0 0 1px rgba(201,162,39,0.35),
+              0 0 30px rgba(201,162,39,0.08);
+}
 
 .symbol-icon {
   display: flex;
@@ -335,48 +492,63 @@
   display: block;
 }
 
-/* Gold glow on correctly placed SVG icons */
 .drop-slot.correct .symbol-svg {
-  filter: drop-shadow(0 0 8px rgba(201,162,39,0.55));
+  filter: drop-shadow(0 0 12px rgba(201,162,39,0.8));
 }
 
 .symbol-label {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  color: #2f1b12;
+  color: rgba(232,217,194,0.78);
   text-align: center;
   font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
 }
 
 /* ═══════════════════════════════════════════════════════
-   DROP SLOTS
+   DROP SLOTS — lodge altar positions
 ═══════════════════════════════════════════════════════ */
 .drop-slot {
   min-height: 112px;
-  border: 2px dashed #9c7b53;
-  border-radius: 10px;
+  border: 1px dashed rgba(201,162,39,0.28);
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  background: rgba(255,255,255,0.5);
+  background: rgba(201,162,39,0.025);
   position: relative;
+  overflow: hidden;
+}
+
+/* Faint diamond watermark on empty slot */
+.drop-slot:not(:has(.piece))::before {
+  content: '◆';
+  position: absolute;
+  font-size: 2.5rem;
+  color: rgba(201,162,39,0.05);
+  pointer-events: none;
+  user-select: none;
+  transform: rotate(0deg);
 }
 
 .slot-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: #8d6040;
+  color: rgba(201,162,39,0.42);
   text-align: center;
   padding: 0 8px;
   pointer-events: none;
   font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-style: italic;
+  position: relative;
+  z-index: 1;
 }
 
-/* Hide label when piece is placed */
 .drop-slot:has(.piece) .slot-label { display: none; }
 
-/* Make placed piece fill the slot completely */
 .drop-slot:has(.piece) {
   padding: 0;
   overflow: hidden;
@@ -392,81 +564,91 @@
 }
 
 .drop-slot.drag-over {
-  border-color: #2d7b5e;
-  background: linear-gradient(135deg, #e2f9f0, #d0f4e8);
-  transform: scale(1.02);
+  border-color: rgba(45,123,94,0.7);
+  border-style: solid;
+  background: rgba(45,123,94,0.1);
+  transform: scale(1.025);
+  box-shadow: 0 0 0 2px rgba(45,123,94,0.2), inset 0 0 20px rgba(45,123,94,0.08);
 }
 
+/* Correct — gold glow */
 .drop-slot.correct {
-  border-color: #18a820;
-  border-style: solid;
-  border-width: 3px;
-  background: linear-gradient(135deg, #d4f5d0, #b8edaf);
-  box-shadow: 0 0 0 3px rgba(24,168,32,0.25), inset 0 0 12px rgba(24,168,32,0.1);
+  border: 2px solid rgba(201,162,39,0.65);
+  background: rgba(201,162,39,0.06);
+  box-shadow: 0 0 0 3px rgba(201,162,39,0.12),
+              0 0 24px rgba(201,162,39,0.12),
+              inset 0 0 20px rgba(201,162,39,0.04);
 }
 
+/* Wrong — crimson flash */
 .drop-slot.wrong {
-  border-color: #c0281e;
-  border-style: solid;
-  border-width: 3px;
-  background: linear-gradient(135deg, #fce8e6, #f9d0cc);
-  box-shadow: 0 0 0 3px rgba(192,40,30,0.22), inset 0 0 12px rgba(192,40,30,0.08);
+  border: 2px solid rgba(192,40,30,0.6);
+  background: rgba(192,40,30,0.06);
+  box-shadow: 0 0 0 3px rgba(192,40,30,0.15),
+              0 0 20px rgba(192,40,30,0.12);
 }
 
 /* ═══════════════════════════════════════════════════════
-   FEEDBACK BAR
+   FEEDBACK BAR — lodge pronouncement
 ═══════════════════════════════════════════════════════ */
 #feedback {
-  margin: 18px 28px 24px;
-  padding: 18px 22px;
-  background: linear-gradient(135deg, #fff 0%, #f8f2e4 100%);
-  border-radius: 14px;
-  border: 1px solid #d8c4b1;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+  margin: 24px 28px 32px;
+  padding: 16px 22px;
+  background: linear-gradient(135deg, #160e05 0%, #0e0803 100%);
+  border-radius: 8px;
+  border: 1px solid rgba(201,162,39,0.16);
+  border-top: 2px solid rgba(201,162,39,0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
   display: flex;
-  gap: 12px;
+  gap: 14px;
   align-items: flex-start;
-  font-size: 0.9rem;
-  color: #654230;
+  font-size: 0.88rem;
+  color: rgba(232,217,194,0.68);
   font-family: 'Inter', sans-serif;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
-.feedback-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.feedback-icon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: rgba(201,162,39,0.6);
+}
 
 .feedback-success { width: 100%; }
 
 .feedback-success-title {
   font-family: 'Playfair Display', serif;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  color: #5e0b15;
+  color: #f5e8c8;
   margin-bottom: 8px;
 }
 
 .feedback-success p {
-  color: #654230;
+  color: rgba(232,217,194,0.68);
   margin: 0 0 14px;
-  font-size: 0.92rem;
+  font-size: 0.88rem;
 }
 
-/* Continue button — appears after puzzle completion */
+/* Continue button */
 .continue-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   margin-top: 18px;
-  padding: 14px 28px;
+  padding: 13px 28px;
   background: linear-gradient(135deg, #8c1f1f 0%, #6b1515 100%);
-  color: #fff;
+  color: #f5e8c8;
   border: none;
-  border-radius: 10px;
-  font-size: 0.95rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
   font-weight: 700;
-  letter-spacing: 0.4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 6px 24px rgba(140,31,31,0.35);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 24px rgba(140,31,31,0.45);
+  transition: all 0.25s;
   font-family: 'Inter', sans-serif;
   position: relative;
   overflow: hidden;
@@ -476,34 +658,33 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
   transform: translateX(-100%);
-  transition: transform 0.5s;
+  transition: transform 0.6s;
 }
 
 .continue-btn:hover::before { transform: translateX(100%); }
 .continue-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 32px rgba(140,31,31,0.5);
-  background: linear-gradient(135deg, #a02525 0%, #7b1f1f 100%);
+  box-shadow: 0 10px 32px rgba(140,31,31,0.6);
 }
 .continue-btn:active { transform: translateY(0); }
 
-/* Clue reveal inside feedback */
+/* Clue reveal block inside puzzle 1 completion */
 .clue-reveal {
-  background: linear-gradient(135deg, #fffbf0 0%, #fef5d9 100%);
-  border: 1px solid rgba(201,162,39,0.28);
-  border-left: 3px solid #c9a227;
+  background: rgba(201,162,39,0.05);
+  border: 1px solid rgba(201,162,39,0.18);
+  border-left: 2px solid rgba(201,162,39,0.5);
   border-radius: 0 8px 8px 0;
   padding: 14px 18px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .clue-reveal-label {
-  font-size: 0.68rem;
-  letter-spacing: 1px;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  color: #7a5c00;
+  color: rgba(201,162,39,0.7);
   font-weight: 700;
   margin-bottom: 12px;
   font-family: 'Inter', sans-serif;
@@ -519,79 +700,109 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  font-size: 0.86rem;
-  color: #5c4400;
+  font-size: 0.84rem;
+  color: rgba(232,217,194,0.7);
   line-height: 1.45;
   font-family: 'Inter', sans-serif;
 }
 
 /* ═══════════════════════════════════════════════════════
-   NETWORK (Puzzle 3)
+   NETWORK (Puzzle 3) — lodge map of trust
 ═══════════════════════════════════════════════════════ */
 .network-canvas {
   height: 480px;
-  background-color: #f8f2e6;
-  background-image: radial-gradient(circle, rgba(178,141,90,0.28) 1.5px, transparent 1.5px);
-  background-size: 28px 28px;
-  border: 2px dashed #b28d5a;
-  border-radius: 16px;
+  background-color: #0d0804;
+  background-image:
+    radial-gradient(circle, rgba(201,162,39,0.18) 1px, transparent 1px);
+  background-size: 30px 30px;
+  border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 14px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.75),
+              inset 0 1px 0 rgba(201,162,39,0.07),
+              inset 0 0 100px rgba(0,0,0,0.5);
+  outline: 1px solid rgba(201,162,39,0.06);
+  outline-offset: 6px;
+}
+
+/* Faint compass rose watermark at canvas center */
+.network-canvas::after {
+  content: '✦';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 6rem;
+  color: rgba(201,162,39,0.04);
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
 }
 
 .network-node {
   position: absolute;
-  min-width: 126px;
-  padding: 13px 16px;
-  background: linear-gradient(135deg, #fff 0%, #f0e4d4 100%);
-  border: 2px solid rgba(94,11,21,0.28);
-  border-radius: 10px;
+  min-width: 116px;
+  padding: 11px 16px;
+  background: linear-gradient(160deg, #2e1c0c 0%, #1c0e06 100%);
+  border: 1px solid rgba(201,162,39,0.38);
+  border-radius: 8px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.65),
+              inset 0 1px 0 rgba(201,162,39,0.08);
   user-select: none;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  color: #2f1b12;
+  color: #e8d9c2;
   text-align: center;
   transform: translate(-50%, -50%);
   font-family: 'Inter', sans-serif;
+  letter-spacing: 0.4px;
 }
 
 .network-node:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  border-color: #5e0b15;
+  border-color: rgba(201,162,39,0.75);
+  box-shadow: 0 6px 28px rgba(0,0,0,0.7),
+              0 0 24px rgba(201,162,39,0.18),
+              inset 0 1px 0 rgba(201,162,39,0.12);
+  transform: translate(-50%, -50%) scale(1.04);
 }
 
 .network-node.selected {
-  border-color: #1f8d26;
-  background: linear-gradient(135deg, #eaf8e9, #d9f2d5);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.12), 0 0 18px rgba(31,141,38,0.25);
+  border-color: rgba(31,141,38,0.8);
+  background: linear-gradient(160deg, #102010, #0a1608);
+  box-shadow: 0 6px 28px rgba(0,0,0,0.65),
+              0 0 28px rgba(31,141,38,0.3),
+              inset 0 1px 0 rgba(31,141,38,0.1);
+  transform: translate(-50%, -50%) scale(1.06);
 }
 
 .network-node.bonded {
-  border-color: rgba(201,162,39,0.55);
-  background: linear-gradient(135deg, #fffbf0 0%, #fef5d9 100%);
+  border-color: rgba(201,162,39,0.65);
+  background: linear-gradient(160deg, #2a1a04, #1a1004);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.65),
+              0 0 16px rgba(201,162,39,0.1);
 }
 
 /* Bond count badge on each node */
 .node-bond-count {
   display: block;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  color: rgba(94,11,21,0.5);
-  margin-top: 4px;
+  letter-spacing: 0.8px;
+  color: rgba(201,162,39,0.38);
+  margin-top: 5px;
   font-family: 'Inter', sans-serif;
   transition: color 0.3s;
 }
 
 .node-bond-count.badge-full {
-  color: #1f8d26;
+  color: #2db837;
   font-weight: 700;
 }
 
@@ -599,22 +810,23 @@
 .node-tooltip {
   display: none;
   position: absolute;
-  bottom: calc(100% + 10px);
+  bottom: calc(100% + 12px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(15,9,6,0.93);
-  color: #e8d9c2;
-  padding: 6px 12px;
+  background: rgba(8,4,2,0.97);
+  color: rgba(232,217,194,0.82);
+  padding: 8px 14px;
   border-radius: 6px;
-  font-size: 0.7rem;
-  line-height: 1.4;
+  font-size: 0.68rem;
+  line-height: 1.5;
   white-space: nowrap;
   pointer-events: none;
   z-index: 20;
-  border: 1px solid rgba(201,162,39,0.3);
+  border: 1px solid rgba(201,162,39,0.25);
   font-family: 'Inter', sans-serif;
   font-weight: 400;
   letter-spacing: 0;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.7);
 }
 
 .node-tooltip::after {
@@ -624,7 +836,7 @@
   left: 50%;
   transform: translateX(-50%);
   border: 5px solid transparent;
-  border-top-color: rgba(15,9,6,0.93);
+  border-top-color: rgba(8,4,2,0.97);
 }
 
 .network-node:hover .node-tooltip { display: block; }
@@ -637,41 +849,127 @@
   pointer-events: none;
 }
 
-/* ═══════════════════════════════════════════════════════
-   HOW TO PLAY BOX
-═══════════════════════════════════════════════════════ */
-.how-to-play {
-  margin: 0 28px 0;
-  padding: 14px 20px;
-  background: linear-gradient(135deg, #fffbf0 0%, #fef5d9 100%);
-  border-left: 3px solid #c9a227;
-  border-radius: 0 10px 10px 0;
-  box-shadow: 0 2px 10px rgba(201,162,39,0.1);
-}
-
-.htp-title {
+.network-drag-hint {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: #7a5c00;
-  margin-bottom: 8px;
+  color: rgba(201,162,39,0.35);
   font-family: 'Inter', sans-serif;
+  letter-spacing: 1px;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.4s;
+  text-transform: uppercase;
 }
 
-.htp-steps {
-  margin: 0;
-  padding-left: 18px;
+.network-node { cursor: grab; }
+.network-node:active { cursor: grabbing; }
+
+/* ═══════════════════════════════════════════════════════
+   HEALTH BAR
+═══════════════════════════════════════════════════════ */
+.health-bar {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 5px;
 }
 
-.htp-steps li {
-  font-size: 0.84rem;
-  color: #5c4400;
-  line-height: 1.5;
+.heart {
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: transform 0.2s;
+  display: inline-block;
+}
+
+.heart.active {
+  color: #c0281e;
+  filter: drop-shadow(0 0 6px rgba(192,40,30,0.6));
+}
+
+.heart.lost {
+  color: rgba(255,255,255,0.15);
+}
+
+/* ═══════════════════════════════════════════════════════
+   GAME OVER OVERLAY
+═══════════════════════════════════════════════════════ */
+.game-over-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3,1,0,0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.game-over-card {
+  background: linear-gradient(160deg, #1c1008 0%, #0f0704 100%);
+  border: 1px solid rgba(192,40,30,0.35);
+  border-top: 2px solid rgba(192,40,30,0.5);
+  border-radius: 16px;
+  padding: 48px 40px 40px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 28px 80px rgba(0,0,0,0.85),
+              0 0 60px rgba(192,40,30,0.08);
+  outline: 1px solid rgba(192,40,30,0.08);
+  outline-offset: 8px;
+}
+
+.game-over-icon {
+  font-size: 2.8rem;
+  color: rgba(192,40,30,0.35);
+  margin-bottom: 18px;
+  display: block;
+}
+
+.game-over-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #f5e8c8;
+  margin: 0 0 8px;
+  letter-spacing: 0.5px;
+}
+
+.game-over-body {
+  font-size: 0.88rem;
+  color: rgba(232,217,194,0.48);
+  line-height: 1.65;
+  margin: 0 0 30px;
   font-family: 'Inter', sans-serif;
+  font-style: italic;
+}
+
+.game-over-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 32px;
+  background: linear-gradient(135deg, #8c1f1f 0%, #6b1515 100%);
+  color: #f5e8c8;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(140,31,31,0.5);
+  transition: all 0.25s;
+  font-family: 'Inter', sans-serif;
+}
+
+.game-over-btn:hover {
+  background: linear-gradient(135deg, #a02525 0%, #7b1f1f 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 36px rgba(140,31,31,0.65);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -680,85 +978,89 @@
 .completion-modal {
   position: fixed;
   inset: 0;
-  background: rgba(10, 5, 2, 0.82);
+  background: rgba(3,1,0,0.9);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 20px;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
 }
 
 .completion-modal-card {
-  background: linear-gradient(160deg, #1a0f0a 0%, #0f0906 100%);
-  border: 1px solid rgba(201,162,39,0.35);
-  border-radius: 20px;
+  background: linear-gradient(160deg, #1c1008 0%, #0f0704 100%);
+  border: 1px solid rgba(201,162,39,0.3);
+  border-top: 2px solid rgba(201,162,39,0.5);
+  border-radius: 16px;
   padding: 40px 36px 36px;
   max-width: 540px;
   width: 100%;
   max-height: 88vh;
   overflow-y: auto;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 60px rgba(201,162,39,0.08);
+  box-shadow: 0 28px 80px rgba(0,0,0,0.85),
+              0 0 60px rgba(201,162,39,0.06);
   text-align: center;
   position: relative;
+  outline: 1px solid rgba(201,162,39,0.06);
+  outline-offset: 8px;
 }
 
-/* Masonic compass SVG centred above modal title */
 .modal-masonic-row {
   display: flex;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .modal-masonic-svg {
-  width: 60px;
-  height: 52px;
-  opacity: 0.85;
+  width: 56px;
+  height: 48px;
+  opacity: 0.82;
 }
 
 .modal-solved-badge {
   font-family: 'Playfair Display', serif;
-  font-size: 0.75rem;
-  letter-spacing: 3px;
+  font-size: 0.68rem;
+  letter-spacing: 4px;
   text-transform: uppercase;
-  color: #c9a227;
-  margin-bottom: 12px;
-  opacity: 0.85;
+  color: rgba(201,162,39,0.7);
+  margin-bottom: 14px;
 }
 
 .modal-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-size: clamp(1.3rem, 4vw, 1.75rem);
   font-weight: 700;
   color: #f5e8c8;
   margin: 0 0 14px;
-  line-height: 1.25;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 40px rgba(201,162,39,0.15);
 }
 
 .modal-body {
-  font-size: 0.91rem;
-  color: rgba(232,217,194,0.75);
-  line-height: 1.65;
-  margin: 0 0 20px;
+  font-size: 0.9rem;
+  color: rgba(232,217,194,0.65);
+  line-height: 1.7;
+  margin: 0 0 22px;
   font-family: 'Inter', sans-serif;
+  font-style: italic;
 }
 
-/* Clue block inside modal */
 .modal-clue {
-  background: rgba(201,162,39,0.07);
-  border: 1px solid rgba(201,162,39,0.22);
-  border-left: 3px solid #c9a227;
-  border-radius: 0 10px 10px 0;
+  background: rgba(201,162,39,0.05);
+  border: 1px solid rgba(201,162,39,0.18);
+  border-left: 2px solid rgba(201,162,39,0.5);
+  border-radius: 0 8px 8px 0;
   padding: 14px 18px;
   margin-bottom: 24px;
   text-align: left;
 }
 
 .modal-clue-label {
-  font-size: 0.65rem;
-  letter-spacing: 1.2px;
+  font-size: 0.6rem;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  color: #c9a227;
+  color: rgba(201,162,39,0.65);
   font-weight: 700;
   margin-bottom: 12px;
   font-family: 'Inter', sans-serif;
@@ -775,28 +1077,28 @@
   align-items: flex-start;
   gap: 10px;
   font-size: 0.84rem;
-  color: rgba(232,217,194,0.75);
-  line-height: 1.45;
+  color: rgba(232,217,194,0.68);
+  line-height: 1.5;
   font-family: 'Inter', sans-serif;
 }
 
 .modal-clue-icon { flex-shrink: 0; font-size: 0.95rem; }
 
-/* Continue button inside modal */
 .modal-continue-btn {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 15px 32px;
+  padding: 14px 32px;
   background: linear-gradient(135deg, #8c1f1f 0%, #6b1515 100%);
-  color: #fff;
+  color: #f5e8c8;
   border: none;
-  border-radius: 12px;
-  font-size: 0.95rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
   font-weight: 700;
-  letter-spacing: 0.4px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 6px 24px rgba(140,31,31,0.45);
+  box-shadow: 0 6px 24px rgba(140,31,31,0.5);
   transition: all 0.25s;
   font-family: 'Inter', sans-serif;
 }
@@ -804,131 +1106,156 @@
 .modal-continue-btn:hover {
   background: linear-gradient(135deg, #a02525 0%, #7b1f1f 100%);
   transform: translateY(-2px);
-  box-shadow: 0 10px 36px rgba(140,31,31,0.6);
+  box-shadow: 0 10px 36px rgba(140,31,31,0.65);
 }
 
 /* ═══════════════════════════════════════════════════════
-   NETWORK — drag hint overlay text
+   CLUE POPUP OVERLAY
 ═══════════════════════════════════════════════════════ */
-.network-drag-hint {
-  position: absolute;
-  bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.72rem;
-  color: rgba(178,141,90,0.55);
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 0.5px;
-  pointer-events: none;
-  white-space: nowrap;
-  transition: opacity 0.4s;
-}
-
-/* Nodes are draggable — show grab cursor */
-.network-node { cursor: grab; }
-.network-node:active { cursor: grabbing; }
-
-/* ═══════════════════════════════════════════════════════
-   HEALTH BAR
-═══════════════════════════════════════════════════════ */
-.health-bar {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.heart {
-  font-size: 1.35rem;
-  line-height: 1;
-  transition: transform 0.2s;
-  display: inline-block;
-}
-
-.heart.active {
-  color: #c0281e;
-  filter: drop-shadow(0 0 4px rgba(192,40,30,0.5));
-}
-
-.heart.lost {
-  color: rgba(255,255,255,0.2);
-}
-
-/* ═══════════════════════════════════════════════════════
-   GAME OVER OVERLAY
-═══════════════════════════════════════════════════════ */
-.game-over-overlay {
+.clue-popup-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(10,5,2,0.88);
+  background: rgba(3,1,0,0.92);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1100;
+  z-index: 1200;
   padding: 20px;
   backdrop-filter: blur(6px);
 }
 
-.game-over-card {
-  background: linear-gradient(160deg, #1a0f0a 0%, #0f0906 100%);
-  border: 1px solid rgba(192,40,30,0.4);
-  border-radius: 20px;
-  padding: 44px 40px 40px;
-  max-width: 420px;
+.clue-popup-card {
+  background: linear-gradient(160deg, #1c1008 0%, #0f0704 100%);
+  border: 1px solid rgba(201,162,39,0.3);
+  border-top: 2px solid rgba(201,162,39,0.5);
+  border-radius: 16px;
+  padding: 32px 32px 28px;
+  max-width: 500px;
   width: 100%;
-  text-align: center;
-  box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 50px rgba(192,40,30,0.1);
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.85),
+              0 0 50px rgba(201,162,39,0.05);
+  outline: 1px solid rgba(201,162,39,0.05);
+  outline-offset: 8px;
+  position: relative;
 }
 
-.game-over-icon {
-  font-size: 3.2rem;
-  color: rgba(192,40,30,0.4);
-  margin-bottom: 16px;
-  display: block;
+.clue-popup-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-.game-over-title {
+.clue-popup-title {
   font-family: 'Playfair Display', serif;
-  font-size: 1.65rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #f5e8c8;
-  margin: 0 0 12px;
+  margin: 0;
+  line-height: 1.3;
+  letter-spacing: 0.5px;
 }
 
-.game-over-body {
-  font-size: 0.9rem;
-  color: rgba(232,217,194,0.6);
-  line-height: 1.65;
-  margin: 0 0 28px;
-  font-family: 'Inter', sans-serif;
-}
-
-.game-over-btn {
-  display: inline-flex;
+.clue-popup-close {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 32px;
-  background: linear-gradient(135deg, #8c1f1f 0%, #6b1515 100%);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.4px;
+  justify-content: center;
   cursor: pointer;
-  box-shadow: 0 6px 24px rgba(140,31,31,0.45);
-  transition: all 0.25s;
+  color: rgba(232,217,194,0.45);
+  font-size: 1rem;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  line-height: 1;
+}
+
+.clue-popup-close:hover {
+  background: rgba(255,255,255,0.07);
+  color: rgba(232,217,194,0.85);
+  border-color: rgba(255,255,255,0.25);
+}
+
+.clue-popup-label {
+  font-size: 0.59rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(201,162,39,0.6);
+  font-weight: 700;
+  margin-bottom: 14px;
   font-family: 'Inter', sans-serif;
 }
 
-.game-over-btn:hover {
+.clue-popup-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+  background: rgba(201,162,39,0.04);
+  border: 1px solid rgba(201,162,39,0.15);
+  border-left: 2px solid rgba(201,162,39,0.5);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 16px;
+}
+
+.clue-popup-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.86rem;
+  color: rgba(232,217,194,0.75);
+  line-height: 1.5;
+  font-family: 'Inter', sans-serif;
+}
+
+.clue-popup-line-icon {
+  flex-shrink: 0;
+  font-size: 0.95rem;
+  margin-top: 1px;
+}
+
+.clue-popup-dismiss {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #8c1f1f 0%, #6b1515 100%);
+  color: #f5e8c8;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+  box-shadow: 0 4px 18px rgba(140,31,31,0.45);
+}
+
+.clue-popup-dismiss:hover {
   background: linear-gradient(135deg, #a02525 0%, #7b1f1f 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 36px rgba(140,31,31,0.6);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(140,31,31,0.6);
 }
 
 /* ═══════════════════════════════════════════════════════
-   ANIMATIONS
+   ANIMATIONS — gold pulse on active states
 ═══════════════════════════════════════════════════════ */
+@keyframes gold-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(201,162,39,0.12), 0 0 20px rgba(201,162,39,0.08); }
+  50%       { box-shadow: 0 0 0 3px rgba(201,162,39,0.22), 0 0 32px rgba(201,162,39,0.14); }
+}
+
+.drop-slot.correct { animation: gold-pulse 2.4s ease-in-out infinite; }
+
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50%       { transform: translateY(-6px); }
@@ -938,19 +1265,14 @@
    RESPONSIVE
 ═══════════════════════════════════════════════════════ */
 @media (max-width: 860px) {
-  .puzzle-header {
-    padding: 12px 16px;
-    grid-template-columns: auto 1fr;
-  }
-  .puzzle-header-right { display: none; }
-
-  .clue-panel   { margin: 16px 16px 0; }
-  .how-to-play  { margin: 12px 16px 0; }
-  .puzzle-intro { padding: 14px 16px 8px; }
+  .puzzle-header     { padding: 12px 16px; }
+  .how-to-play       { margin: 0 16px; }
+  .puzzle-intro      { padding: 18px 16px 14px; }
+  .masonic-section-rule { padding: 14px 16px; }
 
   .puzzle-layout {
     grid-template-columns: 1fr;
-    padding: 12px 16px 0;
+    padding: 0 16px;
     gap: 16px;
   }
 
@@ -960,35 +1282,43 @@
   .piece      { min-height: 88px; }
   .drop-slot  { min-height: 88px; }
 
-  #feedback { margin: 14px 16px 20px; }
+  #feedback { margin: 18px 16px 28px; }
 
   .network-canvas { height: 360px; }
   .network-node {
-    min-width: 90px;
-    font-size: 0.7rem;
+    min-width: 88px;
+    font-size: 0.68rem;
     padding: 9px 10px;
+  }
+
+  /* Outline-offset visual chrome too large on mobile */
+  .puzzle-source, .puzzle-target,
+  .network-canvas, .completion-modal-card,
+  .game-over-card, .clue-popup-card {
+    outline: none;
   }
 }
 
 @media (max-width: 480px) {
-  .puzzle-header h1 { font-size: 1rem; }
-  .puzzle-step      { display: none; }
+  .puzzle-header h1  { font-size: 0.98rem; }
+  .puzzle-step       { display: none; }
+  .header-rule-line  { display: none; }
+  .clue-header-btn   { display: none; }
   .completion-modal-card { padding: 28px 20px 24px; }
-  .modal-title      { font-size: 1.2rem; }
+  .modal-title       { font-size: 1.2rem; }
 
-  /* 3-col grid keeps 3 cols on small screens (pieces are small but still recognisable) */
   .puzzle-source,
   .puzzle-target {
     grid-template-columns: 1fr 1fr;
-    padding: 12px;
-    gap: 10px;
+    padding: 10px;
+    gap: 8px;
   }
 
   .puzzle-source.grid-3,
   .puzzle-target.grid-3 {
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    padding: 10px;
+    gap: 6px;
+    padding: 8px;
   }
 
   .symbol-svg { width: 40px; height: 40px; }

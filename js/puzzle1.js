@@ -62,6 +62,7 @@ export function initPuzzle1(container, onBack, onNext) {
         <button class="back-btn" id="back-btn">&#8592; Back</button>
         <div class="puzzle-header-center">
           <div class="puzzle-step">Enigma 01 of 03</div>
+          <div class="header-rule-line"><span></span><span class="hrl-diamond">&#9670;</span><span></span></div>
           <h1>Shattered Sanctuary</h1>
         </div>
         <div class="puzzle-header-right">
@@ -85,6 +86,16 @@ export function initPuzzle1(container, onBack, onNext) {
           <li>Drag it across and drop it into the slot it belongs in on the <strong>Sanctuary</strong> panel.</li>
           <li>Place all 6 pieces correctly to reveal the first hidden bond.</li>
         </ol>
+      </div>
+
+      <div class="masonic-section-rule">
+        <span></span>
+        <div class="msr-centre">
+          <span class="msr-dot"></span>
+          <span class="msr-line"></span>
+          <span class="msr-dot"></span>
+        </div>
+        <span></span>
       </div>
 
       <div class="puzzle-layout">
@@ -113,6 +124,7 @@ export function initPuzzle1(container, onBack, onNext) {
   `;
 
   container.innerHTML = html;
+  window.scrollTo(0, 0);
 
   // ── Health system ────────────────────────────────────────────────────────────
   let lives = 3;
