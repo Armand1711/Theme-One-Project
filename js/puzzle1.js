@@ -14,42 +14,45 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
   modal.id = 'completion-modal';
   modal.innerHTML = `
     <div class="completion-modal-card">
-      <div class="modal-masonic-row">${MODAL_MASONIC}</div>
-      <div class="modal-solved-badge">&#10022; Solved &#10022;</div>
-      <h2 class="modal-title">${title}</h2>
-      <p class="modal-body">${body}</p>
+      <span class="material-symbols-outlined cmc-corner cmc-tl">architecture</span>
+      <span class="material-symbols-outlined cmc-corner cmc-tr">architecture</span>
+      <div class="cmc-star">✦</div>
+      <div class="cmc-badge">
+        <div class="cmc-badge-line"></div>
+        <span class="cmc-badge-text">ENIGMA SOLVED</span>
+        <div class="cmc-badge-line"></div>
+      </div>
+      <h2 class="cmc-title">${title}</h2>
+      <div class="cmc-divider">
+        <div class="cmc-divider-line"></div>
+        <span class="cmc-divider-diamond">◆</span>
+        <div class="cmc-divider-line"></div>
+      </div>
+      <p class="cmc-body">${body}</p>
       ${clueLines ? `
-        <div class="modal-clue">
-          <div class="modal-clue-label">${clueLabel}</div>
-          <div class="modal-clue-lines">
+        <div class="cmc-clue">
+          <div class="cmc-clue-label">${clueLabel}</div>
+          <div class="cmc-clue-lines">
             ${clueLines.map(l => `
-              <div class="modal-clue-line">
-                <span class="modal-clue-icon">${l.icon}</span>
+              <div class="cmc-clue-line">
+                <span class="cmc-clue-icon">${l.icon}</span>
                 <span>${l.text}</span>
               </div>
             `).join('')}
           </div>
         </div>
       ` : ''}
-      <button class="modal-continue-btn" id="modal-continue">
-        ${btnLabel} <span class="btn-arrow">&#8594;</span>
-      </button>
+      <button class="cmc-continue-btn shimmer-btn" id="modal-continue">${btnLabel}</button>
     </div>
   `;
   document.body.appendChild(modal);
-
-  gsap.fromTo(modal,
-    { opacity: 0 },
-    { opacity: 1, duration: 0.35, ease: 'power2.out' }
-  );
+  gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
   gsap.fromTo('.completion-modal-card',
     { opacity: 0, y: 40, scale: 0.94 },
     { opacity: 1, y: 0, scale: 1, duration: 0.5, delay: 0.1, ease: 'back.out(1.7)' }
   );
-
   document.getElementById('modal-continue').addEventListener('click', () => {
-    gsap.to(modal, {
-      opacity: 0, duration: 0.25, ease: 'power2.in',
+    gsap.to(modal, { opacity: 0, duration: 0.25, ease: 'power2.in',
       onComplete: () => { modal.remove(); onContinue(); }
     });
   });
@@ -58,68 +61,85 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
 export function initPuzzle1(container, onBack, onNext) {
   const html = `
     <div id="screen-puzzle1" class="screen active">
-      <div class="puzzle-header">
-        <button class="back-btn" id="back-btn">&#8592; Back</button>
-        <div class="puzzle-header-center">
-          <div class="puzzle-step">Enigma 01 of 03</div>
-          <div class="header-rule-line"><span></span><span class="hrl-diamond">&#9670;</span><span></span></div>
-          <h1>Shattered Sanctuary</h1>
+
+      <div class="ptb">
+        <div class="ptb-left" id="back-btn">
+          <span class="material-symbols-outlined ptb-arrow">arrow_back</span>
+          <span class="ptb-back-label">BACK</span>
         </div>
-        <div class="puzzle-header-right">
-          <div class="health-bar" id="health-bar">
-            <span class="heart active">&#9829;</span>
-            <span class="heart active">&#9829;</span>
-            <span class="heart active">&#9829;</span>
+        <div class="ptb-center">
+          <p class="ptb-enigma-tag">ENIGMA 01 OF 03</p>
+          <h1 class="ptb-title">Shattered Sanctuary</h1>
+        </div>
+        <div class="ptb-right" id="health-bar">
+          <span class="material-symbols-outlined ptb-heart ptb-heart-on">favorite</span>
+          <span class="material-symbols-outlined ptb-heart ptb-heart-on">favorite</span>
+          <span class="material-symbols-outlined ptb-heart ptb-heart-on">favorite</span>
+        </div>
+      </div>
+
+      <div class="puzzle-scroll-body">
+
+        <section class="puzzle-intro-strip">
+          <p class="pis-tag">PHOTO RECONSTRUCTION</p>
+          <p class="pis-quote">&ldquo;Six fragments of the Sanctuary have been scattered across the ritual floor. Restore the image to unlock the path to the inner sanctum.&rdquo;</p>
+        </section>
+
+        <div class="puzzle-instr">
+          <h4 class="pi-title">INSTRUCTIONS</h4>
+          <p class="pi-body">Drag fragments from the left archive and place them into the correct corresponding slots on the right ritual plate.</p>
+        </div>
+
+        <div class="masonic-divider">
+          <div class="md-line"></div>
+          <span class="md-diamonds">◆◆</span>
+          <div class="md-line"></div>
+        </div>
+
+        <div class="puzzle-panels">
+          <div class="pp-col pp-fragments">
+            <div class="pp-col-top-accent"></div>
+            <h3 class="pp-col-label">
+              <span class="material-symbols-outlined pp-col-label-icon">category</span>
+              FRAGMENTS
+            </h3>
+            <div class="puzzle-source grid-3" id="puzzle-source"></div>
+          </div>
+          <div class="pp-col pp-sanctuary">
+            <span class="material-symbols-outlined pp-star-icon">star</span>
+            <h3 class="pp-col-label">
+              <span class="material-symbols-outlined pp-col-label-icon">museum</span>
+              SANCTUARY
+            </h3>
+            <div class="puzzle-target grid-3 pp-drop-grid" id="puzzle-target">
+              <div class="drop-slot" data-slot="1"><span class="slot-diamond">◆</span></div>
+              <div class="drop-slot" data-slot="2"><span class="slot-diamond">◆</span></div>
+              <div class="drop-slot" data-slot="3"><span class="slot-diamond">◆</span></div>
+              <div class="drop-slot" data-slot="4"><span class="slot-diamond">◆</span></div>
+              <div class="drop-slot" data-slot="5"><span class="slot-diamond">◆</span></div>
+              <div class="drop-slot" data-slot="6"><span class="slot-diamond">◆</span></div>
+            </div>
+            <div class="pp-submit-wrap">
+              <button class="pp-submit-btn">SUBMIT SEAL</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pff" id="feedback">
+        <div class="pff-main">
+          <span class="material-symbols-outlined pff-icon">emergency_home</span>
+          <p class="pff-text" id="feedback-text">The pieces hum with a faint vibration when placed near their true origin&hellip;</p>
+        </div>
+        <div class="pff-stats">
+          <div class="pff-stat">
+            <span class="pff-stat-label">PROGRESS</span>
+            <span class="pff-stat-val" id="progress-counter">0/6</span>
           </div>
         </div>
       </div>
 
-      <div class="puzzle-intro">
-        <div class="puzzle-tag">Drag &amp; Restore</div>
-        <p class="puzzle-description">The facade of the 1886 Union Masonic Temple has fractured across time. Six pieces of its Roman Corinthian architecture lie scattered. Put them back in the right order to reveal the first hidden bond.</p>
-      </div>
-
-      <div class="how-to-play">
-        <div class="htp-title">&#9670; How to Play</div>
-        <ol class="htp-steps">
-          <li>Pick up a piece from the <strong>Fragments</strong> panel on the left.</li>
-          <li>Drag it across and drop it into the slot it belongs in on the <strong>Sanctuary</strong> panel.</li>
-          <li>Place all 6 pieces correctly to reveal the first hidden bond.</li>
-        </ol>
-      </div>
-
-      <div class="masonic-section-rule">
-        <span></span>
-        <div class="msr-centre">
-          <span class="msr-dot"></span>
-          <span class="msr-line"></span>
-          <span class="msr-dot"></span>
-        </div>
-        <span></span>
-      </div>
-
-      <div class="puzzle-layout">
-        <div class="puzzle-col">
-          <div class="col-label">Fragments</div>
-          <div class="puzzle-source grid-3" id="puzzle-source"></div>
-        </div>
-        <div class="puzzle-col">
-          <div class="col-label">Sanctuary</div>
-          <div class="puzzle-target grid-3" id="puzzle-target">
-            <div class="drop-slot" data-slot="1"><span class="slot-label">North-West</span></div>
-            <div class="drop-slot" data-slot="2"><span class="slot-label">Temple Crown</span></div>
-            <div class="drop-slot" data-slot="3"><span class="slot-label">North-East</span></div>
-            <div class="drop-slot" data-slot="4"><span class="slot-label">West Colonnade</span></div>
-            <div class="drop-slot" data-slot="5"><span class="slot-label">Lodge Threshold</span></div>
-            <div class="drop-slot" data-slot="6"><span class="slot-label">East Colonnade</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div id="feedback" class="feedback-bar">
-        <span class="feedback-icon">&#9670;</span>
-        <span id="feedback-text">Drag each piece into its slot. The image will guide you — look at the edges.</span>
-      </div>
     </div>
   `;
 
@@ -137,8 +157,9 @@ export function initPuzzle1(container, onBack, onNext) {
     bar.innerHTML = '';
     for (let i = 1; i <= MAX_LIVES; i++) {
       const h = document.createElement('span');
-      h.className = 'heart' + (i <= lives ? ' active' : ' lost');
-      h.innerHTML = i <= lives ? '&#9829;' : '&#9825;';
+      h.className = 'material-symbols-outlined ptb-heart' + (i <= lives ? ' ptb-heart-on' : ' ptb-heart-off');
+      h.style.fontVariationSettings = i <= lives ? "'FILL' 1" : "'FILL' 0";
+      h.textContent = 'favorite';
       bar.appendChild(h);
     }
   }
@@ -156,7 +177,7 @@ export function initPuzzle1(container, onBack, onNext) {
     if (lives >= MAX_LIVES || completed) return;
     lives++;
     renderHearts();
-    const hearts = document.querySelectorAll('.heart');
+    const hearts = document.querySelectorAll('.ptb-heart');
     const gained = hearts[lives - 1];
     if (gained) gsap.fromTo(gained, { scale: 0 }, { scale: 1, duration: 0.4, ease: 'back.out(2.5)' });
     document.getElementById('feedback-text').textContent = '+1 life restored — keep going!';
@@ -180,10 +201,24 @@ export function initPuzzle1(container, onBack, onNext) {
     overlay.className = 'game-over-overlay';
     overlay.innerHTML = `
       <div class="game-over-card">
-        <div class="game-over-icon">&#9825;</div>
-        <h2 class="game-over-title">No Lives Remaining</h2>
-        <p class="game-over-body">The sanctuary resists you — but every initiate may try once more.</p>
-        <button class="game-over-btn" id="try-again-btn">Try Again &#8629;</button>
+        <span class="material-symbols-outlined go-flare go-flare-tl">flare</span>
+        <span class="material-symbols-outlined go-flare go-flare-tr">flare</span>
+        <div class="go-icon-wrap">
+          <span class="material-symbols-outlined go-skull">skull</span>
+          <div class="go-skull-glow"></div>
+        </div>
+        <h2 class="go-heading">The chamber goes dark</h2>
+        <div class="go-divider">
+          <div class="go-divider-line"></div>
+          <span class="go-divider-diamond">◆</span>
+          <div class="go-divider-line"></div>
+        </div>
+        <p class="go-body">Your vitality has withered beneath the weight of these ancient corridors. The Great Architect's secrets remain hidden from those who falter.</p>
+        <button class="go-try-btn" id="try-again-btn">
+          <div class="go-try-border"></div>
+          Try Again
+        </button>
+        <button class="go-return-btn" id="back-to-lodge-btn">Return to the Lodge</button>
       </div>
     `;
     document.body.appendChild(overlay);
@@ -194,27 +229,31 @@ export function initPuzzle1(container, onBack, onNext) {
       overlay.remove();
       initPuzzle1(container, onBack, onNext);
     });
+    document.getElementById('back-to-lodge-btn').addEventListener('click', () => {
+      overlay.remove();
+      if (typeof onBack === 'function') onBack();
+    });
   }
   // ────────────────────────────────────────────────────────────────────────────
 
-  gsap.set('.puzzle-header', { opacity: 0, y: -20 });
-  gsap.set('.puzzle-intro',  { opacity: 0, y: 16  });
-  gsap.set('.how-to-play',   { opacity: 0, y: 12  });
-  gsap.set('.puzzle-layout', { opacity: 0, y: 24  });
-  gsap.set('#feedback',      { opacity: 0 });
+  gsap.set('.ptb',                { opacity: 0, y: -20 });
+  gsap.set('.puzzle-intro-strip', { opacity: 0, y: 16  });
+  gsap.set('.puzzle-instr',       { opacity: 0, y: 12  });
+  gsap.set('.puzzle-panels',      { opacity: 0, y: 24  });
+  gsap.set('#feedback',           { opacity: 0 });
 
   const tl = gsap.timeline();
-  tl.to('.puzzle-header', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
-    .to('.puzzle-intro',  { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
-    .to('.how-to-play',   { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
-    .to('.puzzle-layout', { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
-    .to('#feedback',      { opacity: 1, duration: 0.4 }, '-=0.2');
+  tl.to('.ptb',                { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
+    .to('.puzzle-intro-strip', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
+    .to('.puzzle-instr',       { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
+    .to('.puzzle-panels',      { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
+    .to('#feedback',           { opacity: 1, duration: 0.4 }, '-=0.2');
 
   document.getElementById('back-btn').addEventListener('click', () => {
     if (typeof onBack === 'function') onBack();
   });
 
-  const imageUrl = '../assets/PT-Masonic_Temple-1888.jpg';
+  const imageUrl = 'assets/PT-Masonic_Temple-1888.jpg';
 
   // 6-piece jigsaw: 3 columns × 2 rows
   const pieceDefs = [
@@ -291,6 +330,9 @@ export function initPuzzle1(container, onBack, onNext) {
     });
 
     const placed = [...slots].filter(s => s.querySelector('.piece')).length;
+    const counter = document.getElementById('progress-counter');
+    if (counter) counter.textContent = `${solved}/6`;
+
     if (solved < slots.length) {
       document.getElementById('feedback-text').textContent =
         placed === 0
@@ -339,6 +381,22 @@ export function initPuzzle1(container, onBack, onNext) {
       handleSlotDrop(piece, slot);
     });
   });
+
+  // Submit button
+  const submitBtn = document.querySelector('.pp-submit-btn');
+  if (submitBtn) {
+    submitBtn.addEventListener('click', () => {
+      if (completed) return;
+      const placed = [...slots].filter(s => s.querySelector('.piece')).length;
+      if (placed < slots.length) {
+        document.getElementById('feedback-text').textContent =
+          `Place all 6 pieces before submitting. ${placed}/6 placed so far.`;
+        gsap.fromTo('#feedback', { x: -6 }, { x: 0, duration: 0.4, ease: 'elastic.out(1,0.3)' });
+        return;
+      }
+      recalcSlots();
+    });
+  }
 
   // Allow dropping pieces back onto the source panel
   source.addEventListener('dragover', (e) => { e.preventDefault(); });

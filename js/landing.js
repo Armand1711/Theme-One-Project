@@ -34,45 +34,20 @@ export function initLanding(app, startMenu) {
       <div class="landing-hero">
         <div class="hero-grain"></div>
         <div class="hero-overlay">
-          <nav class="hero-nav">
-            <div class="hero-badge">SAHRA Heritage Discovery</div>
-          </nav>
           <div class="hero-content">
+            <div class="hero-arch-icon-wrap">
+              <span class="material-symbols-outlined hero-arch-icon" style="font-variation-settings:'FILL' 1">architecture</span>
+            </div>
             <div class="hero-eyebrow">
               <span class="eyebrow-line"></span>
-              <span>Kimberley &middot; South Africa &middot; 1886</span>
+              <span class="eyebrow-text">KIMBERLEY &middot; 1886</span>
               <span class="eyebrow-line"></span>
             </div>
-            <h1 class="hero-title">ONE BUILDING.<br><span class="hero-title-accent">THREE NATIONS.</span></h1>
-            <p class="hero-tagline">How did Scottish miners, Dutch traders, and English merchants &mdash; strangers in a foreign land &mdash; learn to trust each other? The answer is hidden inside a building that still stands today.</p>
-            <div class="hero-dividers">
-              <div class="hero-divider-line"></div>
-              <div class="hero-divider-icon">&#9670;</div>
-              <div class="hero-divider-line"></div>
-            </div>
-            <div class="hero-stats">
-              <div class="hero-stat">
-                <span class="stat-num">1886</span>
-                <span class="stat-label">Year Built</span>
-              </div>
-              <div class="hero-stat-sep">&middot;</div>
-              <div class="hero-stat">
-                <span class="stat-num">7</span>
-                <span class="stat-label">Groups</span>
-              </div>
-              <div class="hero-stat-sep">&middot;</div>
-              <div class="hero-stat">
-                <span class="stat-num">3</span>
-                <span class="stat-label">Puzzles</span>
-              </div>
-            </div>
-            <button id="start-discovery">
-              <span class="btn-text">READ THE STORY FIRST</span>
-              <span class="btn-arrow">&#8595;</span>
+            <h1 class="hero-title">Connect the Hidden Bonds</h1>
+            <p class="hero-tagline">Uncover the secret bonds that built a city &mdash; one ritual at a time. Explore the echoes of the past within the stone walls of the Great Lodge.</p>
+            <button id="start-discovery" class="hero-cta-btn">
+              <span>Enter the Lodge</span>
             </button>
-          </div>
-          <div class="hero-footer">
-            <span>1886 Union Masonic Temple &middot; 126&ndash;128 Dutoitspan Road, Kimberley &middot; National Monument No.&nbsp;395</span>
           </div>
         </div>
       </div>
@@ -97,19 +72,25 @@ export function initLanding(app, startMenu) {
 
           <div class="context-grid">
             <div class="context-block">
-              <div class="ctx-icon">${COMPASS_SVG}</div>
-              <h3 class="ctx-block-title">What is Freemasonry?</h3>
-              <p class="ctx-block-text">Think of it as a global brotherhood with a shared language of symbols and rituals. Members &mdash; called Masons &mdash; join a local group called a &ldquo;lodge&rdquo; and make oaths to help each other. The symbols they use (like the compass and square) mean the same thing in every country, which made Freemasonry one of the few ways different nationalities could connect in colonial Kimberley.</p>
+              <div class="ctx-ms-icon-wrap">
+                <span class="material-symbols-outlined ctx-ms-icon">schedule</span>
+              </div>
+              <h3 class="ctx-block-title">Timeless Cycles</h3>
+              <p class="ctx-block-text">Measured in seconds, lived in centuries. The temple clock marks the slow march of initiation and the preservation of ancient truth across three national brotherhoods who shared one floor.</p>
             </div>
             <div class="context-block">
-              <div class="ctx-icon">${BUILDING_SVG}</div>
-              <h3 class="ctx-block-title">The 1886 Union Temple</h3>
-              <p class="ctx-block-text">Built between 1886 and 1889 at 126&ndash;128 Dutoitspan Road, this Roman Corinthian building was shared by seven lodges from three different countries. It&rsquo;s still standing in Kimberley today and was declared a <strong>National Monument in 1990</strong> by the South African government &mdash; a recognition of just how significant this place was to the city&rsquo;s history.</p>
+              <div class="ctx-ms-icon-wrap">
+                <span class="material-symbols-outlined ctx-ms-icon">explore</span>
+              </div>
+              <h3 class="ctx-block-title">Divine Geometry</h3>
+              <p class="ctx-block-text">Every angle is intentional. Every line serves a greater architectural purpose. Discover the precision of the compass, square, and level &mdash; the shared symbols that bridged Scottish, Dutch, and English Masons.</p>
             </div>
             <div class="context-block">
-              <div class="ctx-icon">${NETWORK_SVG}</div>
-              <h3 class="ctx-block-title">The Six Bonds</h3>
-              <p class="ctx-block-text">The seven lodges were not all equally connected. Archives from the 1880s reveal six specific relationships between certain groups &mdash; based on shared members, business dealings, and ritual ties. These six bonds formed a network of trust that held Kimberley&rsquo;s immigrant community together during one of the most turbulent periods in South African history.</p>
+              <div class="ctx-ms-icon-wrap">
+                <span class="material-symbols-outlined ctx-ms-icon">account_balance</span>
+              </div>
+              <h3 class="ctx-block-title">Unyielding Pillars</h3>
+              <p class="ctx-block-text">Strength and beauty support the heavens. The 1886 Union Masonic Temple at 126&ndash;128 Dutoitspan Road still stands &mdash; a National Monument that bound a community in brotherhood and became a refuge in war.</p>
             </div>
           </div>
 
@@ -158,23 +139,19 @@ export function initLanding(app, startMenu) {
   window.scrollTo(0, 0);
 
   // Hero entrance animation
-  gsap.set('.hero-eyebrow',    { opacity: 0, y: -16 });
-  gsap.set('.hero-title',      { opacity: 0, y: 50, scale: 0.94 });
-  gsap.set('.hero-tagline',    { opacity: 0, y: 20 });
-  gsap.set('.hero-dividers',   { opacity: 0, scaleX: 0 });
-  gsap.set('.hero-stats',      { opacity: 0, y: 16 });
-  gsap.set('#start-discovery', { opacity: 0, y: 20, scale: 0.95 });
-  gsap.set('.hero-footer',     { opacity: 0 });
-  gsap.set('.landing-context', { opacity: 0 });
+  gsap.set('.hero-arch-icon-wrap', { opacity: 0, scale: 0.7 });
+  gsap.set('.hero-eyebrow',        { opacity: 0, y: -12 });
+  gsap.set('.hero-title',          { opacity: 0, y: 40, scale: 0.95 });
+  gsap.set('.hero-tagline',        { opacity: 0, y: 20 });
+  gsap.set('#start-discovery',     { opacity: 0, y: 20, scale: 0.95 });
+  gsap.set('.landing-context',     { opacity: 0 });
 
   const tl = gsap.timeline({ delay: 0.3 });
-  tl.to('.hero-eyebrow',    { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' })
-    .to('.hero-title',      { opacity: 1, y: 0, scale: 1, duration: 1.0, ease: 'power3.out' }, '-=0.3')
-    .to('.hero-tagline',    { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, '-=0.6')
-    .to('.hero-dividers',   { opacity: 1, scaleX: 1, duration: 0.6, ease: 'power2.out' }, '-=0.5')
-    .to('.hero-stats',      { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.4')
-    .to('#start-discovery', { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.7)' }, '-=0.3')
-    .to('.hero-footer',     { opacity: 0.5, duration: 0.5 }, '-=0.2');
+  tl.to('.hero-arch-icon-wrap', { opacity: 1, scale: 1, duration: 0.7, ease: 'back.out(1.7)' })
+    .to('.hero-eyebrow',        { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
+    .to('.hero-title',          { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: 'power3.out' }, '-=0.4')
+    .to('.hero-tagline',        { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, '-=0.5')
+    .to('#start-discovery',     { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'back.out(1.7)' }, '-=0.3');
 
   // Hero button scrolls to context section and fades it in
   document.getElementById('start-discovery').addEventListener('click', () => {

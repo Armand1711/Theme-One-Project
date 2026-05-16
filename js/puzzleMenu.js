@@ -1,110 +1,92 @@
-export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzle3, completedPuzzles = 0) {
-  const progressPct = Math.round((Math.min(completedPuzzles, 3) / 3) * 100);
+export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzle3, completedPuzzles = 0, onBack = null) {
 
   const puzzles = [
     {
       num: '01',
       title: 'Shattered Sanctuary',
-      desc: 'The 1886 Union Masonic Temple on Dutoitspan Road was built in the Roman Corinthian style by immigrant communities pooling their resources. Six photographic fragments of its facade are scattered — place each piece in the correct position to reconstruct what they built.',
-      how: 'Drag a fragment from the left panel and drop it into its matching slot on the right.',
-      tag: 'Drag & Restore',
       unlocked: true,
       complete: completedPuzzles >= 1
     },
     {
       num: '02',
       title: 'Symbol Cipher',
-      desc: 'Freemasons used a shared system of symbols as a language that crossed national and cultural boundaries. Four of these symbols each represent a different bond that held the seven lodges together. Match every symbol to the value it stands for.',
-      how: 'Drag each symbol from the left and drop it onto the meaning you think it represents on the right.',
-      tag: 'Decode & Match',
       unlocked: completedPuzzles >= 1,
       complete: completedPuzzles >= 2
     },
     {
       num: '03',
       title: 'Web of Whispers',
-      desc: 'The seven lodges in Kimberley were not all equally connected. Historical records reveal six specific bonds — ties of shared membership, trade, and ritual — linking certain lodges while leaving others separate. Draw those connections to reveal the real network of trust.',
-      how: 'Click and drag from one lodge to another to draw a bond between them.',
-      tag: 'Connect & Reveal',
       unlocked: completedPuzzles >= 2,
       complete: completedPuzzles >= 3
     }
   ];
 
-  const COMPASS = `<svg class="menu-masonic-icon" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <line x1="40" y1="6" x2="16" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
-    <line x1="40" y1="6" x2="64" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
-    <path d="M18 50 Q40 43 62 50" stroke="#c9a227" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-    <line x1="16" y1="24" x2="16" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
-    <line x1="16" y1="62" x2="64" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
-    <circle cx="40" cy="6" r="2.5" fill="#c9a227"/>
-  </svg>`;
-
   const html = `
     <div id="screen-menu">
-      <div class="menu-inner">
 
-        <header class="menu-header">
-          <div class="menu-masonic-header">
-            ${COMPASS}
-            <div class="menu-eyebrow">
-              <span class="eyebrow-line"></span>
-              <span>1886 Union Masonic Temple &middot; Kimberley</span>
-              <span class="eyebrow-line"></span>
-            </div>
-            ${COMPASS}
-          </div>
-          <h1>THREE PUZZLES &middot; ONE STORY</h1>
-          <p>Each puzzle reveals a different layer of how seven Masonic lodges from Scotland, England, and the Netherlands built a community together in Kimberley&rsquo;s diamond fields. Work through them in order to build the full picture.</p>
-        </header>
+      <header class="lodge-header">
+        <button class="lodge-back-btn" id="lodge-back-btn">
+          <span class="material-symbols-outlined" style="font-size:18px;line-height:1;vertical-align:middle">arrow_back</span>
+          Return
+        </button>
+        <div class="lodge-title-center">
+          <h1>The Lodge</h1>
+          <div class="lodge-title-underline"></div>
+        </div>
+        <div class="lodge-hearts">
+          <span class="material-symbols-outlined">favorite</span>
+          <span class="material-symbols-outlined">favorite</span>
+          <span class="material-symbols-outlined">favorite</span>
+        </div>
+      </header>
 
-        <div class="menu-progress">
-          <div class="progress-label">
-            <span>Your Progress</span>
-            <span>${Math.min(completedPuzzles, 3)}/3 Solved</span>
+      <main class="lodge-main">
+
+        <div class="initiations-header">
+          <div class="ih-line"></div>
+          <div class="ih-center">
+            <span class="ih-diamond">◆</span>
+            <span class="ih-label">Your Initiations</span>
+            <span class="ih-diamond">◆</span>
           </div>
-          <div class="progress-track">
-            <div class="progress-fill" style="width:${progressPct}%"></div>
-          </div>
+          <div class="ih-line"></div>
         </div>
 
-        <div class="menu-grid">
+        <div class="initiations-list">
           ${puzzles.map((p, i) => `
-            <div class="menu-card ${p.complete ? 'complete' : ''} ${!p.unlocked ? 'locked' : ''}">
-              <div class="card-status">
+            <div class="ic-card ${p.complete ? 'ic-complete' : ''} ${!p.unlocked ? 'ic-locked' : 'ic-available card-play-btn'}" ${p.unlocked ? `data-idx="${i}"` : ''}>
+              ${p.unlocked ? '<span class="ic-star-icon material-symbols-outlined">star</span>' : ''}
+              <div class="ic-content">
+                <span class="ic-num">ENIGMA ${p.num}</span>
+                <h3 class="ic-title">${p.title}</h3>
+              </div>
+              <div class="ic-status-row">
                 ${p.complete
-                  ? '<span class="status-badge complete-badge">&#10003; Solved</span>'
+                  ? `<span class="material-symbols-outlined ic-status-icon ic-done-icon">check_circle</span><span class="ic-status-text ic-done-text">Solved</span>`
                   : p.unlocked
-                    ? '<span class="status-badge active-badge">&#9670; Available</span>'
-                    : '<span class="status-badge locked-badge">&#128274; Locked</span>'}
+                    ? `<span class="material-symbols-outlined ic-status-icon ic-play-icon">play_circle</span><span class="ic-status-text shimmer-gold">Available</span>`
+                    : `<span class="material-symbols-outlined ic-status-icon ic-lock-icon">lock</span><span class="ic-status-text ic-locked-text">Locked</span>`}
               </div>
-              <div class="card-num">${p.num}</div>
-              <div class="card-title">${p.title}</div>
-              <div class="card-tag">${p.tag}</div>
-              <div class="card-desc">${p.desc}</div>
-              <div class="card-how">
-                <span class="card-how-icon">&#9654;</span>
-                <span>${p.how}</span>
+              <div class="ic-bottom-bar">
+                <div class="ic-bottom-fill" style="width:${p.complete ? '100%' : '0%'}"></div>
               </div>
-              ${p.unlocked
-                ? `<button class="card-play-btn" data-idx="${i}">
-                     ${p.complete ? 'Play Again' : 'Begin Enigma'}
-                     <span class="btn-arrow">&#8594;</span>
-                   </button>`
-                : `<div class="card-locked-msg">Complete the previous enigma to unlock.</div>`}
             </div>
           `).join('')}
         </div>
 
-      </div>
+        <div class="lodge-footer-link" id="archives-link">
+          <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">menu_book</span>
+          Secret Archives
+        </div>
+
+      </main>
     </div>
   `;
 
-  // Write the HTML first — event wiring comes AFTER, with no GSAP in between
   app.innerHTML = html;
   window.scrollTo(0, 0);
 
-  // Wire every play button directly — idx maps to puzzle number
+  // Wire puzzle play buttons
   const starters = [onStartPuzzle1, onStartPuzzle2, onStartPuzzle3];
   document.querySelectorAll('.card-play-btn').forEach(btn => {
     btn.addEventListener('click', function () {
@@ -115,23 +97,51 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
     });
   });
 
-  // Kill any lingering tweens on the app container so nothing bleeds into the menu
+  // Back button
+  const backBtn = document.getElementById('lodge-back-btn');
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      if (typeof onBack === 'function') {
+        gsap.to('#screen-menu', {
+          opacity: 0, duration: 0.4, ease: 'power2.in',
+          onComplete: () => onBack()
+        });
+      }
+    });
+  }
+
+  // Secret archives link (wired in main.js via global event)
+  const archivesLink = document.getElementById('archives-link');
+  if (archivesLink) {
+    archivesLink.addEventListener('click', () => {
+      if (typeof window.__openArchives === 'function') {
+        gsap.to('#screen-menu', {
+          opacity: 0, duration: 0.35, ease: 'power2.in',
+          onComplete: () => window.__openArchives()
+        });
+      }
+    });
+  }
+
+  // Kill any lingering tweens
   try { gsap.killTweensOf(app); } catch (e) {}
 
   try {
-    gsap.fromTo('.menu-header',
+    gsap.fromTo('.lodge-header',
       { opacity: 0, y: -24 },
       { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
     );
-    gsap.fromTo('.menu-progress',
+    gsap.fromTo('.initiations-header',
       { opacity: 0, y: 16 },
       { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.15 }
     );
-    gsap.fromTo('.menu-card',
+    gsap.fromTo('.ic-card',
       { opacity: 0, y: 30 },
       { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.1, delay: 0.25 }
     );
-  } catch (e) {
-    // GSAP unavailable — CSS opacity:1 fallback keeps cards visible
-  }
+    gsap.fromTo('.lodge-footer-link',
+      { opacity: 0 },
+      { opacity: 1, duration: 0.4, ease: 'power2.out', delay: 0.6 }
+    );
+  } catch (e) {}
 }

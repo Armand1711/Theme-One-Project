@@ -1,54 +1,48 @@
-const MODAL_MASONIC = `<svg class="modal-masonic-svg" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <line x1="40" y1="6" x2="16" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
-  <line x1="40" y1="6" x2="64" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
-  <path d="M18 50 Q40 43 62 50" stroke="#c9a227" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-  <line x1="16" y1="24" x2="16" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
-  <line x1="16" y1="62" x2="64" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
-  <circle cx="40" cy="6" r="2.5" fill="#c9a227"/>
-</svg>`;
-
 function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onContinue }) {
   const modal = document.createElement('div');
   modal.className = 'completion-modal';
   modal.id = 'completion-modal';
   modal.innerHTML = `
     <div class="completion-modal-card">
-      <div class="modal-masonic-row">${MODAL_MASONIC}</div>
-      <div class="modal-solved-badge">&#10022; Solved &#10022;</div>
-      <h2 class="modal-title">${title}</h2>
-      <p class="modal-body">${body}</p>
+      <span class="material-symbols-outlined cmc-corner cmc-tl">architecture</span>
+      <span class="material-symbols-outlined cmc-corner cmc-tr">architecture</span>
+      <div class="cmc-star">✦</div>
+      <div class="cmc-badge">
+        <div class="cmc-badge-line"></div>
+        <span class="cmc-badge-text">ENIGMA SOLVED</span>
+        <div class="cmc-badge-line"></div>
+      </div>
+      <h2 class="cmc-title">${title}</h2>
+      <div class="cmc-divider">
+        <div class="cmc-divider-line"></div>
+        <span class="cmc-divider-diamond">◆</span>
+        <div class="cmc-divider-line"></div>
+      </div>
+      <p class="cmc-body">${body}</p>
       ${clueLines ? `
-        <div class="modal-clue">
-          <div class="modal-clue-label">${clueLabel}</div>
-          <div class="modal-clue-lines">
+        <div class="cmc-clue">
+          <div class="cmc-clue-label">${clueLabel}</div>
+          <div class="cmc-clue-lines">
             ${clueLines.map(l => `
-              <div class="modal-clue-line">
-                <span class="modal-clue-icon">${l.icon}</span>
+              <div class="cmc-clue-line">
+                <span class="cmc-clue-icon">${l.icon}</span>
                 <span>${l.text}</span>
               </div>
             `).join('')}
           </div>
         </div>
       ` : ''}
-      <button class="modal-continue-btn" id="modal-continue">
-        ${btnLabel} <span class="btn-arrow">&#8594;</span>
-      </button>
+      <button class="cmc-continue-btn shimmer-btn" id="modal-continue">${btnLabel}</button>
     </div>
   `;
   document.body.appendChild(modal);
-
-  gsap.fromTo(modal,
-    { opacity: 0 },
-    { opacity: 1, duration: 0.35, ease: 'power2.out' }
-  );
+  gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
   gsap.fromTo('.completion-modal-card',
     { opacity: 0, y: 40, scale: 0.94 },
     { opacity: 1, y: 0, scale: 1, duration: 0.5, delay: 0.1, ease: 'back.out(1.7)' }
   );
-
   document.getElementById('modal-continue').addEventListener('click', () => {
-    gsap.to(modal, {
-      opacity: 0, duration: 0.25, ease: 'power2.in',
+    gsap.to(modal, { opacity: 0, duration: 0.25, ease: 'power2.in',
       onComplete: () => { modal.remove(); onContinue(); }
     });
   });
@@ -57,28 +51,35 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
 function showCluePopup(clue) {
   if (!clue) return;
   const overlay = document.createElement('div');
-  overlay.className = 'clue-popup-overlay';
+  overlay.className = 'cpp-overlay';
   overlay.innerHTML = `
-    <div class="clue-popup-card">
-      <div class="clue-popup-header">
-        <h2 class="clue-popup-title">${clue.title}</h2>
-        <button class="clue-popup-close" id="clue-popup-close">&#215;</button>
+    <div class="cpp-card">
+      <div class="cpp-header">
+        <div>
+          <div class="cpp-title">HINT FROM THE ARCHIVIST</div>
+          <div class="cpp-title-underline"></div>
+        </div>
+        <button class="cpp-close" id="clue-popup-close">&#215;</button>
       </div>
-      <div class="clue-popup-label">&#128279; Hint from Puzzle 1 — Shattered Sanctuary</div>
-      <div class="clue-popup-body">
+      <div class="cpp-body">
         ${clue.lines.map(l => `
-          <div class="clue-popup-line">
-            <span class="clue-popup-line-icon">${l.icon}</span>
+          <div class="cpp-line">
+            <span class="cpp-line-icon">${l.icon}</span>
             <span>${l.text}</span>
           </div>
         `).join('')}
       </div>
-      <button class="clue-popup-dismiss" id="clue-popup-dismiss">Got it — back to the puzzle</button>
+      <button class="cpp-dismiss" id="clue-popup-dismiss">GOT IT &mdash; BACK TO THE PUZZLE</button>
+      <div class="cpp-ornament">
+        <div class="cpp-ornament-line"></div>
+        <span class="cpp-ornament-diamond">◆</span>
+        <div class="cpp-ornament-line"></div>
+      </div>
     </div>
   `;
   document.body.appendChild(overlay);
   gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' });
-  gsap.fromTo('.clue-popup-card',
+  gsap.fromTo('.cpp-card',
     { opacity: 0, y: 30, scale: 0.95 },
     { opacity: 1, y: 0, scale: 1, duration: 0.4, delay: 0.05, ease: 'back.out(1.7)' }
   );
@@ -94,67 +95,77 @@ function showCluePopup(clue) {
 export function initPuzzle2(container, clue, onBack, onNext) {
   const html = `
     <div id="screen-puzzle2" class="screen active">
-      <div class="puzzle-header">
-        <button class="back-btn" id="back-btn">&#8592; Back</button>
-        <div class="puzzle-header-center">
-          <div class="puzzle-step">Enigma 02 of 03</div>
-          <div class="header-rule-line"><span></span><span class="hrl-diamond">&#9670;</span><span></span></div>
-          <h1>Symbol Cipher</h1>
+
+      <div class="ptb">
+        <div class="ptb-left" id="back-btn">
+          <span class="material-symbols-outlined ptb-arrow">arrow_back</span>
+          <span class="ptb-back-label">BACK</span>
         </div>
-        <div class="puzzle-header-right">
-          ${clue ? `<button class="clue-header-btn" id="clue-btn">&#128269; Hint</button>` : ''}
-          <div class="health-bar" id="health-bar">
-            <span class="heart active">&#9829;</span>
-            <span class="heart active">&#9829;</span>
-            <span class="heart active">&#9829;</span>
+        <div class="ptb-center">
+          <p class="ptb-enigma-tag">ENIGMA 02 OF 03</p>
+          <h1 class="ptb-title">Symbol Cipher</h1>
+        </div>
+        <div class="ptb-right">
+          ${clue ? `<button class="ptb-hint-btn" id="clue-btn"><span class="material-symbols-outlined">lightbulb</span><span class="ptb-hint-label">HINT</span></button>` : ''}
+          <div class="ptb-hearts" id="health-bar">
+            <span class="material-symbols-outlined ptb-heart ptb-heart-on" style="font-variation-settings:'FILL' 1">favorite</span>
+            <span class="material-symbols-outlined ptb-heart ptb-heart-on" style="font-variation-settings:'FILL' 1">favorite</span>
+            <span class="material-symbols-outlined ptb-heart ptb-heart-on" style="font-variation-settings:'FILL' 1">favorite</span>
           </div>
         </div>
       </div>
 
-      <div class="puzzle-intro">
-        <div class="puzzle-tag">Decode &amp; Match</div>
-        <p class="puzzle-description">Freemasons used symbols as a shared language that worked across different nationalities and cultures. Four of those symbols each stand for a different bond that held the seven lodges together. Your job is to match each symbol to the right meaning.</p>
-      </div>
+      <div class="puzzle-scroll-body">
 
-      <div class="how-to-play">
-        <div class="htp-title">&#9670; How to Play</div>
-        <ol class="htp-steps">
-          <li>Look at the <strong>Symbols</strong> panel on the left — each symbol has a name below it.</li>
-          <li>Drag a symbol and drop it onto the <strong>Meaning</strong> you think it represents on the right.</li>
-          <li>If you get stuck, press the <strong>Hint</strong> button in the header to see the clue.</li>
-        </ol>
-      </div>
+        <section class="puzzle-intro-strip">
+          <p class="pis-tag">DECODE &amp; MATCH</p>
+          <p class="pis-quote">&ldquo;Four symbols of the Brotherhood wait to be decoded. Match each emblem to the bond it represents &mdash; and unlock the secrets of the inner sanctum.&rdquo;</p>
+        </section>
 
-      <div class="masonic-section-rule">
-        <span></span>
-        <div class="msr-centre">
-          <span class="msr-dot"></span>
-          <span class="msr-line"></span>
-          <span class="msr-dot"></span>
+        <div class="puzzle-instr">
+          <h4 class="pi-title">INSTRUCTIONS</h4>
+          <p class="pi-body">Drag a symbol from the left panel and drop it onto the meaning you think it represents on the right. Each symbol has been used as a shared language across the three national brotherhoods.</p>
         </div>
-        <span></span>
-      </div>
 
-      <div class="puzzle-layout">
-        <div class="puzzle-col">
-          <div class="col-label">Symbols</div>
-          <div class="puzzle-source" id="symbol-source"></div>
+        <div class="masonic-divider">
+          <div class="md-line"></div>
+          <span class="md-diamonds">◆◆</span>
+          <div class="md-line"></div>
         </div>
-        <div class="puzzle-col">
-          <div class="col-label">Meanings</div>
-          <div class="puzzle-target" id="symbol-target">
-            <div class="drop-slot" data-slot="1"><span class="slot-label">The Silent Oath</span></div>
-            <div class="drop-slot" data-slot="2"><span class="slot-label">Shared Prosperity</span></div>
-            <div class="drop-slot" data-slot="3"><span class="slot-label">Cultural Bridge</span></div>
-            <div class="drop-slot" data-slot="4"><span class="slot-label">Enduring Legacy</span></div>
+
+        <div class="puzzle-panels">
+          <div class="pp-col pp-fragments">
+            <div class="pp-col-top-accent"></div>
+            <h3 class="pp-col-label">
+              <span class="material-symbols-outlined pp-col-label-icon">explore</span>
+              SYMBOLS
+            </h3>
+            <div class="puzzle-source" id="symbol-source"></div>
+          </div>
+          <div class="pp-col pp-sanctuary">
+            <span class="material-symbols-outlined pp-star-icon">star</span>
+            <h3 class="pp-col-label">
+              <span class="material-symbols-outlined pp-col-label-icon">auto_stories</span>
+              MEANINGS
+            </h3>
+            <div class="puzzle-target pp-drop-grid pp-drop-grid--4" id="symbol-target">
+              <div class="drop-slot" data-slot="1"><span class="slot-label">The Silent Oath</span></div>
+              <div class="drop-slot" data-slot="2"><span class="slot-label">Shared Prosperity</span></div>
+              <div class="drop-slot" data-slot="3"><span class="slot-label">Cultural Bridge</span></div>
+              <div class="drop-slot" data-slot="4"><span class="slot-label">Enduring Legacy</span></div>
+            </div>
           </div>
         </div>
+
       </div>
 
-      <div id="feedback" class="feedback-bar">
-        <span class="feedback-icon">&#9670;</span>
-        <span id="feedback-text">Drag each symbol to its meaning. Use the hint button if you need help.</span>
+      <div class="pff" id="feedback">
+        <div class="pff-main">
+          <span class="material-symbols-outlined pff-icon">emergency_home</span>
+          <p class="pff-text" id="feedback-text">Drag each symbol to its meaning. Use the hint button if you need help.</p>
+        </div>
       </div>
+
     </div>
   `;
 
@@ -176,8 +187,9 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     bar.innerHTML = '';
     for (let i = 1; i <= MAX_LIVES; i++) {
       const h = document.createElement('span');
-      h.className = 'heart' + (i <= lives ? ' active' : ' lost');
-      h.innerHTML = i <= lives ? '&#9829;' : '&#9825;';
+      h.className = 'material-symbols-outlined ptb-heart' + (i <= lives ? ' ptb-heart-on' : ' ptb-heart-off');
+      h.style.fontVariationSettings = i <= lives ? "'FILL' 1" : "'FILL' 0";
+      h.textContent = 'favorite';
       bar.appendChild(h);
     }
   }
@@ -195,7 +207,7 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     if (lives >= MAX_LIVES || completed) return;
     lives++;
     renderHearts();
-    const hearts = document.querySelectorAll('.heart');
+    const hearts = document.querySelectorAll('.ptb-heart');
     const gained = hearts[lives - 1];
     if (gained) gsap.fromTo(gained, { scale: 0 }, { scale: 1, duration: 0.4, ease: 'back.out(2.5)' });
     document.getElementById('feedback-text').textContent = '+1 life restored — keep decoding!';
@@ -219,10 +231,24 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     overlay.className = 'game-over-overlay';
     overlay.innerHTML = `
       <div class="game-over-card">
-        <div class="game-over-icon">&#9825;</div>
-        <h2 class="game-over-title">No Lives Remaining</h2>
-        <p class="game-over-body">The cipher defeats you — but every initiate may try once more.</p>
-        <button class="game-over-btn" id="try-again-btn">Try Again &#8629;</button>
+        <span class="material-symbols-outlined go-flare go-flare-tl">flare</span>
+        <span class="material-symbols-outlined go-flare go-flare-tr">flare</span>
+        <div class="go-icon-wrap">
+          <span class="material-symbols-outlined go-skull">skull</span>
+          <div class="go-skull-glow"></div>
+        </div>
+        <h2 class="go-heading">The chamber goes dark</h2>
+        <div class="go-divider">
+          <div class="go-divider-line"></div>
+          <span class="go-divider-diamond">◆</span>
+          <div class="go-divider-line"></div>
+        </div>
+        <p class="go-body">Your vitality has withered beneath the weight of these ancient corridors. The Great Architect's secrets remain hidden from those who falter.</p>
+        <button class="go-try-btn" id="try-again-btn">
+          <div class="go-try-border"></div>
+          Try Again
+        </button>
+        <button class="go-return-btn" id="back-to-lodge-btn">Return to the Lodge</button>
       </div>
     `;
     document.body.appendChild(overlay);
@@ -233,21 +259,25 @@ export function initPuzzle2(container, clue, onBack, onNext) {
       overlay.remove();
       initPuzzle2(container, clue, onBack, onNext);
     });
+    document.getElementById('back-to-lodge-btn').addEventListener('click', () => {
+      overlay.remove();
+      if (typeof onBack === 'function') onBack();
+    });
   }
   // ────────────────────────────────────────────────────────────────────────────
 
-  gsap.set('.puzzle-header',  { opacity: 0, y: -20 });
-  gsap.set('.puzzle-intro',   { opacity: 0, y: 16  });
-  gsap.set('.how-to-play',    { opacity: 0, y: 12  });
-  gsap.set('.puzzle-layout',  { opacity: 0, y: 24  });
-  gsap.set('#feedback',       { opacity: 0 });
+  gsap.set('.ptb',                { opacity: 0, y: -20 });
+  gsap.set('.puzzle-intro-strip', { opacity: 0, y: 16  });
+  gsap.set('.puzzle-instr',       { opacity: 0, y: 12  });
+  gsap.set('.puzzle-panels',      { opacity: 0, y: 24  });
+  gsap.set('#feedback',           { opacity: 0 });
 
   const tl = gsap.timeline();
-  tl.to('.puzzle-header',  { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
-    .to('.puzzle-intro',   { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
-    .to('.how-to-play',    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
-    .to('.puzzle-layout',  { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
-    .to('#feedback',       { opacity: 1, duration: 0.4 }, '-=0.2');
+  tl.to('.ptb',                { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' })
+    .to('.puzzle-intro-strip', { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, '-=0.2')
+    .to('.puzzle-instr',       { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, '-=0.2')
+    .to('.puzzle-panels',      { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3')
+    .to('#feedback',           { opacity: 1, duration: 0.4 }, '-=0.2');
 
   document.getElementById('back-btn').addEventListener('click', () => {
     if (typeof onBack === 'function') onBack();

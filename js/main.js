@@ -1,9 +1,10 @@
-import { initLanding }    from './landing.js';
-import { initPuzzleMenu } from './puzzleMenu.js';
-import { initPuzzle1 }    from './puzzle1.js';
-import { initPuzzle2 }    from './puzzle2.js';
-import { initPuzzle3 }    from './puzzle3.js';
-import { initReflection } from './reflection.js';
+import { initLanding }        from './landing.js';
+import { initPuzzleMenu }     from './puzzleMenu.js';
+import { initPuzzle1 }        from './puzzle1.js';
+import { initPuzzle2 }        from './puzzle2.js';
+import { initPuzzle3 }        from './puzzle3.js';
+import { initReflection }     from './reflection.js';
+import { initSecretArchives } from './secret_archives.js';
 
 const app = document.getElementById('app');
 let completedPuzzles = 0;
@@ -16,9 +17,18 @@ function renderMenu() {
     () => startPuzzle(1),
     () => startPuzzle(2),
     () => startPuzzle(3),
-    completedPuzzles
+    completedPuzzles,
+    () => initLanding(app, () => {
+      completedPuzzles = 0;
+      renderMenu();
+    })
   );
 }
+
+// Wire the Secret Archives link (called by puzzleMenu via window.__openArchives)
+window.__openArchives = () => {
+  initSecretArchives(app, renderMenu);
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   initLanding(app, () => {
