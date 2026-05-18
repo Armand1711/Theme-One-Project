@@ -5,7 +5,8 @@
       "Bash(node --check js/puzzle1.js)",
       "Bash(node --check js/puzzle2.js)",
       "WebSearch",
-      "Bash(Get-ChildItem \"c:\\\\Users\\\\arman\\\\Downloads\\\\stitch_the_hidden_bonds\\\\stitch_the_hidden_bonds\\\\\" -Recurse -Filter \"code.html\" | Select-Object FullName)"
+      "Bash(Get-ChildItem \"c:\\\\Users\\\\arman\\\\Downloads\\\\stitch_the_hidden_bonds\\\\stitch_the_hidden_bonds\\\\\" -Recurse -Filter \"code.html\" | Select-Object FullName)",
+      "WebFetch(domain:api.anthropic.com)"
     ]
   }
 }

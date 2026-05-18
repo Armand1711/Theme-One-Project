@@ -1,12 +1,23 @@
+import {
+  SVG_FLAME,
+  SVG_COMPASS_MARK,
+  SVG_RADIANT_DELTA,
+  SVG_WAX_SEAL
+} from './svg-library.js';
+
+function renderFlames(lives, max = 3) {
+  const out = [];
+  for (let i = 1; i <= max; i++) out.push(SVG_FLAME(i <= lives));
+  return out.join('');
+}
+
 function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onContinue }) {
   const modal = document.createElement('div');
   modal.className = 'completion-modal';
   modal.id = 'completion-modal';
   modal.innerHTML = `
     <div class="completion-modal-card">
-      <span class="material-symbols-outlined cmc-corner cmc-tl">architecture</span>
-      <span class="material-symbols-outlined cmc-corner cmc-tr">architecture</span>
-      <div class="cmc-star">✦</div>
+      <div class="cmc-seal">${SVG_WAX_SEAL}</div>
       <div class="cmc-badge">
         <div class="cmc-badge-line"></div>
         <span class="cmc-badge-text">ENIGMA SOLVED</span>
@@ -38,8 +49,8 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
   document.body.appendChild(modal);
   gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
   gsap.fromTo('.completion-modal-card',
-    { opacity: 0, y: 40, scale: 0.94 },
-    { opacity: 1, y: 0, scale: 1, duration: 0.5, delay: 0.1, ease: 'back.out(1.7)' }
+    { opacity: 0, clipPath: 'inset(50% 0 50% 0)' },
+    { opacity: 1, clipPath: 'inset(0% 0 0% 0)', duration: 0.7, delay: 0.15, ease: 'power2.out' }
   );
   document.getElementById('modal-continue').addEventListener('click', () => {
     gsap.to(modal, { opacity: 0, duration: 0.25, ease: 'power2.in',
@@ -69,7 +80,7 @@ function showCluePopup(clue) {
           </div>
         `).join('')}
       </div>
-      <button class="cpp-dismiss" id="clue-popup-dismiss">GOT IT &mdash; BACK TO THE PUZZLE</button>
+      <button class="cpp-dismiss" id="clue-popup-dismiss">GOT IT, BACK TO THE PUZZLE</button>
       <div class="cpp-ornament">
         <div class="cpp-ornament-line"></div>
         <span class="cpp-ornament-diamond">◆</span>
@@ -98,19 +109,17 @@ export function initPuzzle3(container, clue, onBack, onNext) {
 
       <div class="ptb">
         <div class="ptb-left" id="back-btn">
-          <span class="material-symbols-outlined ptb-arrow">arrow_back</span>
+          ${SVG_COMPASS_MARK}
           <span class="ptb-back-label">BACK</span>
         </div>
         <div class="ptb-center">
-          <p class="ptb-enigma-tag">ENIGMA 03 OF 03</p>
+          <p class="ptb-enigma-tag">ENIGMA III OF III</p>
           <h1 class="ptb-title">Web of Whispers</h1>
         </div>
         <div class="ptb-right">
-          ${clue ? `<button class="ptb-hint-btn" id="clue-btn"><span class="material-symbols-outlined">lightbulb</span><span class="ptb-hint-label">HINT</span></button>` : ''}
+          ${clue ? `<button class="ptb-hint-btn" id="clue-btn" title="Get a hint from the Archivist"><span class="material-symbols-outlined">lightbulb</span><span class="ptb-hint-label">Need a hint?</span></button>` : ''}
           <div class="ptb-hearts" id="health-bar">
-            <span class="material-symbols-outlined ptb-heart ptb-heart-on" style="font-variation-settings:'FILL' 1">favorite</span>
-            <span class="material-symbols-outlined ptb-heart ptb-heart-on" style="font-variation-settings:'FILL' 1">favorite</span>
-            <span class="material-symbols-outlined ptb-heart ptb-heart-on" style="font-variation-settings:'FILL' 1">favorite</span>
+            ${renderFlames(3)}
           </div>
         </div>
       </div>
@@ -118,13 +127,13 @@ export function initPuzzle3(container, clue, onBack, onNext) {
       <div class="puzzle-scroll-body">
 
         <section class="puzzle-intro-strip">
-          <p class="pis-tag">CONNECT &amp; REVEAL</p>
-          <p class="pis-quote">&ldquo;Seven lodges from three nations shared the 1886 Union Masonic Temple. Not every group was connected &mdash; only six true bonds existed. Draw those bonds to reveal the web of trust.&rdquo;</p>
+          <p class="pis-tag">DRAW THE CONNECTIONS</p>
+          <p class="pis-quote">Seven lodges shared one building in 1886. But not every group was connected, only six real bonds linked them. Find those six.</p>
         </section>
 
         <div class="puzzle-instr">
-          <h4 class="pi-title">INSTRUCTIONS</h4>
-          <p class="pi-body">Click and drag from one circle to another to draw a bond between them. A gold line means the bond is correct. A red flash means no bond exists there. Use the <strong>Hint</strong> button if you need a clue from the previous enigma.</p>
+          <h4 class="pi-title">HOW TO PLAY</h4>
+          <p class="pi-body"><strong>Click and drag</strong> from one circle to another to draw a line between them. <strong>A real bond</strong> lights up gold. <strong>A wrong guess</strong> flashes red and costs a life. Stuck? Tap the red <strong>"Need a hint?"</strong> button, the Archivist will share what the previous puzzle revealed.</p>
         </div>
 
         <div class="masonic-divider">
@@ -136,19 +145,19 @@ export function initPuzzle3(container, clue, onBack, onNext) {
         <div class="network-layout">
           <div class="network-canvas" id="network-canvas">
             <div class="network-node" data-node="1"
-                 data-tooltip="Built 1886&ndash;89. National Monument 1990. Shared home of seven lodges."
+                 data-tooltip="Built 1886 to 89. National Monument 1990. Shared home of seven lodges."
                  style="left:50%;top:12%;">Union Temple<span class="node-bond-count" data-badge="1">0/3</span></div>
             <div class="network-node" data-node="2"
-                 data-tooltip="Cosmopolitan Lodge No.1574 &mdash; the first lodge in Kimberley, founded 1872."
+                 data-tooltip="Cosmopolitan Lodge No.1574, the first lodge in Kimberley, founded 1872."
                  style="left:84%;top:38%;">English Craft<span class="node-bond-count" data-badge="2">0/2</span></div>
             <div class="network-node" data-node="3"
                  data-tooltip="Merchants of Dutoitspan Road who financed the temple with debentures."
                  style="left:71%;top:78%;">Diamond Traders<span class="node-bond-count" data-badge="3">0/2</span></div>
             <div class="network-node" data-node="4"
-                 data-tooltip="Peace &amp; Harmony Lodge &mdash; Cape Dutch immigrants, Netherlandic Constitution."
+                 data-tooltip="Peace &amp; Harmony Lodge, Cape Dutch immigrants, Netherlandic Constitution."
                  style="left:29%;top:78%;">Dutch Brethren<span class="node-bond-count" data-badge="4">0/3</span></div>
             <div class="network-node" data-node="5"
-                 data-tooltip="Athole Lodge, Scottish Constitution &mdash; followed the diamond rush from Cape Colony."
+                 data-tooltip="Athole Lodge, Scottish Constitution, followed the diamond rush from Cape Colony."
                  style="left:16%;top:38%;">Scottish Chapter<span class="node-bond-count" data-badge="5">0/2</span></div>
             <svg class="network-lines" id="network-lines"></svg>
             <div class="network-drag-hint" id="drag-hint">Click and drag from a node to begin</div>
@@ -160,7 +169,7 @@ export function initPuzzle3(container, clue, onBack, onNext) {
       <div class="pff" id="feedback">
         <div class="pff-main">
           <span class="material-symbols-outlined pff-icon">emergency_home</span>
-          <p class="pff-text" id="feedback-text">Click and drag from one circle to another to draw a bond. Use the hint button if you need a clue.</p>
+          <p class="pff-text" id="feedback-text">Click and drag from one circle to another. Find <strong>6 real connections</strong>. You have 3 lives, and a hint button if you need it.</p>
         </div>
       </div>
 
@@ -182,14 +191,7 @@ export function initPuzzle3(container, clue, onBack, onNext) {
   function renderHearts() {
     const bar = document.getElementById('health-bar');
     if (!bar) return;
-    bar.innerHTML = '';
-    for (let i = 1; i <= MAX_LIVES; i++) {
-      const h = document.createElement('span');
-      h.className = 'material-symbols-outlined ptb-heart' + (i <= lives ? ' ptb-heart-on' : ' ptb-heart-off');
-      h.style.fontVariationSettings = i <= lives ? "'FILL' 1" : "'FILL' 0";
-      h.textContent = 'favorite';
-      bar.appendChild(h);
-    }
+    bar.innerHTML = renderFlames(lives, MAX_LIVES);
   }
 
   function loseLife() {
@@ -205,10 +207,8 @@ export function initPuzzle3(container, clue, onBack, onNext) {
     if (lives >= MAX_LIVES || completed) return;
     lives++;
     renderHearts();
-    const hearts = document.querySelectorAll('.ptb-heart');
-    const gained = hearts[lives - 1];
-    if (gained) gsap.fromTo(gained, { scale: 0 }, { scale: 1, duration: 0.4, ease: 'back.out(2.5)' });
-    document.getElementById('feedback-text').textContent = '+1 life restored — keep drawing!';
+    gsap.fromTo('#health-bar .svg-flame', { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, stagger: 0.08, ease: 'back.out(2.5)' });
+    document.getElementById('feedback-text').textContent = '+1 life restored, keep drawing!';
     setTimeout(() => {
       if (!completed) {
         document.getElementById('feedback-text').textContent =
@@ -228,30 +228,22 @@ export function initPuzzle3(container, clue, onBack, onNext) {
     overlay.className = 'game-over-overlay';
     overlay.innerHTML = `
       <div class="game-over-card">
-        <span class="material-symbols-outlined go-flare go-flare-tl">flare</span>
-        <span class="material-symbols-outlined go-flare go-flare-tr">flare</span>
-        <div class="go-icon-wrap">
-          <span class="material-symbols-outlined go-skull">skull</span>
-          <div class="go-skull-glow"></div>
-        </div>
+        <div class="go-icon-wrap go-eye-wrap">${SVG_RADIANT_DELTA}</div>
         <h2 class="go-heading">The chamber goes dark</h2>
         <div class="go-divider">
           <div class="go-divider-line"></div>
-          <span class="go-divider-diamond">◆</span>
+          <span class="go-divider-diamond">&#9670;</span>
           <div class="go-divider-line"></div>
         </div>
-        <p class="go-body">Your vitality has withered beneath the weight of these ancient corridors. The Great Architect's secrets remain hidden from those who falter.</p>
-        <button class="go-try-btn" id="try-again-btn">
-          <div class="go-try-border"></div>
-          Try Again
-        </button>
+        <p class="go-body">You ran out of lives. Take another shot.</p>
+        <button class="go-try-btn" id="try-again-btn">Try Again</button>
         <button class="go-return-btn" id="back-to-lodge-btn">Return to the Lodge</button>
       </div>
     `;
     document.body.appendChild(overlay);
     gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.35 });
-    gsap.fromTo('.game-over-card', { opacity: 0, scale: 0.85, y: 30 },
-      { opacity: 1, scale: 1, y: 0, duration: 0.45, delay: 0.1, ease: 'back.out(1.7)' });
+    gsap.fromTo('.game-over-card', { y: '-100%', opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.7, delay: 0.05, ease: 'power3.out' });
     document.getElementById('try-again-btn').addEventListener('click', () => {
       overlay.remove();
       initPuzzle3(container, clue, onBack, onNext);
@@ -412,18 +404,21 @@ export function initPuzzle3(container, clue, onBack, onNext) {
       fromNode.classList.add('bonded');
       toNode.classList.add('bonded');
       updateBadges();
+      // Update tally
+      const tally = document.getElementById('bonds-drawn-count');
+      if (tally) tally.textContent = connections.length;
       checkStreak();
       const count = connections.length;
       if (count < correctConnections.length) {
         document.getElementById('feedback-text').textContent =
-          `${count} of 6 bonds drawn. Keep going — use the hint button if you need a clue.`;
+          `${count} of 6 bonds drawn. Keep going, use the hint button if you need a clue.`;
       }
       checkCompletion();
     } else {
       loseLife();
       drawWrongLine(fromNode, toNode);
       const ft = document.getElementById('feedback-text');
-      ft.textContent = 'No bond exists between those two — try a different connection.';
+      ft.textContent = 'No bond exists between those two, try a different connection.';
       setTimeout(() => {
         if (!completed) {
           ft.textContent = `${connections.length} of 6 bonds drawn. Use the hint button for guidance.`;
@@ -477,18 +472,44 @@ export function initPuzzle3(container, clue, onBack, onNext) {
   function drawLine(node1, node2) {
     const c1 = getCenter(node1);
     const c2 = getCenter(node2);
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', c1.x); line.setAttribute('y1', c1.y);
-    line.setAttribute('x2', c2.x); line.setAttribute('y2', c2.y);
-    line.setAttribute('stroke', '#b28d5a');
-    line.setAttribute('stroke-width', '2.5');
-    line.setAttribute('stroke-linecap', 'round');
-    linesSvg.appendChild(line);
-    const length = line.getTotalLength();
-    gsap.fromTo(line,
+    // Calligraphic gold line: thicker outer stroke + thinner highlight on top
+    const outer = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    outer.setAttribute('x1', c1.x); outer.setAttribute('y1', c1.y);
+    outer.setAttribute('x2', c2.x); outer.setAttribute('y2', c2.y);
+    outer.setAttribute('stroke', '#8a6b1c');
+    outer.setAttribute('stroke-width', '4');
+    outer.setAttribute('stroke-linecap', 'round');
+    outer.setAttribute('opacity', '0.85');
+    linesSvg.appendChild(outer);
+
+    const inner = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    inner.setAttribute('x1', c1.x); inner.setAttribute('y1', c1.y);
+    inner.setAttribute('x2', c2.x); inner.setAttribute('y2', c2.y);
+    inner.setAttribute('stroke', '#ecc246');
+    inner.setAttribute('stroke-width', '1.6');
+    inner.setAttribute('stroke-linecap', 'round');
+    linesSvg.appendChild(inner);
+
+    const length = inner.getTotalLength();
+    gsap.fromTo([outer, inner],
       { strokeDasharray: length, strokeDashoffset: length },
-      { strokeDashoffset: 0, duration: 0.55, ease: 'power2.out' }
+      { strokeDashoffset: 0, duration: 0.7, ease: 'power2.out' }
     );
+
+    // Travelling sparkle along the line
+    const dotR = 3;
+    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('r', dotR);
+    dot.setAttribute('fill', '#f5e8c8');
+    dot.setAttribute('cx', c1.x);
+    dot.setAttribute('cy', c1.y);
+    dot.setAttribute('opacity', '0.95');
+    linesSvg.appendChild(dot);
+    gsap.to(dot, {
+      attr: { cx: c2.x, cy: c2.y },
+      duration: 0.7, ease: 'power1.inOut',
+      onComplete: () => gsap.to(dot, { opacity: 0, duration: 0.25, onComplete: () => dot.remove() })
+    });
   }
 
   function drawWrongLine(node1, node2) {
@@ -549,22 +570,22 @@ export function initPuzzle3(container, clue, onBack, onNext) {
       duration: 0.5, stagger: 0.08, ease: 'power2.out'
     });
 
-    document.getElementById('feedback-text').textContent = 'All 6 bonds drawn — the web is complete!';
+    document.getElementById('feedback-text').textContent = 'All 6 bonds drawn. The network is complete.';
 
     setTimeout(() => {
       showCompletionModal({
-        title: 'The Web is Complete',
-        body: "You have mapped the hidden network. Seven lodges from three nations — English, Scottish, and Dutch — shared one floor, one oath, and one building on Dutoitspan Road. This invisible web of trust is what built Kimberley's 1886 Union Masonic Temple.",
-        clueLabel: '&#128279; The Six Bonds of the Enclave',
+        title: 'All Six Bonds Found',
+        body: "You mapped the real network. Seven Masonic lodges from three nations shared one building on Dutoitspan Road in Kimberley. The temple sat at the center. The traders dealt with both English and Dutch sides. Old loyalties tied the Dutch to the Scots. These six links held the whole community together.",
+        clueLabel: '&#128279; The six bonds you uncovered',
         clueLines: [
-          { icon: '⬡', text: 'Union Temple anchored the <em>English Craft</em> — its founding lodges' },
-          { icon: '⬡', text: 'Union Temple sheltered the <em>Scottish Chapter</em> — Athole Lodge' },
-          { icon: '⬡', text: 'Union Temple welcomed the <em>Dutch Brethren</em> — Peace &amp; Harmony Lodge' },
-          { icon: '⬡', text: 'English Craft traded with the <em>Diamond Traders</em> of Dutoitspan Road' },
-          { icon: '⬡', text: "Diamond Traders financed the <em>Dutch Brethren's</em> debentures" },
-          { icon: '⬡', text: 'Dutch Brethren kept faith with the <em>Scottish Chapter</em>' }
+          { icon: '⬡', text: 'Union Temple ↔ <em>English Craft</em>' },
+          { icon: '⬡', text: 'Union Temple ↔ <em>Scottish Chapter</em>' },
+          { icon: '⬡', text: 'Union Temple ↔ <em>Dutch Brethren</em>' },
+          { icon: '⬡', text: 'English Craft ↔ <em>Diamond Traders</em>' },
+          { icon: '⬡', text: 'Diamond Traders ↔ <em>Dutch Brethren</em>' },
+          { icon: '⬡', text: 'Dutch Brethren ↔ <em>Scottish Chapter</em>' }
         ],
-        btnLabel: 'See the Full Discovery',
+        btnLabel: 'See What You Found',
         onContinue: () => {
           if (typeof onNext === 'function') onNext();
         }

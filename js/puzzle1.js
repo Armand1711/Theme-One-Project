@@ -1,12 +1,17 @@
-// Masonic compass-and-square SVG for modal header
-const MODAL_MASONIC = `<svg class="modal-masonic-svg" viewBox="0 0 80 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <line x1="40" y1="6" x2="16" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
-  <line x1="40" y1="6" x2="64" y2="62" stroke="#c9a227" stroke-width="2.2" stroke-linecap="round"/>
-  <path d="M18 50 Q40 43 62 50" stroke="#c9a227" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-  <line x1="16" y1="24" x2="16" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
-  <line x1="16" y1="62" x2="64" y2="62" stroke="#8c1f1f" stroke-width="2.2" stroke-linecap="round"/>
-  <circle cx="40" cy="6" r="2.5" fill="#c9a227"/>
-</svg>`;
+import {
+  SVG_FLAME,
+  SVG_COMPASS_MARK,
+  SVG_RADIANT_DELTA,
+  SVG_WAX_SEAL,
+  SVG_SQUARE_COMPASS,
+  SVG_CORNER_FLOURISH
+} from './svg-library.js';
+
+function renderFlames(lives, max = 3) {
+  const out = [];
+  for (let i = 1; i <= max; i++) out.push(SVG_FLAME(i <= lives));
+  return out.join('');
+}
 
 function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onContinue }) {
   const modal = document.createElement('div');
@@ -14,9 +19,7 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
   modal.id = 'completion-modal';
   modal.innerHTML = `
     <div class="completion-modal-card">
-      <span class="material-symbols-outlined cmc-corner cmc-tl">architecture</span>
-      <span class="material-symbols-outlined cmc-corner cmc-tr">architecture</span>
-      <div class="cmc-star">✦</div>
+      <div class="cmc-seal">${SVG_WAX_SEAL}</div>
       <div class="cmc-badge">
         <div class="cmc-badge-line"></div>
         <span class="cmc-badge-text">ENIGMA SOLVED</span>
@@ -48,8 +51,8 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
   document.body.appendChild(modal);
   gsap.fromTo(modal, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'power2.out' });
   gsap.fromTo('.completion-modal-card',
-    { opacity: 0, y: 40, scale: 0.94 },
-    { opacity: 1, y: 0, scale: 1, duration: 0.5, delay: 0.1, ease: 'back.out(1.7)' }
+    { opacity: 0, clipPath: 'inset(50% 0 50% 0)' },
+    { opacity: 1, clipPath: 'inset(0% 0 0% 0)', duration: 0.7, delay: 0.15, ease: 'power2.out' }
   );
   document.getElementById('modal-continue').addEventListener('click', () => {
     gsap.to(modal, { opacity: 0, duration: 0.25, ease: 'power2.in',
@@ -64,30 +67,28 @@ export function initPuzzle1(container, onBack, onNext) {
 
       <div class="ptb">
         <div class="ptb-left" id="back-btn">
-          <span class="material-symbols-outlined ptb-arrow">arrow_back</span>
+          ${SVG_COMPASS_MARK}
           <span class="ptb-back-label">BACK</span>
         </div>
         <div class="ptb-center">
-          <p class="ptb-enigma-tag">ENIGMA 01 OF 03</p>
+          <p class="ptb-enigma-tag">ENIGMA I OF III</p>
           <h1 class="ptb-title">Shattered Sanctuary</h1>
         </div>
         <div class="ptb-right" id="health-bar">
-          <span class="material-symbols-outlined ptb-heart ptb-heart-on">favorite</span>
-          <span class="material-symbols-outlined ptb-heart ptb-heart-on">favorite</span>
-          <span class="material-symbols-outlined ptb-heart ptb-heart-on">favorite</span>
+          ${renderFlames(3)}
         </div>
       </div>
 
       <div class="puzzle-scroll-body">
 
         <section class="puzzle-intro-strip">
-          <p class="pis-tag">PHOTO RECONSTRUCTION</p>
-          <p class="pis-quote">&ldquo;Six fragments of the Sanctuary have been scattered across the ritual floor. Restore the image to unlock the path to the inner sanctum.&rdquo;</p>
+          <p class="pis-tag">REBUILD THE PHOTO</p>
+          <p class="pis-quote">Six pieces of the 1886 Union Masonic Temple, scattered. Drag them back into place to see what the building looked like.</p>
         </section>
 
         <div class="puzzle-instr">
-          <h4 class="pi-title">INSTRUCTIONS</h4>
-          <p class="pi-body">Drag fragments from the left archive and place them into the correct corresponding slots on the right ritual plate.</p>
+          <h4 class="pi-title">HOW TO PLAY</h4>
+          <p class="pi-body"><strong>Drag</strong> each photo fragment from the left into the right slot on the grid. <strong>Watch the edges</strong>, they line up like a real jigsaw. <strong>You have three lives</strong>, every wrong placement costs one. The gold flame icons in the top right show how many lives you have left.</p>
         </div>
 
         <div class="masonic-divider">
@@ -96,28 +97,42 @@ export function initPuzzle1(container, onBack, onNext) {
           <div class="md-line"></div>
         </div>
 
+        <!-- Architectural plate header -->
+        <div class="plate-header">
+          <div class="plate-header-corner ph-tl"></div>
+          <div class="plate-header-corner ph-tr"></div>
+          <div class="plate-header-inner">
+            <span class="plate-tag">PLATE I</span>
+            <span class="plate-divider">·</span>
+            <span class="plate-title">UNION TEMPLE, EXTERIOR ELEVATION</span>
+            <span class="plate-divider">·</span>
+            <span class="plate-meta">DUTOITSPAN ROAD, 1888</span>
+          </div>
+        </div>
+
         <div class="puzzle-panels">
           <div class="pp-col pp-fragments">
             <div class="pp-col-top-accent"></div>
             <h3 class="pp-col-label">
-              <span class="material-symbols-outlined pp-col-label-icon">category</span>
+              <span class="pp-col-label-dot">◆</span>
               FRAGMENTS
             </h3>
             <div class="puzzle-source grid-3" id="puzzle-source"></div>
           </div>
           <div class="pp-col pp-sanctuary">
-            <span class="material-symbols-outlined pp-star-icon">star</span>
+            <span class="pp-corner-bl"></span>
+            <span class="pp-corner-br"></span>
             <h3 class="pp-col-label">
-              <span class="material-symbols-outlined pp-col-label-icon">museum</span>
+              <span class="pp-col-label-dot">◆</span>
               SANCTUARY
             </h3>
             <div class="puzzle-target grid-3 pp-drop-grid" id="puzzle-target">
-              <div class="drop-slot" data-slot="1"><span class="slot-diamond">◆</span></div>
-              <div class="drop-slot" data-slot="2"><span class="slot-diamond">◆</span></div>
-              <div class="drop-slot" data-slot="3"><span class="slot-diamond">◆</span></div>
-              <div class="drop-slot" data-slot="4"><span class="slot-diamond">◆</span></div>
-              <div class="drop-slot" data-slot="5"><span class="slot-diamond">◆</span></div>
-              <div class="drop-slot" data-slot="6"><span class="slot-diamond">◆</span></div>
+              <div class="drop-slot" data-slot="1"><span class="slot-pos-marker">I</span><span class="slot-diamond">◆</span></div>
+              <div class="drop-slot" data-slot="2"><span class="slot-pos-marker">II</span><span class="slot-diamond">◆</span></div>
+              <div class="drop-slot" data-slot="3"><span class="slot-pos-marker">III</span><span class="slot-diamond">◆</span></div>
+              <div class="drop-slot" data-slot="4"><span class="slot-pos-marker">IV</span><span class="slot-diamond">◆</span></div>
+              <div class="drop-slot" data-slot="5"><span class="slot-pos-marker">V</span><span class="slot-diamond">◆</span></div>
+              <div class="drop-slot" data-slot="6"><span class="slot-pos-marker">VI</span><span class="slot-diamond">◆</span></div>
             </div>
             <div class="pp-submit-wrap">
               <button class="pp-submit-btn">SUBMIT SEAL</button>
@@ -130,7 +145,7 @@ export function initPuzzle1(container, onBack, onNext) {
       <div class="pff" id="feedback">
         <div class="pff-main">
           <span class="material-symbols-outlined pff-icon">emergency_home</span>
-          <p class="pff-text" id="feedback-text">The pieces hum with a faint vibration when placed near their true origin&hellip;</p>
+          <p class="pff-text" id="feedback-text">Drag the photo pieces from the left into the right grid. You have <strong>3 lives</strong>, every wrong placement costs one.</p>
         </div>
         <div class="pff-stats">
           <div class="pff-stat">
@@ -154,14 +169,7 @@ export function initPuzzle1(container, onBack, onNext) {
   function renderHearts() {
     const bar = document.getElementById('health-bar');
     if (!bar) return;
-    bar.innerHTML = '';
-    for (let i = 1; i <= MAX_LIVES; i++) {
-      const h = document.createElement('span');
-      h.className = 'material-symbols-outlined ptb-heart' + (i <= lives ? ' ptb-heart-on' : ' ptb-heart-off');
-      h.style.fontVariationSettings = i <= lives ? "'FILL' 1" : "'FILL' 0";
-      h.textContent = 'favorite';
-      bar.appendChild(h);
-    }
+    bar.innerHTML = renderFlames(lives, MAX_LIVES);
   }
 
   function loseLife() {
@@ -177,15 +185,13 @@ export function initPuzzle1(container, onBack, onNext) {
     if (lives >= MAX_LIVES || completed) return;
     lives++;
     renderHearts();
-    const hearts = document.querySelectorAll('.ptb-heart');
-    const gained = hearts[lives - 1];
-    if (gained) gsap.fromTo(gained, { scale: 0 }, { scale: 1, duration: 0.4, ease: 'back.out(2.5)' });
-    document.getElementById('feedback-text').textContent = '+1 life restored — keep going!';
+    gsap.fromTo('#health-bar .svg-flame', { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, stagger: 0.08, ease: 'back.out(2.5)' });
+    document.getElementById('feedback-text').textContent = '+1 life restored, keep going!';
     setTimeout(() => {
       if (!completed) {
         const placed = [...document.querySelectorAll('.drop-slot')].filter(s => s.querySelector('.piece')).length;
         document.getElementById('feedback-text').textContent =
-          placed === 0 ? 'Drag each piece into its slot. The image will guide you — look at the edges.'
+          placed === 0 ? 'Drag each piece into its slot. The image will guide you, look at the edges.'
                        : `${solved} of 6 pieces in the right place. Keep going.`;
       }
     }, 1600);
@@ -201,30 +207,24 @@ export function initPuzzle1(container, onBack, onNext) {
     overlay.className = 'game-over-overlay';
     overlay.innerHTML = `
       <div class="game-over-card">
-        <span class="material-symbols-outlined go-flare go-flare-tl">flare</span>
-        <span class="material-symbols-outlined go-flare go-flare-tr">flare</span>
-        <div class="go-icon-wrap">
-          <span class="material-symbols-outlined go-skull">skull</span>
-          <div class="go-skull-glow"></div>
+        <div class="go-icon-wrap go-eye-wrap">
+          ${SVG_RADIANT_DELTA}
         </div>
         <h2 class="go-heading">The chamber goes dark</h2>
         <div class="go-divider">
           <div class="go-divider-line"></div>
-          <span class="go-divider-diamond">◆</span>
+          <span class="go-divider-diamond">&#9670;</span>
           <div class="go-divider-line"></div>
         </div>
-        <p class="go-body">Your vitality has withered beneath the weight of these ancient corridors. The Great Architect's secrets remain hidden from those who falter.</p>
-        <button class="go-try-btn" id="try-again-btn">
-          <div class="go-try-border"></div>
-          Try Again
-        </button>
+        <p class="go-body">You ran out of lives. Take another shot.</p>
+        <button class="go-try-btn" id="try-again-btn">Try Again</button>
         <button class="go-return-btn" id="back-to-lodge-btn">Return to the Lodge</button>
       </div>
     `;
     document.body.appendChild(overlay);
     gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.35 });
-    gsap.fromTo('.game-over-card', { opacity: 0, scale: 0.85, y: 30 },
-      { opacity: 1, scale: 1, y: 0, duration: 0.45, delay: 0.1, ease: 'back.out(1.7)' });
+    gsap.fromTo('.game-over-card', { y: '-100%', opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.7, delay: 0.05, ease: 'power3.out' });
     document.getElementById('try-again-btn').addEventListener('click', () => {
       overlay.remove();
       initPuzzle1(container, onBack, onNext);
@@ -336,7 +336,7 @@ export function initPuzzle1(container, onBack, onNext) {
     if (solved < slots.length) {
       document.getElementById('feedback-text').textContent =
         placed === 0
-          ? 'Drag each piece into its slot. The image will guide you — look at the edges.'
+          ? 'Drag each piece into its slot. The image will guide you, look at the edges.'
           : `${solved} of 6 pieces in the right place. Keep going.`;
     }
 
@@ -469,25 +469,25 @@ export function initPuzzle1(container, onBack, onNext) {
     });
 
     // Update inline feedback
-    document.getElementById('feedback-text').textContent = 'All 6 pieces placed — the sanctuary stands whole!';
+    document.getElementById('feedback-text').textContent = 'All 6 pieces placed. The temple is whole.';
 
     const clue = {
-      title: "The Sanctuary's Inscription",
+      title: "What the symbols mean",
       lines: [
-        { icon: '🤝', text: 'The clasped hand seals <em>The Silent Oath</em>' },
-        { icon: '🔗', text: 'The unbroken chain weaves <em>Shared Prosperity</em>' },
-        { icon: '🌉', text: 'The arched bridge spans the <em>Cultural Bridge</em>' },
-        { icon: '🕯️', text: 'The undying flame guards the <em>Enduring Legacy</em>' }
+        { icon: '🤝', text: 'The clasped hand = <em>The Silent Oath</em>' },
+        { icon: '🔗', text: 'The chain = <em>Shared Prosperity</em>' },
+        { icon: '🌉', text: 'The bridge = <em>Cultural Bridge</em>' },
+        { icon: '🕯️', text: 'The flame = <em>Enduring Legacy</em>' }
       ]
     };
 
     setTimeout(() => {
       showCompletionModal({
-        title: 'The Sanctuary Stands Whole',
-        body: "You've uncovered the first hidden bond: the silent pact of mutual aid. Seven lodges from three nations pooled their resources to raise this Roman Corinthian building on Dutoitspan Road — a covenant forged in the diamond fields.",
-        clueLabel: '&#128269; Clue Unlocked — carry this into the next enigma',
+        title: 'The Temple Rises Again',
+        body: "You rebuilt the 1888 photograph of the Union Masonic Temple at 126-128 Dutoitspan Road in Kimberley. Seven Masonic groups from English, Scottish, and Dutch backgrounds pooled their money to raise this building. It became the first place in town where all three communities worked side by side.",
+        clueLabel: '&#128269; You unlocked these clues. They help in the next puzzle.',
         clueLines: clue.lines,
-        btnLabel: 'Continue to Symbol Cipher',
+        btnLabel: 'Continue to Puzzle 2',
         onContinue: () => {
           if (typeof onNext === 'function') onNext(clue);
         }

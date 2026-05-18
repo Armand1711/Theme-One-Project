@@ -5,6 +5,7 @@ import { initPuzzle2 }        from './puzzle2.js';
 import { initPuzzle3 }        from './puzzle3.js';
 import { initReflection }     from './reflection.js';
 import { initSecretArchives } from './secret_archives.js';
+import './immersion.js';
 
 const app = document.getElementById('app');
 let completedPuzzles = 0;

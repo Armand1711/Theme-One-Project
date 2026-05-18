@@ -1,24 +1,17 @@
+import {
+  SVG_LOCK,
+  SVG_SEAL_BROKEN,
+  SVG_HANGING_PENDANT,
+  SVG_COMPASS_MARK,
+  SVG_FLAME
+} from './svg-library.js';
+
 export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzle3, completedPuzzles = 0, onBack = null) {
 
   const puzzles = [
-    {
-      num: '01',
-      title: 'Shattered Sanctuary',
-      unlocked: true,
-      complete: completedPuzzles >= 1
-    },
-    {
-      num: '02',
-      title: 'Symbol Cipher',
-      unlocked: completedPuzzles >= 1,
-      complete: completedPuzzles >= 2
-    },
-    {
-      num: '03',
-      title: 'Web of Whispers',
-      unlocked: completedPuzzles >= 2,
-      complete: completedPuzzles >= 3
-    }
+    { num: 'I',   romanFull: 'PUZZLE I',   title: 'Rebuild the Photo',   subtitle: 'Drag 6 pieces back together', unlocked: true, complete: completedPuzzles >= 1 },
+    { num: 'II',  romanFull: 'PUZZLE II',  title: 'Match the Symbols',   subtitle: 'Pair 4 emblems with meanings', unlocked: completedPuzzles >= 1, complete: completedPuzzles >= 2 },
+    { num: 'III', romanFull: 'PUZZLE III', title: 'Draw the Connections', subtitle: 'Find 6 real bonds between lodges', unlocked: completedPuzzles >= 2, complete: completedPuzzles >= 3 }
   ];
 
   const html = `
@@ -26,17 +19,15 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
 
       <header class="lodge-header">
         <button class="lodge-back-btn" id="lodge-back-btn">
-          <span class="material-symbols-outlined" style="font-size:18px;line-height:1;vertical-align:middle">arrow_back</span>
-          Return
+          ${SVG_COMPASS_MARK}
+          <span>Return</span>
         </button>
         <div class="lodge-title-center">
           <h1>The Lodge</h1>
           <div class="lodge-title-underline"></div>
         </div>
         <div class="lodge-hearts">
-          <span class="material-symbols-outlined">favorite</span>
-          <span class="material-symbols-outlined">favorite</span>
-          <span class="material-symbols-outlined">favorite</span>
+          ${SVG_FLAME(true)}${SVG_FLAME(true)}${SVG_FLAME(true)}
         </div>
       </header>
 
@@ -55,18 +46,27 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
         <div class="initiations-list">
           ${puzzles.map((p, i) => `
             <div class="ic-card ${p.complete ? 'ic-complete' : ''} ${!p.unlocked ? 'ic-locked' : 'ic-available card-play-btn'}" ${p.unlocked ? `data-idx="${i}"` : ''}>
-              ${p.unlocked ? '<span class="ic-star-icon material-symbols-outlined">star</span>' : ''}
+              <div class="ic-cursor-glow"></div>
+              <div class="ic-ribbon-seal"></div>
+              <div class="ic-tab">${p.romanFull}</div>
+
+              ${!p.unlocked ? `<div class="ic-lock-svg">${SVG_LOCK}</div>` : ''}
+              ${p.complete ? `<div class="ic-seal-broken">${SVG_SEAL_BROKEN}</div>` : ''}
+
               <div class="ic-content">
-                <span class="ic-num">ENIGMA ${p.num}</span>
+                <span class="ic-num">No. ${String(i + 1).padStart(2, '0')}</span>
                 <h3 class="ic-title">${p.title}</h3>
+                <p class="ic-subtitle">${p.subtitle}</p>
               </div>
+
               <div class="ic-status-row">
                 ${p.complete
-                  ? `<span class="material-symbols-outlined ic-status-icon ic-done-icon">check_circle</span><span class="ic-status-text ic-done-text">Solved</span>`
+                  ? `<span class="ic-status-text ic-done-text">&#10003; &nbsp; Solved</span>`
                   : p.unlocked
-                    ? `<span class="material-symbols-outlined ic-status-icon ic-play-icon">play_circle</span><span class="ic-status-text shimmer-gold">Available</span>`
-                    : `<span class="material-symbols-outlined ic-status-icon ic-lock-icon">lock</span><span class="ic-status-text ic-locked-text">Locked</span>`}
+                    ? `<span class="ic-status-text shimmer-gold">Available, Enter</span>`
+                    : `<span class="ic-status-text ic-locked-text">Sealed</span>`}
               </div>
+
               <div class="ic-bottom-bar">
                 <div class="ic-bottom-fill" style="width:${p.complete ? '100%' : '0%'}"></div>
               </div>
@@ -74,9 +74,9 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
           `).join('')}
         </div>
 
-        <div class="lodge-footer-link" id="archives-link">
-          <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle">menu_book</span>
-          Secret Archives
+        <div class="lodge-footer-link" id="archives-link" title="Open the Secret Archives">
+          <div class="pendant-svg">${SVG_HANGING_PENDANT}</div>
+          <span class="pendant-label">Open the Secret Archives</span>
         </div>
 
       </main>
@@ -91,9 +91,18 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
   document.querySelectorAll('.card-play-btn').forEach(btn => {
     btn.addEventListener('click', function () {
       const idx = parseInt(this.dataset.idx, 10);
-      if (typeof starters[idx] === 'function') {
-        starters[idx]();
-      }
+      if (typeof starters[idx] === 'function') starters[idx]();
+    });
+  });
+
+  // Cursor-tracked gold glow on cards
+  document.querySelectorAll('.ic-card.ic-available').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const mx = ((e.clientX - r.left) / r.width) * 100;
+      const my = ((e.clientY - r.top) / r.height) * 100;
+      card.style.setProperty('--mx', `${mx}%`);
+      card.style.setProperty('--my', `${my}%`);
     });
   });
 
@@ -110,7 +119,7 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
     });
   }
 
-  // Secret archives link (wired in main.js via global event)
+  // Secret archives link
   const archivesLink = document.getElementById('archives-link');
   if (archivesLink) {
     archivesLink.addEventListener('click', () => {
@@ -123,9 +132,9 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
     });
   }
 
-  // Kill any lingering tweens
   try { gsap.killTweensOf(app); } catch (e) {}
 
+  // Entrance animations
   try {
     gsap.fromTo('.lodge-header',
       { opacity: 0, y: -24 },
@@ -136,12 +145,12 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
       { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.15 }
     );
     gsap.fromTo('.ic-card',
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.1, delay: 0.25 }
+      { opacity: 0, y: 60, scale: 0.93 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.7, stagger: 0.12, ease: 'back.out(1.4)', delay: 0.25 }
     );
     gsap.fromTo('.lodge-footer-link',
-      { opacity: 0 },
-      { opacity: 1, duration: 0.4, ease: 'power2.out', delay: 0.6 }
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', delay: 0.6 }
     );
   } catch (e) {}
 }
