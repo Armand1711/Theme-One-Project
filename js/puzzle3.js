@@ -6,19 +6,6 @@ import {
   SVG_HANGING_PENDANT
 } from './svg-library.js';
 
-function scrambleEl(el) {
-  if (!el) return;
-  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
-  const nodes = [];
-  let n;
-  while ((n = walker.nextNode())) nodes.push(n);
-  nodes.forEach(n => {
-    n.textContent = n.textContent.replace(/[a-zA-Z]/g, () =>
-      String.fromCharCode(97 + Math.floor(Math.random() * 26))
-    );
-  });
-}
-
 function renderFlames(lives, max = 3) {
   const out = [];
   for (let i = 1; i <= max; i++) out.push(SVG_FLAME(i <= lives));
@@ -118,7 +105,6 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
           <h1 class="ptb-title">Web of Whispers</h1>
         </div>
         <div class="ptb-right">
-          ${clue ? `<button class="ptb-hint-btn" id="clue-btn" title="Get a hint from the Archivist"><span class="material-symbols-outlined">lightbulb</span><span class="ptb-hint-label">Need a hint?</span></button>` : ''}
           <div class="ptb-hearts" id="health-bar">
             ${renderFlames(3)}
           </div>
@@ -133,7 +119,7 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
 
         <div class="puzzle-instr">
           <h4 class="pi-title">HOW TO PLAY</h4>
-          <p class="pi-body"><strong>Click and drag</strong> from one circle to another to draw a line between them. <strong>A real bond</strong> lights up gold. <strong>A wrong guess</strong> flashes red and costs a life. Stuck? Tap the red <strong>"Need a hint?"</strong> button, the Archivist will share what the previous puzzle revealed.</p>
+          <p class="pi-body"><strong>Click and drag</strong> from one circle to another to draw a line between them. <strong>A real bond</strong> lights up gold. <strong>A wrong guess</strong> flashes red and costs a life. Stuck? Tap the seal on the right to review your research.</p>
         </div>
 
         <div class="network-layout">
@@ -163,14 +149,13 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
       <div class="pff" id="feedback">
         <div class="pff-main">
           <span class="material-symbols-outlined pff-icon">emergency_home</span>
-          <p class="pff-text" id="feedback-text">Click and drag from one circle to another. Find <strong>6 real connections</strong>. You have 3 lives, and a hint button if you need it.</p>
+          <p class="pff-text" id="feedback-text">Click and drag from one circle to another. Find <strong>6 real connections</strong>. You have 3 lives — tap the seal on the right to review your research.</p>
         </div>
-        <div class="pff-side">
-          <button class="pff-archives-btn" id="pff-archives-btn" title="Open the Secret Archives">
-            <span class="material-symbols-outlined">auto_stories</span>
-            Archives
-          </button>
-        </div>
+      </div>
+
+      <div class="puzzle-arc-float" id="puzzle-arc-float" role="button" tabindex="0" title="Open the Secret Archives">
+        <div class="pendant-svg">${SVG_HANGING_PENDANT}</div>
+        <span class="paf-label">Archives</span>
       </div>
 
     </div>
@@ -178,25 +163,6 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
 
   container.innerHTML = html;
   window.scrollTo(0, 0);
-
-  if (!unlocked) {
-    scrambleEl(document.querySelector('.pis-quote'));
-    scrambleEl(document.querySelector('.pi-body'));
-    // Scramble node label text only — skip child spans (badge counters)
-    document.querySelectorAll('.network-node').forEach(node => {
-      [...node.childNodes]
-        .filter(nd => nd.nodeType === 3)
-        .forEach(nd => {
-          nd.textContent = nd.textContent.replace(/[a-zA-Z]/g, () =>
-            String.fromCharCode(97 + Math.floor(Math.random() * 26))
-          );
-        });
-    });
-  }
-
-  if (clue) {
-    document.getElementById('clue-btn')?.addEventListener('click', () => showCluePopup(clue));
-  }
 
   // ── Health system ────────────────────────────────────────────────────────────
   let lives = 3;
@@ -212,10 +178,25 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
   function loseLife() {
     if (lives <= 0 || completed) return;
     correctStreak = 0;
-    lives--;
-    renderHearts();
-    gsap.fromTo('#health-bar', { x: -7 }, { x: 0, duration: 0.45, ease: 'elastic.out(1,0.3)' });
-    if (lives === 0) setTimeout(handleGameOver, 600);
+    const bar = document.getElementById('health-bar');
+    const dyingFlame = bar ? [...bar.querySelectorAll('.svg-flame')][lives - 1] : null;
+    function doDecrement() {
+      lives--;
+      renderHearts();
+      gsap.fromTo('#health-bar', { x: -7 }, { x: 0, duration: 0.45, ease: 'elastic.out(1,0.3)' });
+      const flash = document.createElement('div');
+      flash.style.cssText = 'position:fixed;inset:0;background:rgba(120,0,0,0.22);pointer-events:none;z-index:99;';
+      document.body.appendChild(flash);
+      gsap.to(flash, { opacity: 0, duration: 0.6, ease: 'power2.out', onComplete: () => flash.remove() });
+      if (lives === 0) setTimeout(handleGameOver, 600);
+    }
+    if (dyingFlame) {
+      gsap.timeline()
+        .to(dyingFlame, { scale: 1.7, duration: 0.18, ease: 'power2.out', transformOrigin: '50% 100%' })
+        .to(dyingFlame, { scale: 0.05, opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: doDecrement });
+    } else {
+      doDecrement();
+    }
   }
 
   function gainLife() {
@@ -261,7 +242,7 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
       { y: 0, opacity: 1, duration: 0.7, delay: 0.05, ease: 'power3.out' });
     document.getElementById('try-again-btn').addEventListener('click', () => {
       overlay.remove();
-      initPuzzle3(container, clue, onBack, onNext);
+      initPuzzle3(container, clue, onBack, onNext, onArchives, unlocked);
     });
     document.getElementById('back-to-lodge-btn').addEventListener('click', () => {
       overlay.remove();
@@ -291,7 +272,7 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
   });
 
   if (typeof onArchives === 'function') {
-    document.getElementById('pff-archives-btn')?.addEventListener('click', () => {
+    document.getElementById('puzzle-arc-float')?.addEventListener('click', () => {
       cleanup();
       gsap.to('#screen-puzzle3', { opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: onArchives });
     });
@@ -304,17 +285,9 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
     lockCard.className = 'puzzle-lock-card';
     lockCard.innerHTML = `
       <h3 class="plc-title">Research Required</h3>
-      <p class="plc-body">Explore the Secret Archives and unseal the classified intel to unlock this puzzle.</p>
-      <div class="plc-pendant-link" id="plc-archives-btn" role="button" tabindex="0">
-        <div class="pendant-svg">${SVG_HANGING_PENDANT}</div>
-        <span class="pendant-label">Open the Secret Archives</span>
-      </div>
+      <p class="plc-body">Open the Secret Archives to unlock this puzzle — tap the seal on the right side of the screen.</p>
     `;
     networkLayout?.after(lockCard);
-    document.getElementById('plc-archives-btn')?.addEventListener('click', () => {
-      cleanup();
-      gsap.to('#screen-puzzle3', { opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: onArchives });
-    });
     gsap.fromTo(lockCard, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.5 });
   }
 

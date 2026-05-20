@@ -3542,22 +3542,36 @@ a { color: inherit; text-decoration: none; }
   margin: 0;
 }
 
-/* Redacted bar */
+/* Redacted bar — text is hidden via JS (inner span visibility:hidden).
+   The ::before overlay provides the visible dark bar. */
 .arc-redacted {
-  display: inline;
-  background: #0d0604;
-  color: #0d0604;
+  display: inline-block;
+  position: relative;
+  z-index: 0;
   border-radius: 2px;
-  padding: 1px 4px;
+  padding: 2px 8px;
   cursor: pointer;
   user-select: none;
-  transition: background 0.5s ease, color 0.5s ease;
-  position: relative;
-  box-shadow: inset 0 0 0 1px rgba(140,0,0,0.18);
+  vertical-align: baseline;
+  box-shadow: inset 0 0 0 1.5px rgba(140,31,31,0.75);
+  transition: box-shadow 0.25s;
+}
+.arc-text-inner { display: inline; }
+.arc-redacted::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #220c08;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 1;
+  transition: background 0.25s;
+}
+.arc-redacted:hover::before {
+  background: #2e1009;
 }
 .arc-redacted:hover {
-  background: #1a0808;
-  color: #1a0808;
+  box-shadow: inset 0 0 0 1.5px rgba(201,162,39,0.6);
 }
 .arc-redacted::after {
   content: "click to unseal";
@@ -3578,17 +3592,20 @@ a { color: inherit; text-decoration: none; }
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;
+  z-index: 10;
 }
 .arc-redacted:hover::after { opacity: 1; }
 
 /* Revealed state */
 .arc-redacted--revealed {
+  display: inline;
   background: transparent;
   color: var(--gold);
   font-style: italic;
   font-weight: 600;
   cursor: default;
 }
+.arc-redacted--revealed::before { display: none; }
 .arc-redacted--revealed::after { display: none; }
 .arc-redacted--revealed:hover { background: transparent; }
 

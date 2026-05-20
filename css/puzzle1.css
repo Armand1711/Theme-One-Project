@@ -550,7 +550,7 @@
   margin-top: 18px;
 }
 .pp-submit-btn {
-  display: inline-flex; align-items: center;
+  display: none; align-items: center;
   padding: 12px 28px;
   background: linear-gradient(180deg, var(--crimson), var(--crimson-deep));
   color: var(--gold-2);
@@ -1861,7 +1861,48 @@
   color: var(--gold);
 }
 
+/* ── Floating archives pendant — fixed right edge ─────────────────────────── */
+.puzzle-arc-float {
+  position: fixed;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  z-index: 40;
+  outline: none;
+  transition: transform 0.3s;
+}
+.puzzle-arc-float:hover,
+.puzzle-arc-float:focus-visible { transform: translateY(calc(-50% + 4px)); }
+.puzzle-arc-float .pendant-svg {
+  width: 68px;
+  height: 90px;
+  filter: drop-shadow(0 6px 16px rgba(0,0,0,0.7)) drop-shadow(0 0 14px rgba(94,11,21,0.4));
+  transition: filter 0.3s;
+}
+.puzzle-arc-float:hover .pendant-svg,
+.puzzle-arc-float:focus-visible .pendant-svg {
+  filter: drop-shadow(0 10px 22px rgba(0,0,0,0.8)) drop-shadow(0 0 18px rgba(201,162,39,0.45));
+}
+.paf-label {
+  margin-top: 5px;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 0.48rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.85;
+}
+
 @media (max-width: 600px) {
   .puzzle-lock-card { padding: 28px 20px; margin-bottom: 32px; }
   .plc-archives-btn { width: 100%; justify-content: center; }
+  .puzzle-arc-float { right: 8px; top: auto; bottom: 96px; transform: none; }
+  .puzzle-arc-float:hover,
+  .puzzle-arc-float:focus-visible { transform: translateY(-4px); }
+  .puzzle-arc-float .pendant-svg { width: 52px; height: 70px; }
 }

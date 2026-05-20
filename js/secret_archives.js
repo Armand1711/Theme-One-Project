@@ -1,3 +1,8 @@
+/* Session-level reveal state: persists while the page is open so users can
+   navigate back and forth without losing their unsealed intel, but resets on
+   every fresh page load so every play-through starts fully redacted. */
+const _sessionRevealed = new Map();
+
 export function initSecretArchives(app, onBack, puzzleContext = null) {
 
   /* ─── Tab content definitions ─────────────────────────────── */
@@ -470,13 +475,13 @@ export function initSecretArchives(app, onBack, puzzleContext = null) {
               <span class="arc-intel-clearance">ENIGMA I &mdash; PHOTOGRAPHIC INTELLIGENCE</span>
             </div>
             <h3 class="arc-intel-title">Unsealing the Sanctuary</h3>
-            <p class="arc-intel-sub">Four pieces of intelligence are sealed below. Click each black bar to unseal it before entering Enigma I.</p>
+            <p class="arc-intel-sub">Four intelligence fragments are sealed below. Unseal each one — use the reasoning inside to guide how you reassemble the photograph.</p>
           </div>
           <div class="arc-intel-body">
-            <p class="arc-intel-line">This photograph records the Union Masonic Temple at <span class="arc-redacted">126&ndash;128 Dutoitspan Road, Kimberley, photographed c.&nbsp;1888 &mdash; one year before the formal consecration on 15 August 1889</span>.</p>
-            <p class="arc-intel-line">The image divides into <span class="arc-redacted">six sections arranged in three columns and two rows &mdash; each section captures a distinct portion of the double-storey facade</span>.</p>
-            <p class="arc-intel-line">The upper row reveals <span class="arc-redacted">the left pilaster corner, the central arched entrance, and the right roofline pilaster</span> &mdash; reading left to right.</p>
-            <p class="arc-intel-line">The lower row reveals <span class="arc-redacted">the lower left stonework, the entrance steps and doorway, and the lower right corner of the building</span> &mdash; reading left to right.</p>
+            <p class="arc-intel-line">The photograph was taken at <span class="arc-redacted">126&ndash;128 Dutoitspan Road, Kimberley, circa 1888 &mdash; one year before the formal consecration. The building is symmetrical. Study the whole composition before placing any fragment.</span></p>
+            <p class="arc-intel-line">The facade reads across in <span class="arc-redacted">three vertical sections &mdash; a left flank, a central bay, and a right flank. The central bay is dominated by the grand arched entrance. The flanks are mirror images of each other &mdash; but look carefully, the details are not identical.</span></p>
+            <p class="arc-intel-line">The upper fragments are defined by <span class="arc-redacted">what appears at their very top edge &mdash; the crowning of the structure. Look for the pilaster capitals, the decorative pediment, and where the roofline meets the sky. These pieces show the building from mid-height upward.</span></p>
+            <p class="arc-intel-line">The lower fragments are anchored by <span class="arc-redacted">what appears at their bottom edge &mdash; where the building meets the street. Look for entrance steps, horizontal stonework courses, and the base of the pilasters. These pieces show the building from mid-height downward to the ground.</span></p>
           </div>
           <div class="arc-intel-progress" id="arc-intel-progress">
             <div class="arc-intel-bar"><div class="arc-intel-fill" id="arc-intel-fill" style="width:0%"></div></div>
@@ -496,17 +501,17 @@ export function initSecretArchives(app, onBack, puzzleContext = null) {
               <span class="arc-intel-clearance">ENIGMA II &mdash; CIPHER INTELLIGENCE</span>
             </div>
             <h3 class="arc-intel-title">Decoding the Symbols</h3>
-            <p class="arc-intel-sub">In Enigma II you will drag four symbol tiles onto four meaning slots. Click each black bar to reveal which tile belongs to which slot.</p>
+            <p class="arc-intel-sub">Four sealed clues below. Each one describes the logic behind a symbol and its meaning &mdash; unseal them, reason through each, and make the match yourself.</p>
           </div>
           <div class="arc-intel-body">
-            <p class="arc-intel-line">The tile showing <strong>clasped hands</strong> is called <span class="arc-redacted">&ldquo;Hands of Alliance&rdquo; &mdash; drag it onto the slot labelled &ldquo;The Silent Oath.&rdquo; The clasped grip is the secret pledge of loyalty exchanged between brothers at initiation.</span></p>
-            <p class="arc-intel-line">The tile showing a <strong>linked chain</strong> is called <span class="arc-redacted">&ldquo;Chain of Unity&rdquo; &mdash; drag it onto the slot labelled &ldquo;Shared Prosperity.&rdquo; Each link is a brother: break one and the whole chain weakens.</span></p>
-            <p class="arc-intel-line">The tile showing an <strong>arched bridge</strong> is called <span class="arc-redacted">&ldquo;Bridge of Cultures&rdquo; &mdash; drag it onto the slot labelled &ldquo;Cultural Bridge.&rdquo; Drawn from the architecture of Solomon&rsquo;s Temple, it represents the bond that crosses language and nationality.</span></p>
-            <p class="arc-intel-line">The tile showing a <strong>lit candle</strong> is called <span class="arc-redacted">&ldquo;Light of Tradition&rdquo; &mdash; drag it onto the slot labelled &ldquo;Enduring Legacy.&rdquo; The flame is never extinguished between lodge meetings &mdash; it carries the brotherhood across generations.</span></p>
+            <p class="arc-intel-line">The tile showing <strong>clasped hands</strong>: <span class="arc-redacted">At initiation, the candidate was hoodwinked &mdash; blindfolded and led through darkness. He could only identify a brother by a secret physical grip passed between two men without a word. No ceremony. No light. Just a pledge made in darkness. Consider what kind of bond that gesture represents.</span></p>
+            <p class="arc-intel-line">The tile showing a <strong>linked chain</strong>: <span class="arc-redacted">Each brother is a link. The chain holds only as long as every member holds &mdash; break one and the whole weakens. Lodge teaching held that mutual dependence was not weakness but strength. Ask yourself: what does a structure where every member depends on every other ultimately build for those within it?</span></p>
+            <p class="arc-intel-line">The tile showing an <strong>arched bridge</strong>: <span class="arc-redacted">The bridge derives from Solomon&rsquo;s Temple &mdash; a passage built to connect two otherwise separated spaces. In Kimberley, men from three nations used this symbol for their shared hall on Dutoitspan Road. Consider what a bridge makes possible between two worlds that would otherwise remain apart.</span></p>
+            <p class="arc-intel-line">The tile showing a <strong>lit candle</strong>: <span class="arc-redacted">The candle was never allowed to go out between meetings &mdash; carried from one Worshipful Master to the next, from one generation to the next, without interruption. Think about what something that cannot be extinguished and is passed forward indefinitely ultimately becomes.</span></p>
           </div>
           <div class="arc-intel-progress" id="arc-intel-progress">
             <div class="arc-intel-bar"><div class="arc-intel-fill" id="arc-intel-fill" style="width:0%"></div></div>
-            <span class="arc-intel-count" id="arc-intel-count">0 of 4 cipher items decoded</span>
+            <span class="arc-intel-count" id="arc-intel-count">0 of 4 clues unsealed</span>
           </div>
         </article>
       `
@@ -522,15 +527,15 @@ export function initSecretArchives(app, onBack, puzzleContext = null) {
               <span class="arc-intel-clearance">ENIGMA III &mdash; BOND NETWORK INTELLIGENCE</span>
             </div>
             <h3 class="arc-intel-title">The Hidden Network</h3>
-            <p class="arc-intel-sub">In Enigma III you will draw lines between five circles on a network map. Six real bonds exist. Click each black bar to reveal exactly which two circles to connect.</p>
+            <p class="arc-intel-sub">Six sealed fragments of evidence below. Each one describes a real historical relationship &mdash; unseal it, follow the reasoning, and draw the connection yourself.</p>
           </div>
           <div class="arc-intel-body">
-            <p class="arc-intel-line">Bond I &mdash; draw a line between: <span class="arc-redacted"><strong>Union Temple</strong> and <strong>English Craft</strong>. Seven English lodges were the founding debenture subscribers who gave the temple its legal existence on Dutoitspan Road.</span></p>
-            <p class="arc-intel-line">Bond II &mdash; draw a line between: <span class="arc-redacted"><strong>Union Temple</strong> and <strong>Scottish Chapter</strong>. Athole Lodge No.&nbsp;401 signed the founding charter, making the Scots co-owners of the building from day one.</span></p>
-            <p class="arc-intel-line">Bond III &mdash; draw a line between: <span class="arc-redacted"><strong>Union Temple</strong> and <strong>Dutch Brethren</strong>. De Goede Hoop Lodge contributed the largest single debenture, anchoring the Dutch brethren as the temple&rsquo;s largest creditors.</span></p>
-            <p class="arc-intel-line">Bond IV &mdash; draw a line between: <span class="arc-redacted"><strong>English Craft</strong> and <strong>Diamond Traders</strong>. English merchants financed lodge expansion through De Beers mining capital &mdash; commerce and the craft were inseparable in Kimberley.</span></p>
-            <p class="arc-intel-line">Bond V &mdash; draw a line between: <span class="arc-redacted"><strong>Diamond Traders</strong> and <strong>Dutch Brethren</strong>. Dutch merchants and English traders shared debenture subscriptions across national lines &mdash; wealth united what language divided.</span></p>
-            <p class="arc-intel-line">Bond VI &mdash; draw a line between: <span class="arc-redacted"><strong>Dutch Brethren</strong> and <strong>Scottish Chapter</strong>. Lodge records show a shared ceremonial calendar predating the temple&rsquo;s 1886 construction &mdash; the oldest bond in the network.</span></p>
+            <p class="arc-intel-line">Bond I &mdash; <span class="arc-redacted">The temple was built on debenture capital. The lodges that signed the founding charter earliest and subscribed the most were the ones most institutionally bound to the temple itself. The English lodges were the primary subscribers &mdash; follow the money to find who is connected to the centre.</span></p>
+            <p class="arc-intel-line">Bond II &mdash; <span class="arc-redacted">One lodge had followed the diamond rush south from Cape Colony, carrying their Scottish constitution with them. They signed the founding charter alongside the English lodges &mdash; making them co-owners from the very beginning. Their name sits beside the temple&rsquo;s on the foundation documents. Look for who arrived at the same table as the building itself.</span></p>
+            <p class="arc-intel-line">Bond III &mdash; <span class="arc-redacted">The largest single debenture contribution did not come from the English or Scottish lodges. It came from the Dutch brethren, who were the temple&rsquo;s principal creditors &mdash; not merely its tenants. Without their capital, the building could not have been sustained. The centre and its largest financial backer are inseparable.</span></p>
+            <p class="arc-intel-line">Bond IV &mdash; <span class="arc-redacted">Kimberley&rsquo;s diamond market and its English lodges were not separate worlds. Membership rolls and De Beers shareholder registers carry many of the same names. Commerce and the craft moved together in this town. Find where the merchants and the English brethren share the same ledger page.</span></p>
+            <p class="arc-intel-line">Bond V &mdash; <span class="arc-redacted">Debenture lists from the temple&rsquo;s construction fund show two groups of merchants subscribing side by side. The market square did not enforce the same borders as the Grand Lodges. Wealth crossed the lines that language maintained. Find the two merchant communities that shared the same subscription list.</span></p>
+            <p class="arc-intel-line">Bond VI &mdash; <span class="arc-redacted">Lodge records predating 1886 show two brotherhoods already sharing ceremonial occasions before the temple was built. Their alliance is the oldest documented connection in the network &mdash; it existed before the building that housed them all. Look for the pair that were already bound to each other before the others arrived.</span></p>
           </div>
           <div class="arc-intel-progress" id="arc-intel-progress">
             <div class="arc-intel-bar"><div class="arc-intel-fill" id="arc-intel-fill" style="width:0%"></div></div>
@@ -541,10 +546,12 @@ export function initSecretArchives(app, onBack, puzzleContext = null) {
     }
   };
 
-  const dossierDef = puzzleContext ? INTEL_DOSSIERS[puzzleContext.step] : null;
-  const startTab   = dossierDef ? dossierDef.tab : 'historical';
-  const totalIntel = dossierDef ? dossierDef.total : 0;
-  const revealed   = new Set();
+  const dossierDef  = puzzleContext ? INTEL_DOSSIERS[puzzleContext.step] : null;
+  const startTab    = dossierDef ? dossierDef.tab : 'historical';
+  const totalIntel  = dossierDef ? dossierDef.total : 0;
+  const stepKey     = puzzleContext ? puzzleContext.step : null;
+  if (stepKey !== null && !_sessionRevealed.has(stepKey)) _sessionRevealed.set(stepKey, new Set());
+  const revealed    = stepKey !== null ? _sessionRevealed.get(stepKey) : new Set();
 
   /* ─── Shell HTML ────────────────────────────────────────────── */
   const bannerHtml = puzzleContext ? `
@@ -755,15 +762,29 @@ export function initSecretArchives(app, onBack, puzzleContext = null) {
   function wireDossier() {
     const spans = document.querySelectorAll('#arc-intel-dossier .arc-redacted');
     spans.forEach((span, idx) => {
-      if (revealed.has(idx)) {
+      const isRevealed = revealed.has(idx);
+
+      // Wrap the real text in an inner span so we can hide/show it via
+      // visibility (guaranteed to work regardless of CSS cascade or stacking).
+      const inner = document.createElement('span');
+      inner.className = 'arc-text-inner';
+      inner.innerHTML = span.innerHTML;
+      inner.style.visibility = isRevealed ? 'visible' : 'hidden';
+      span.innerHTML = '';
+      span.appendChild(inner);
+
+      if (isRevealed) {
+        span.classList.remove('arc-redacted');
         span.classList.add('arc-redacted--revealed');
       } else {
         span.addEventListener('click', () => {
           revealed.add(idx);
+          inner.style.visibility = 'visible';
+          span.classList.remove('arc-redacted');
           span.classList.add('arc-redacted--revealed');
           gsap.fromTo(span,
-            { opacity: 0.4, scale: 0.97 },
-            { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.5)' }
+            { opacity: 0, filter: 'blur(8px)' },
+            { opacity: 1, filter: 'blur(0px)', duration: 0.55, ease: 'power2.out' }
           );
           updateIntelCount();
           if (revealed.size >= totalIntel) onAllRevealed();
