@@ -92,24 +92,24 @@ export function initLanding(app, startMenu) {
 
             <div class="context-block">
               <div class="ctx-icon-wrap">${SVG_HOURGLASS_COMPASS}</div>
-              <h3 class="ctx-block-title">Timeless Cycles</h3>
-              <p class="ctx-block-text">Measured in seconds, lived in centuries. The temple clock marks the slow march of initiation and the preservation of ancient truth across three national brotherhoods who shared one floor.</p>
+              <h3 class="ctx-block-title">A Brotherhood Across Time</h3>
+              <p class="ctx-block-text">Freemasonry has existed for centuries. The same rituals practised in a Kimberley lodge in 1886 were being performed in lodges across Scotland, Holland, and England at the same time. That shared tradition is why strangers from different countries trusted each other instantly.</p>
               <span class="ctx-watermark">I</span>
               <span class="ctx-base"></span>
             </div>
 
             <div class="context-block">
               <div class="ctx-icon-wrap">${SVG_SQUARE_COMPASS}</div>
-              <h3 class="ctx-block-title">Divine Geometry</h3>
-              <p class="ctx-block-text">Every angle is intentional. Every line serves an architectural purpose. The compass, square, and level were the shared symbols that bridged Scottish, Dutch, and English Masons.</p>
+              <h3 class="ctx-block-title">A Language of Symbols</h3>
+              <p class="ctx-block-text">Masonic lodges communicate through symbols, not just words. The compass, square, and level each carry a specific meaning. A Scottish miner and a Dutch trader might not share a spoken language, but they could read the same symbols and understand exactly what the other stood for.</p>
               <span class="ctx-watermark">II</span>
               <span class="ctx-base"></span>
             </div>
 
             <div class="context-block">
               <div class="ctx-icon-wrap">${SVG_PILLARS}</div>
-              <h3 class="ctx-block-title">Unyielding Pillars</h3>
-              <p class="ctx-block-text">Strength and beauty support the heavens. The 1886 Union Masonic Temple at 126-128 Dutoitspan Road still stands today. A National Monument that bound a community in brotherhood and became a refuge in war.</p>
+              <h3 class="ctx-block-title">One Building, Many Nations</h3>
+              <p class="ctx-block-text">The Union Masonic Temple at 126&ndash;128 Dutoitspan Road was built in 1886 and is still standing today. It was declared a National Monument in 1990. During the Siege of Kimberley in 1899, it was converted into a fever hospital. Through all of it, it remained the one place the different lodges shared.</p>
               <span class="ctx-watermark">III</span>
               <span class="ctx-base"></span>
             </div>

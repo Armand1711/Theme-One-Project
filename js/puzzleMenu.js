@@ -37,7 +37,7 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
           <div class="ih-line"></div>
           <div class="ih-center">
             <span class="ih-diamond">◆</span>
-            <span class="ih-label">Your Initiations</span>
+            <span class="ih-label">Choose a Puzzle</span>
             <span class="ih-diamond">◆</span>
           </div>
           <div class="ih-line"></div>
@@ -61,10 +61,10 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
 
               <div class="ic-status-row">
                 ${p.complete
-                  ? `<span class="ic-status-text ic-done-text">&#10003; &nbsp; Solved</span>`
+                  ? `<span class="ic-status-text ic-done-text">&#10003; &nbsp; Completed</span>`
                   : p.unlocked
-                    ? `<span class="ic-status-text shimmer-gold">Available, Enter</span>`
-                    : `<span class="ic-status-text ic-locked-text">Sealed</span>`}
+                    ? `<span class="ic-status-text shimmer-gold">Ready &mdash; Click to Play</span>`
+                    : `<span class="ic-status-text ic-locked-text">Complete the previous puzzle first</span>`}
               </div>
 
               <div class="ic-bottom-bar">

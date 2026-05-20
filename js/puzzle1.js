@@ -210,13 +210,13 @@ export function initPuzzle1(container, onBack, onNext) {
         <div class="go-icon-wrap go-eye-wrap">
           ${SVG_RADIANT_DELTA}
         </div>
-        <h2 class="go-heading">The chamber goes dark</h2>
+        <h2 class="go-heading">Out of Lives</h2>
         <div class="go-divider">
           <div class="go-divider-line"></div>
           <span class="go-divider-diamond">&#9670;</span>
           <div class="go-divider-line"></div>
         </div>
-        <p class="go-body">You ran out of lives. Take another shot.</p>
+        <p class="go-body">You used all three lives. The puzzle resets — try again from the beginning.</p>
         <button class="go-try-btn" id="try-again-btn">Try Again</button>
         <button class="go-return-btn" id="back-to-lodge-btn">Return to the Lodge</button>
       </div>
@@ -269,8 +269,8 @@ export function initPuzzle1(container, onBack, onNext) {
   const shuffled = [...pieceDefs].sort(() => Math.random() - 0.5);
   const pieceEls = [];
 
-  // Create fixed holder cells first so the grid never reflows when pieces leave
-  pieceDefs.forEach(def => {
+  // Create holder cells in random order so visual positions differ each game
+  [...pieceDefs].sort(() => Math.random() - 0.5).forEach(def => {
     const holder = document.createElement('div');
     holder.className = 'source-holder';
     holder.dataset.holderId = def.id;

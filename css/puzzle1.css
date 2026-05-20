@@ -54,18 +54,21 @@
   justify-self: start;
   display: inline-flex; align-items: center; gap: 10px;
   padding: 8px 16px;
-  border: 1px solid var(--border-gold);
-  color: var(--gold);
+  border: 1px solid rgba(201,162,39,0.75);
+  background: rgba(201,162,39,0.13);
+  color: #f5c430;
   font-family: var(--sans);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.65rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 10px rgba(201,162,39,0.2), inset 0 0 6px rgba(201,162,39,0.06);
+  text-shadow: 0 0 8px rgba(255,220,80,0.45);
 }
-.ptb-left:hover { background: rgba(201,162,39,0.06); }
-.ptb-left .svg-compass-mark { width: 16px; height: 16px; color: var(--gold); }
+.ptb-left:hover { background: rgba(201,162,39,0.2); border-color: rgba(201,162,39,1); box-shadow: 0 0 16px rgba(201,162,39,0.35); }
+.ptb-left .svg-compass-mark { width: 16px; height: 16px; color: #f5c430; filter: drop-shadow(0 0 4px rgba(255,200,60,0.5)); }
 .ptb-arrow { font-size: 14px !important; display: none; }
 .ptb-back-label { font-weight: 600; }
 
@@ -154,24 +157,20 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px 8px 16px;
-  border: 1px solid var(--gold);
-  background: linear-gradient(180deg, rgba(140,31,31,0.18), rgba(8,4,2,0.85));
+  padding: 6px 12px;
+  border: 1px solid var(--border-gold);
+  background: rgba(8,4,2,0.6);
   position: relative;
-  box-shadow:
-    inset 0 0 0 1px rgba(201,162,39,0.18),
-    0 4px 10px rgba(0,0,0,0.4);
 }
 .ptb-hearts::before, #health-bar::before {
-  content: "LIVES";
+  content: "VITALITY";
   font-family: var(--sans);
-  font-weight: 700;
-  font-size: 0.58rem;
-  letter-spacing: 0.32em;
-  color: var(--gold-2);
-  margin-right: 8px;
-  padding-right: 8px;
-  border-right: 1px solid var(--border-gold);
+  font-weight: 600;
+  font-size: 0.5rem;
+  letter-spacing: 0.28em;
+  color: var(--gold);
+  opacity: 0.85;
+  margin-right: 6px;
 }
 .ptb-hearts .material-symbols-outlined { display: none !important; }
 .ptb-heart.material-symbols-outlined { display: none !important; }
@@ -182,13 +181,21 @@
   transition: opacity 0.4s;
 }
 .flame-lit {
-  filter: drop-shadow(0 0 6px rgba(201,162,39,0.7));
+  filter: drop-shadow(0 0 6px rgba(255,200,60,1)) drop-shadow(0 0 14px rgba(201,162,39,0.75));
   animation: flamePulse 2.5s ease-in-out infinite;
 }
-.flame-out { opacity: 0.3; filter: grayscale(0.9); }
+/* Override SVG presentation attributes so lit flames are bright gold */
+.flame-lit path {
+  fill: #f5c430 !important;
+  fill-opacity: 1 !important;
+  stroke: #f5c430 !important;
+  stroke-opacity: 1 !important;
+}
+.flame-lit circle { fill: #fff9e8 !important; }
+.flame-out { opacity: 0.2; filter: grayscale(1) brightness(0.5); }
 @keyframes flamePulse {
-  0%, 100% { transform: scale(1); opacity: 0.92; }
-  50%      { transform: scale(1.08); opacity: 1; }
+  0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 6px rgba(255,200,60,1))  drop-shadow(0 0 14px rgba(201,162,39,0.75)); }
+  50%      { transform: scale(1.12); filter: drop-shadow(0 0 10px rgba(255,230,80,1)) drop-shadow(0 0 24px rgba(201,162,39,0.95)); }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -892,16 +899,35 @@
 
 .go-icon-wrap {
   position: relative;
-  width: 110px; height: 110px;
+  width: 120px; height: 120px;
   margin: 0 auto 26px;
   display: flex; align-items: center; justify-content: center;
 }
 .go-skull { display: none; }
 .go-eye-wrap svg {
   width: 100%; height: 100%;
-  filter: drop-shadow(0 0 20px rgba(201,162,39,0.4));
-  animation: eyePulse 3s ease-in-out infinite;
+  display: block;
+  filter: drop-shadow(0 0 20px rgba(255,220,80,1)) drop-shadow(0 0 40px rgba(201,162,39,0.85)) brightness(1.5);
+  animation: goEyePulse 3s ease-in-out infinite;
 }
+/* Make the triangle fill visible and rays bright */
+.go-eye-wrap .svg-radiant-delta > path:first-of-type {
+  fill: rgba(201,162,39,0.32) !important;
+  stroke: #f0c040 !important;
+  stroke-width: 3px !important;
+}
+.go-eye-wrap .rd-rays {
+  stroke: #f5c842 !important;
+  stroke-width: 1.8px !important;
+  opacity: 1 !important;
+  animation: goRaysSpin 22s linear infinite;
+  transform-origin: 70px 70px;
+}
+@keyframes goEyePulse {
+  0%, 100% { filter: drop-shadow(0 0 18px rgba(255,220,80,0.9)) drop-shadow(0 0 36px rgba(201,162,39,0.7)) brightness(1.4); }
+  50%       { filter: drop-shadow(0 0 28px rgba(255,230,80,1))   drop-shadow(0 0 55px rgba(201,162,39,0.95)) brightness(1.65); }
+}
+@keyframes goRaysSpin { to { transform: rotate(360deg); } }
 .go-skull-glow { display: none; }
 
 .go-heading {
@@ -1330,21 +1356,18 @@
   padding: 9px 18px;
   font-size: 0.62rem;
   letter-spacing: 0.32em;
-  border: 1px solid var(--border-gold);
-  background: rgba(201,162,39,0.04);
+  border: 1px solid rgba(201,162,39,0.75);
+  background: rgba(201,162,39,0.13);
 }
 .ptb-left .svg-compass-mark { width: 14px; height: 14px; }
 
-/* Vitality meter — refined header */
+/* Vitality meter — match puzzle menu style */
 .ptb-hearts, #health-bar {
-  padding: 8px 12px 8px 14px;
-  background: rgba(8,4,2,0.6);
-  position: relative;
+  padding: 6px 12px;
 }
 .ptb-hearts::before, #health-bar::before {
   font-size: 0.48rem;
-  letter-spacing: 0.32em;
-  opacity: 0.7;
+  letter-spacing: 0.28em;
 }
 
 /* Hint button slightly bigger */

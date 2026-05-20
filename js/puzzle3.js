@@ -229,13 +229,13 @@ export function initPuzzle3(container, clue, onBack, onNext) {
     overlay.innerHTML = `
       <div class="game-over-card">
         <div class="go-icon-wrap go-eye-wrap">${SVG_RADIANT_DELTA}</div>
-        <h2 class="go-heading">The chamber goes dark</h2>
+        <h2 class="go-heading">Out of Lives</h2>
         <div class="go-divider">
           <div class="go-divider-line"></div>
           <span class="go-divider-diamond">&#9670;</span>
           <div class="go-divider-line"></div>
         </div>
-        <p class="go-body">You ran out of lives. Take another shot.</p>
+        <p class="go-body">You used all three lives. The puzzle resets — try again from the beginning.</p>
         <button class="go-try-btn" id="try-again-btn">Try Again</button>
         <button class="go-return-btn" id="back-to-lodge-btn">Return to the Lodge</button>
       </div>

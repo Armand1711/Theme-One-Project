@@ -179,22 +179,22 @@ export function initPuzzle2(container, clue, onBack, onNext) {
               <div class="drop-slot manuscript-slot" data-slot="1">
                 <span class="ms-initial">S</span>
                 <span class="slot-label">The Silent Oath</span>
-                <span class="slot-sublabel">A wordless pact of trust</span>
+                <span class="slot-sublabel">A solemn promise made between brothers, binding them to loyalty and secrecy</span>
               </div>
               <div class="drop-slot manuscript-slot" data-slot="2">
                 <span class="ms-initial">P</span>
                 <span class="slot-label">Shared Prosperity</span>
-                <span class="slot-sublabel">Linked in fortune and loss</span>
+                <span class="slot-sublabel">Members support each other in business and hardship — what benefits one benefits all</span>
               </div>
               <div class="drop-slot manuscript-slot" data-slot="3">
                 <span class="ms-initial">C</span>
                 <span class="slot-label">Cultural Bridge</span>
-                <span class="slot-sublabel">A span between strange tongues</span>
+                <span class="slot-sublabel">A bond that crosses language and nationality, allowing men from different countries to work as one</span>
               </div>
               <div class="drop-slot manuscript-slot" data-slot="4">
                 <span class="ms-initial">L</span>
                 <span class="slot-label">Enduring Legacy</span>
-                <span class="slot-sublabel">A flame kept through ages</span>
+                <span class="slot-sublabel">A tradition passed from generation to generation, keeping the brotherhood alive across centuries</span>
               </div>
             </div>
           </div>
@@ -266,13 +266,13 @@ export function initPuzzle2(container, clue, onBack, onNext) {
     overlay.innerHTML = `
       <div class="game-over-card">
         <div class="go-icon-wrap go-eye-wrap">${SVG_RADIANT_DELTA}</div>
-        <h2 class="go-heading">The chamber goes dark</h2>
+        <h2 class="go-heading">Out of Lives</h2>
         <div class="go-divider">
           <div class="go-divider-line"></div>
           <span class="go-divider-diamond">&#9670;</span>
           <div class="go-divider-line"></div>
         </div>
-        <p class="go-body">You ran out of lives. Take another shot.</p>
+        <p class="go-body">You used all three lives. The puzzle resets — try again from the beginning.</p>
         <button class="go-try-btn" id="try-again-btn">Try Again</button>
         <button class="go-return-btn" id="back-to-lodge-btn">Return to the Lodge</button>
       </div>
