@@ -1,4 +1,4 @@
-export function initSecretArchives(app, onBack) {
+export function initSecretArchives(app, onBack, puzzleContext = null) {
 
   /* ─── Tab content definitions ─────────────────────────────── */
   const MS = (icon, opts = '') =>
@@ -457,9 +457,105 @@ export function initSecretArchives(app, onBack) {
     `
   };
 
+  /* ─── Intelligence dossiers per puzzle context ─────────────────── */
+  const INTEL_DOSSIERS = {
+    1: {
+      tab: 'historical',
+      total: 4,
+      html: `
+        <article class="archives-doc arc-intel-dossier" id="arc-intel-dossier">
+          <div class="arc-intel-header">
+            <div class="arc-intel-stamp-row">
+              <span class="arc-intel-stamp">&#9670; CLASSIFIED &#9670;</span>
+              <span class="arc-intel-clearance">ENIGMA I &mdash; PHOTOGRAPHIC INTELLIGENCE</span>
+            </div>
+            <h3 class="arc-intel-title">Unsealing the Sanctuary</h3>
+            <p class="arc-intel-sub">Four pieces of intelligence are sealed below. Click each black bar to unseal it before entering Enigma I.</p>
+          </div>
+          <div class="arc-intel-body">
+            <p class="arc-intel-line">This photograph records the Union Masonic Temple at <span class="arc-redacted">126&ndash;128 Dutoitspan Road, Kimberley, photographed c.&nbsp;1888 &mdash; one year before the formal consecration on 15 August 1889</span>.</p>
+            <p class="arc-intel-line">The image divides into <span class="arc-redacted">six sections arranged in three columns and two rows &mdash; each section captures a distinct portion of the double-storey facade</span>.</p>
+            <p class="arc-intel-line">The upper row reveals <span class="arc-redacted">the left pilaster corner, the central arched entrance, and the right roofline pilaster</span> &mdash; reading left to right.</p>
+            <p class="arc-intel-line">The lower row reveals <span class="arc-redacted">the lower left stonework, the entrance steps and doorway, and the lower right corner of the building</span> &mdash; reading left to right.</p>
+          </div>
+          <div class="arc-intel-progress" id="arc-intel-progress">
+            <div class="arc-intel-bar"><div class="arc-intel-fill" id="arc-intel-fill" style="width:0%"></div></div>
+            <span class="arc-intel-count" id="arc-intel-count">0 of 4 intelligence items unsealed</span>
+          </div>
+        </article>
+      `
+    },
+    2: {
+      tab: 'historical',
+      total: 4,
+      html: `
+        <article class="archives-doc arc-intel-dossier" id="arc-intel-dossier">
+          <div class="arc-intel-header">
+            <div class="arc-intel-stamp-row">
+              <span class="arc-intel-stamp">&#9670; CLASSIFIED &#9670;</span>
+              <span class="arc-intel-clearance">ENIGMA II &mdash; CIPHER INTELLIGENCE</span>
+            </div>
+            <h3 class="arc-intel-title">Decoding the Symbols</h3>
+            <p class="arc-intel-sub">In Enigma II you will drag four symbol tiles onto four meaning slots. Click each black bar to reveal which tile belongs to which slot.</p>
+          </div>
+          <div class="arc-intel-body">
+            <p class="arc-intel-line">The tile showing <strong>clasped hands</strong> is called <span class="arc-redacted">&ldquo;Hands of Alliance&rdquo; &mdash; drag it onto the slot labelled &ldquo;The Silent Oath.&rdquo; The clasped grip is the secret pledge of loyalty exchanged between brothers at initiation.</span></p>
+            <p class="arc-intel-line">The tile showing a <strong>linked chain</strong> is called <span class="arc-redacted">&ldquo;Chain of Unity&rdquo; &mdash; drag it onto the slot labelled &ldquo;Shared Prosperity.&rdquo; Each link is a brother: break one and the whole chain weakens.</span></p>
+            <p class="arc-intel-line">The tile showing an <strong>arched bridge</strong> is called <span class="arc-redacted">&ldquo;Bridge of Cultures&rdquo; &mdash; drag it onto the slot labelled &ldquo;Cultural Bridge.&rdquo; Drawn from the architecture of Solomon&rsquo;s Temple, it represents the bond that crosses language and nationality.</span></p>
+            <p class="arc-intel-line">The tile showing a <strong>lit candle</strong> is called <span class="arc-redacted">&ldquo;Light of Tradition&rdquo; &mdash; drag it onto the slot labelled &ldquo;Enduring Legacy.&rdquo; The flame is never extinguished between lodge meetings &mdash; it carries the brotherhood across generations.</span></p>
+          </div>
+          <div class="arc-intel-progress" id="arc-intel-progress">
+            <div class="arc-intel-bar"><div class="arc-intel-fill" id="arc-intel-fill" style="width:0%"></div></div>
+            <span class="arc-intel-count" id="arc-intel-count">0 of 4 cipher items decoded</span>
+          </div>
+        </article>
+      `
+    },
+    3: {
+      tab: 'minutes',
+      total: 6,
+      html: `
+        <article class="archives-doc arc-intel-dossier" id="arc-intel-dossier">
+          <div class="arc-intel-header">
+            <div class="arc-intel-stamp-row">
+              <span class="arc-intel-stamp">&#9670; CLASSIFIED &#9670;</span>
+              <span class="arc-intel-clearance">ENIGMA III &mdash; BOND NETWORK INTELLIGENCE</span>
+            </div>
+            <h3 class="arc-intel-title">The Hidden Network</h3>
+            <p class="arc-intel-sub">In Enigma III you will draw lines between five circles on a network map. Six real bonds exist. Click each black bar to reveal exactly which two circles to connect.</p>
+          </div>
+          <div class="arc-intel-body">
+            <p class="arc-intel-line">Bond I &mdash; draw a line between: <span class="arc-redacted"><strong>Union Temple</strong> and <strong>English Craft</strong>. Seven English lodges were the founding debenture subscribers who gave the temple its legal existence on Dutoitspan Road.</span></p>
+            <p class="arc-intel-line">Bond II &mdash; draw a line between: <span class="arc-redacted"><strong>Union Temple</strong> and <strong>Scottish Chapter</strong>. Athole Lodge No.&nbsp;401 signed the founding charter, making the Scots co-owners of the building from day one.</span></p>
+            <p class="arc-intel-line">Bond III &mdash; draw a line between: <span class="arc-redacted"><strong>Union Temple</strong> and <strong>Dutch Brethren</strong>. De Goede Hoop Lodge contributed the largest single debenture, anchoring the Dutch brethren as the temple&rsquo;s largest creditors.</span></p>
+            <p class="arc-intel-line">Bond IV &mdash; draw a line between: <span class="arc-redacted"><strong>English Craft</strong> and <strong>Diamond Traders</strong>. English merchants financed lodge expansion through De Beers mining capital &mdash; commerce and the craft were inseparable in Kimberley.</span></p>
+            <p class="arc-intel-line">Bond V &mdash; draw a line between: <span class="arc-redacted"><strong>Diamond Traders</strong> and <strong>Dutch Brethren</strong>. Dutch merchants and English traders shared debenture subscriptions across national lines &mdash; wealth united what language divided.</span></p>
+            <p class="arc-intel-line">Bond VI &mdash; draw a line between: <span class="arc-redacted"><strong>Dutch Brethren</strong> and <strong>Scottish Chapter</strong>. Lodge records show a shared ceremonial calendar predating the temple&rsquo;s 1886 construction &mdash; the oldest bond in the network.</span></p>
+          </div>
+          <div class="arc-intel-progress" id="arc-intel-progress">
+            <div class="arc-intel-bar"><div class="arc-intel-fill" id="arc-intel-fill" style="width:0%"></div></div>
+            <span class="arc-intel-count" id="arc-intel-count">0 of 6 bonds unsealed</span>
+          </div>
+        </article>
+      `
+    }
+  };
+
+  const dossierDef = puzzleContext ? INTEL_DOSSIERS[puzzleContext.step] : null;
+  const startTab   = dossierDef ? dossierDef.tab : 'historical';
+  const totalIntel = dossierDef ? dossierDef.total : 0;
+  const revealed   = new Set();
+
   /* ─── Shell HTML ────────────────────────────────────────────── */
+  const bannerHtml = puzzleContext ? `
+    <div class="arc-puzzle-banner" id="arc-puzzle-banner">
+      <div class="apb-label">You have read the research. Ready when you are.</div>
+      <button class="apb-start-btn" id="apb-start-btn">${puzzleContext.label} &rarr;</button>
+    </div>
+  ` : '';
+
   const html = `
-    <div id="screen-archives">
+    <div id="screen-archives"${puzzleContext ? ' class="has-banner"' : ''}>
       <div class="archives-vignette"></div>
 
       <header class="archives-header">
@@ -477,16 +573,16 @@ export function initSecretArchives(app, onBack) {
 
       <!-- Mobile tab strip -->
       <div class="archives-mobile-tabs">
-        <button class="archives-mobile-tab archives-mobile-tab--active" data-tab="historical">
+        <button class="archives-mobile-tab${startTab === 'historical' ? ' archives-mobile-tab--active' : ''}" data-tab="historical">
           <span class="material-symbols-outlined">history_edu</span>History
         </button>
-        <button class="archives-mobile-tab" data-tab="architectural">
+        <button class="archives-mobile-tab${startTab === 'architectural' ? ' archives-mobile-tab--active' : ''}" data-tab="architectural">
           <span class="material-symbols-outlined">architecture</span>Plans
         </button>
-        <button class="archives-mobile-tab" data-tab="minutes">
+        <button class="archives-mobile-tab${startTab === 'minutes' ? ' archives-mobile-tab--active' : ''}" data-tab="minutes">
           <span class="material-symbols-outlined">group</span>Minutes
         </button>
-        <button class="archives-mobile-tab" data-tab="photographs">
+        <button class="archives-mobile-tab${startTab === 'photographs' ? ' archives-mobile-tab--active' : ''}" data-tab="photographs">
           <span class="material-symbols-outlined">photo_library</span>Photos
         </button>
       </div>
@@ -508,16 +604,16 @@ export function initSecretArchives(app, onBack) {
           <nav class="archives-nav">
             <div class="archives-nav-label">&#9670; Sections</div>
             <ul class="archives-nav-list" id="archives-nav-list">
-              <li class="archives-nav-active" data-tab="historical">
+              <li ${startTab === 'historical' ? 'class="archives-nav-active"' : ''} data-tab="historical">
                 <span class="material-symbols-outlined">history_edu</span>Historical Records
               </li>
-              <li data-tab="architectural">
+              <li ${startTab === 'architectural' ? 'class="archives-nav-active"' : ''} data-tab="architectural">
                 <span class="material-symbols-outlined">architecture</span>Architectural Plans
               </li>
-              <li data-tab="minutes">
+              <li ${startTab === 'minutes' ? 'class="archives-nav-active"' : ''} data-tab="minutes">
                 <span class="material-symbols-outlined">group</span>Lodge Minutes
               </li>
-              <li data-tab="photographs">
+              <li ${startTab === 'photographs' ? 'class="archives-nav-active"' : ''} data-tab="photographs">
                 <span class="material-symbols-outlined">photo_library</span>Photographs
               </li>
             </ul>
@@ -536,17 +632,28 @@ export function initSecretArchives(app, onBack) {
 
         <!-- Main content (swapped on tab change) -->
         <main class="archives-main" id="archives-main-content">
-          ${TABS.historical}
+          ${TABS[startTab]}
         </main>
       </div>
+      ${bannerHtml}
     </div>
   `;
 
   app.innerHTML = html;
   window.scrollTo(0, 0);
 
+  /* ─── Puzzle context banner button ──────────────────────────── */
+  if (puzzleContext) {
+    document.getElementById('apb-start-btn')?.addEventListener('click', () => {
+      gsap.to('#screen-archives', {
+        opacity: 0, duration: 0.35, ease: 'power2.in',
+        onComplete: () => typeof puzzleContext.onStart === 'function' && puzzleContext.onStart(revealed.size >= totalIntel)
+      });
+    });
+  }
+
   /* ─── Tab switching ─────────────────────────────────────────── */
-  let currentTab = 'historical';
+  let currentTab = startTab;
 
   function switchTab(tab) {
     if (tab === currentTab) return;
@@ -571,6 +678,7 @@ export function initSecretArchives(app, onBack) {
         main.innerHTML = TABS[tab];
         window.scrollTo(0, 0);
         wireButtons();
+        injectDossier(tab);
         gsap.fromTo(main,
           { opacity: 0, y: 20 },
           { opacity: 1, y: 0, duration: 0.38, ease: 'power2.out' }
@@ -585,12 +693,19 @@ export function initSecretArchives(app, onBack) {
 
   /* ─── Button wiring (called after each tab swap) ─────────────── */
   function wireButtons() {
-    // "Explore Enigma" / "Explore Bond Network" buttons → back to menu
     document.querySelectorAll('.archives-goto-puzzle').forEach(btn => {
+      const btnPuzzle = parseInt(btn.dataset.puzzle);
+      const isThisPuzzle = puzzleContext && puzzleContext.step === btnPuzzle;
+      // Update button text when in context mode for matching puzzle
+      if (isThisPuzzle) btn.textContent = puzzleContext.label + ' →';
       btn.addEventListener('click', () => {
+        const targetFn = isThisPuzzle ? puzzleContext.onStart : onBack;
         gsap.to('#screen-archives', {
           opacity: 0, duration: 0.35, ease: 'power2.in',
-          onComplete: () => typeof onBack === 'function' && onBack()
+          onComplete: () => {
+            if (typeof targetFn !== 'function') return;
+            isThisPuzzle ? targetFn(revealed.size >= totalIntel) : targetFn();
+          }
         });
       });
     });
@@ -622,6 +737,67 @@ export function initSecretArchives(app, onBack) {
 
   /* ─── Wire initial tab buttons ─────────────────────────────────── */
   wireButtons();
+  injectDossier(startTab);
+
+  /* ─── Intelligence dossier injection ──────────────────────────── */
+  function injectDossier(tab) {
+    if (!dossierDef || tab !== dossierDef.tab) return;
+    const main = document.getElementById('archives-main-content');
+    if (!main || main.querySelector('#arc-intel-dossier')) return;
+    main.insertAdjacentHTML('afterbegin', dossierDef.html);
+    wireDossier();
+    gsap.fromTo('#arc-intel-dossier',
+      { opacity: 0, y: -16 },
+      { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }
+    );
+  }
+
+  function wireDossier() {
+    const spans = document.querySelectorAll('#arc-intel-dossier .arc-redacted');
+    spans.forEach((span, idx) => {
+      if (revealed.has(idx)) {
+        span.classList.add('arc-redacted--revealed');
+      } else {
+        span.addEventListener('click', () => {
+          revealed.add(idx);
+          span.classList.add('arc-redacted--revealed');
+          gsap.fromTo(span,
+            { opacity: 0.4, scale: 0.97 },
+            { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.5)' }
+          );
+          updateIntelCount();
+          if (revealed.size >= totalIntel) onAllRevealed();
+        });
+      }
+    });
+    updateIntelCount();
+  }
+
+  function updateIntelCount() {
+    const fill  = document.getElementById('arc-intel-fill');
+    const count = document.getElementById('arc-intel-count');
+    const n     = Math.min(revealed.size, totalIntel);
+    if (fill)  fill.style.width = totalIntel > 0 ? `${(n / totalIntel) * 100}%` : '0%';
+    if (count) {
+      const label = dossierDef && dossierDef.tab === 'minutes' ? 'bonds' : 'items';
+      count.textContent = n >= totalIntel
+        ? `All ${totalIntel} ${label} unsealed — intel gathered`
+        : `${n} of ${totalIntel} ${label} unsealed`;
+      if (n >= totalIntel) count.classList.add('arc-intel-count--done');
+    }
+  }
+
+  function onAllRevealed() {
+    const banner = document.getElementById('arc-puzzle-banner');
+    const btn    = document.getElementById('apb-start-btn');
+    if (banner) banner.classList.add('arc-puzzle-banner--ready');
+    if (btn) {
+      gsap.to(btn, {
+        boxShadow: '0 0 24px rgba(201,162,39,0.7), 0 0 48px rgba(201,162,39,0.3)',
+        duration: 1, repeat: -1, yoyo: true, ease: 'power2.inOut'
+      });
+    }
+  }
 
   /* ─── Entrance animation ──────────────────────────────────────── */
   try {

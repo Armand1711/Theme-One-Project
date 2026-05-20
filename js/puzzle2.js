@@ -6,8 +6,22 @@ import {
   SVG_SYM_CHAIN,
   SVG_SYM_BRIDGE,
   SVG_SYM_CANDLE,
-  SVG_SYM_HANDS
+  SVG_SYM_HANDS,
+  SVG_HANGING_PENDANT
 } from './svg-library.js';
+
+function scrambleEl(el) {
+  if (!el) return;
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  let n;
+  while ((n = walker.nextNode())) nodes.push(n);
+  nodes.forEach(n => {
+    n.textContent = n.textContent.replace(/[a-zA-Z]/g, () =>
+      String.fromCharCode(97 + Math.floor(Math.random() * 26))
+    );
+  });
+}
 
 function renderFlames(lives, max = 3) {
   const out = [];
@@ -34,19 +48,6 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
         <div class="cmc-divider-line"></div>
       </div>
       <p class="cmc-body">${body}</p>
-      ${clueLines ? `
-        <div class="cmc-clue">
-          <div class="cmc-clue-label">${clueLabel}</div>
-          <div class="cmc-clue-lines">
-            ${clueLines.map(l => `
-              <div class="cmc-clue-line">
-                <span class="cmc-clue-icon">${l.icon}</span>
-                <span>${l.text}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      ` : ''}
       <button class="cmc-continue-btn shimmer-btn" id="modal-continue">${btnLabel}</button>
     </div>
   `;
@@ -107,7 +108,7 @@ function showCluePopup(clue) {
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
 }
 
-export function initPuzzle2(container, clue, onBack, onNext) {
+export function initPuzzle2(container, clue, onBack, onNext, onArchives = null, unlocked = false) {
   const html = `
     <div id="screen-puzzle2" class="screen active">
 
@@ -131,7 +132,6 @@ export function initPuzzle2(container, clue, onBack, onNext) {
       <div class="puzzle-scroll-body">
 
         <section class="puzzle-intro-strip">
-          <p class="pis-tag">MATCH SYMBOLS TO MEANINGS</p>
           <p class="pis-quote">Four Masonic symbols. Four meanings. Drag each symbol onto the meaning you think fits best.</p>
         </section>
 
@@ -140,41 +140,13 @@ export function initPuzzle2(container, clue, onBack, onNext) {
           <p class="pi-body"><strong>Drag</strong> a stone tile from the left over to a meaning on the right. <strong>Get it right</strong> and the slot lights up gold. <strong>Get it wrong</strong> and you lose a life, but you keep three lives, and stuck players can tap the red <strong>"Need a hint?"</strong> button up top.</p>
         </div>
 
-        <div class="masonic-divider">
-          <div class="md-line"></div>
-          <span class="md-diamonds">◆◆</span>
-          <div class="md-line"></div>
-        </div>
-
-        <!-- Manuscript folio header -->
-        <div class="plate-header folio-header">
-          <div class="plate-header-corner ph-tl"></div>
-          <div class="plate-header-corner ph-tr"></div>
-          <div class="plate-header-inner">
-            <span class="plate-tag">FOLIO II</span>
-            <span class="plate-divider">·</span>
-            <span class="plate-title">THE BOOK OF SYMBOLS</span>
-            <span class="plate-divider">·</span>
-            <span class="plate-meta">FOUR EMBLEMS &middot; FOUR BONDS</span>
-          </div>
-        </div>
-
         <div class="puzzle-panels">
           <div class="pp-col pp-fragments">
-            <div class="pp-col-top-accent"></div>
-            <h3 class="pp-col-label">
-              <span class="pp-col-label-dot">◆</span>
-              SYMBOLS
-            </h3>
             <div class="puzzle-source" id="symbol-source"></div>
           </div>
           <div class="pp-col pp-sanctuary">
             <span class="pp-corner-bl"></span>
             <span class="pp-corner-br"></span>
-            <h3 class="pp-col-label">
-              <span class="pp-col-label-dot">◆</span>
-              MEANINGS
-            </h3>
             <div class="puzzle-target pp-drop-grid pp-drop-grid--4" id="symbol-target">
               <div class="drop-slot manuscript-slot" data-slot="1">
                 <span class="ms-initial">S</span>
@@ -207,6 +179,12 @@ export function initPuzzle2(container, clue, onBack, onNext) {
           <span class="material-symbols-outlined pff-icon">emergency_home</span>
           <p class="pff-text" id="feedback-text">Drag each symbol onto the meaning that fits. <strong>3 lives</strong>, and you can tap the red <em>Need a hint?</em> button if you get stuck.</p>
         </div>
+        <div class="pff-side">
+          <button class="pff-archives-btn" id="pff-archives-btn" title="Open the Secret Archives">
+            <span class="material-symbols-outlined">auto_stories</span>
+            Archives
+          </button>
+        </div>
       </div>
 
     </div>
@@ -214,6 +192,12 @@ export function initPuzzle2(container, clue, onBack, onNext) {
 
   container.innerHTML = html;
   window.scrollTo(0, 0);
+
+  if (!unlocked) {
+    scrambleEl(document.querySelector('.pis-quote'));
+    scrambleEl(document.querySelector('.pi-body'));
+    document.querySelectorAll('.slot-label, .slot-sublabel').forEach(scrambleEl);
+  }
 
   if (clue) {
     document.getElementById('clue-btn')?.addEventListener('click', () => showCluePopup(clue));
@@ -308,6 +292,32 @@ export function initPuzzle2(container, clue, onBack, onNext) {
   document.getElementById('back-btn').addEventListener('click', () => {
     if (typeof onBack === 'function') onBack();
   });
+
+  if (typeof onArchives === 'function') {
+    document.getElementById('pff-archives-btn')?.addEventListener('click', () => {
+      gsap.to('#screen-puzzle2', { opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: onArchives });
+    });
+  }
+
+  if (!unlocked) {
+    const panels = document.querySelector('.puzzle-panels');
+    if (panels) panels.classList.add('is-locked');
+    const lockCard = document.createElement('div');
+    lockCard.className = 'puzzle-lock-card';
+    lockCard.innerHTML = `
+      <h3 class="plc-title">Research Required</h3>
+      <p class="plc-body">Explore the Secret Archives and unseal the classified intel to unlock this puzzle.</p>
+      <div class="plc-pendant-link" id="plc-archives-btn" role="button" tabindex="0">
+        <div class="pendant-svg">${SVG_HANGING_PENDANT}</div>
+        <span class="pendant-label">Open the Secret Archives</span>
+      </div>
+    `;
+    panels?.after(lockCard);
+    document.getElementById('plc-archives-btn')?.addEventListener('click', () => {
+      gsap.to('#screen-puzzle2', { opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: onArchives });
+    });
+    gsap.fromTo(lockCard, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.5 });
+  }
 
   const source = document.getElementById('symbol-source');
 
@@ -512,7 +522,7 @@ export function initPuzzle2(container, clue, onBack, onNext) {
         body: "The chain, the bridge, the candle, and the clasped hands. These four symbols were the shared language that bridged Scottish, Dutch, and English Masons in 1886. They couldn't always speak the same words, but they recognized the same emblems.",
         clueLabel: '&#128279; Six real connections to draw in Puzzle 3',
         clueLines: nextClue.lines,
-        btnLabel: 'Continue to Puzzle 3',
+        btnLabel: 'Return to the Lodge',
         onContinue: () => {
           if (typeof onNext === 'function') onNext(nextClue);
         }

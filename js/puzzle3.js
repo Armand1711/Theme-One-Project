@@ -2,8 +2,22 @@ import {
   SVG_FLAME,
   SVG_COMPASS_MARK,
   SVG_RADIANT_DELTA,
-  SVG_WAX_SEAL
+  SVG_WAX_SEAL,
+  SVG_HANGING_PENDANT
 } from './svg-library.js';
+
+function scrambleEl(el) {
+  if (!el) return;
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  let n;
+  while ((n = walker.nextNode())) nodes.push(n);
+  nodes.forEach(n => {
+    n.textContent = n.textContent.replace(/[a-zA-Z]/g, () =>
+      String.fromCharCode(97 + Math.floor(Math.random() * 26))
+    );
+  });
+}
 
 function renderFlames(lives, max = 3) {
   const out = [];
@@ -30,19 +44,6 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
         <div class="cmc-divider-line"></div>
       </div>
       <p class="cmc-body">${body}</p>
-      ${clueLines ? `
-        <div class="cmc-clue">
-          <div class="cmc-clue-label">${clueLabel}</div>
-          <div class="cmc-clue-lines">
-            ${clueLines.map(l => `
-              <div class="cmc-clue-line">
-                <span class="cmc-clue-icon">${l.icon}</span>
-                <span>${l.text}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      ` : ''}
       <button class="cmc-continue-btn shimmer-btn" id="modal-continue">${btnLabel}</button>
     </div>
   `;
@@ -103,7 +104,7 @@ function showCluePopup(clue) {
   overlay.addEventListener('click', (e) => { if (e.target === overlay) closePopup(); });
 }
 
-export function initPuzzle3(container, clue, onBack, onNext) {
+export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, unlocked = false) {
   const html = `
     <div id="screen-puzzle3" class="screen active">
 
@@ -127,19 +128,12 @@ export function initPuzzle3(container, clue, onBack, onNext) {
       <div class="puzzle-scroll-body">
 
         <section class="puzzle-intro-strip">
-          <p class="pis-tag">DRAW THE CONNECTIONS</p>
           <p class="pis-quote">Seven lodges shared one building in 1886. But not every group was connected, only six real bonds linked them. Find those six.</p>
         </section>
 
         <div class="puzzle-instr">
           <h4 class="pi-title">HOW TO PLAY</h4>
           <p class="pi-body"><strong>Click and drag</strong> from one circle to another to draw a line between them. <strong>A real bond</strong> lights up gold. <strong>A wrong guess</strong> flashes red and costs a life. Stuck? Tap the red <strong>"Need a hint?"</strong> button, the Archivist will share what the previous puzzle revealed.</p>
-        </div>
-
-        <div class="masonic-divider">
-          <div class="md-line"></div>
-          <span class="md-diamonds">◆◆</span>
-          <div class="md-line"></div>
         </div>
 
         <div class="network-layout">
@@ -171,6 +165,12 @@ export function initPuzzle3(container, clue, onBack, onNext) {
           <span class="material-symbols-outlined pff-icon">emergency_home</span>
           <p class="pff-text" id="feedback-text">Click and drag from one circle to another. Find <strong>6 real connections</strong>. You have 3 lives, and a hint button if you need it.</p>
         </div>
+        <div class="pff-side">
+          <button class="pff-archives-btn" id="pff-archives-btn" title="Open the Secret Archives">
+            <span class="material-symbols-outlined">auto_stories</span>
+            Archives
+          </button>
+        </div>
       </div>
 
     </div>
@@ -178,6 +178,21 @@ export function initPuzzle3(container, clue, onBack, onNext) {
 
   container.innerHTML = html;
   window.scrollTo(0, 0);
+
+  if (!unlocked) {
+    scrambleEl(document.querySelector('.pis-quote'));
+    scrambleEl(document.querySelector('.pi-body'));
+    // Scramble node label text only — skip child spans (badge counters)
+    document.querySelectorAll('.network-node').forEach(node => {
+      [...node.childNodes]
+        .filter(nd => nd.nodeType === 3)
+        .forEach(nd => {
+          nd.textContent = nd.textContent.replace(/[a-zA-Z]/g, () =>
+            String.fromCharCode(97 + Math.floor(Math.random() * 26))
+          );
+        });
+    });
+  }
 
   if (clue) {
     document.getElementById('clue-btn')?.addEventListener('click', () => showCluePopup(clue));
@@ -274,6 +289,34 @@ export function initPuzzle3(container, clue, onBack, onNext) {
     cleanup();
     if (typeof onBack === 'function') onBack();
   });
+
+  if (typeof onArchives === 'function') {
+    document.getElementById('pff-archives-btn')?.addEventListener('click', () => {
+      cleanup();
+      gsap.to('#screen-puzzle3', { opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: onArchives });
+    });
+  }
+
+  if (!unlocked) {
+    const networkLayout = document.querySelector('.network-layout');
+    if (networkLayout) networkLayout.classList.add('is-locked');
+    const lockCard = document.createElement('div');
+    lockCard.className = 'puzzle-lock-card';
+    lockCard.innerHTML = `
+      <h3 class="plc-title">Research Required</h3>
+      <p class="plc-body">Explore the Secret Archives and unseal the classified intel to unlock this puzzle.</p>
+      <div class="plc-pendant-link" id="plc-archives-btn" role="button" tabindex="0">
+        <div class="pendant-svg">${SVG_HANGING_PENDANT}</div>
+        <span class="pendant-label">Open the Secret Archives</span>
+      </div>
+    `;
+    networkLayout?.after(lockCard);
+    document.getElementById('plc-archives-btn')?.addEventListener('click', () => {
+      cleanup();
+      gsap.to('#screen-puzzle3', { opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: onArchives });
+    });
+    gsap.fromTo(lockCard, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.5 });
+  }
 
   const canvas   = document.getElementById('network-canvas');
   const linesSvg = document.getElementById('network-lines');

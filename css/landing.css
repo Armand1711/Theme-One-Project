@@ -2092,10 +2092,7 @@ a { color: inherit; text-decoration: none; }
   left: 0;
   transform: none;
 }
-/* refined base */
-.context-block::after {
-  /* keep grain — but layer in a base accent via a second pseudo via inline span */
-}
+/* refined base — grain kept via inline span inside context-block */
 
 .context-block .ctx-base {
   position: absolute;
@@ -3459,4 +3456,182 @@ a { color: inherit; text-decoration: none; }
 }
 @media (max-width: 600px) {
   .archives-siege-photo-col { width: 100%; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   INTELLIGENCE DOSSIER — per-puzzle classified reveal system
+   ───────────────────────────────────────────────────────────────────────── */
+.arc-intel-dossier {
+  border: 1px solid rgba(201,162,39,0.35);
+  background:
+    radial-gradient(ellipse at top left, rgba(201,162,39,0.06), transparent 60%),
+    rgba(6,3,1,0.7);
+  position: relative;
+  overflow: hidden;
+}
+.arc-intel-dossier::before {
+  content: "CLASSIFIED";
+  position: absolute;
+  top: 50%; right: -40px;
+  transform: translateY(-50%) rotate(35deg);
+  font-family: var(--sans);
+  font-size: 4.5rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: rgba(140,0,0,0.06);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.arc-intel-stamp-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.arc-intel-stamp {
+  display: inline-block;
+  padding: 4px 14px;
+  border: 2px solid rgba(140,0,0,0.7);
+  color: rgba(180,20,20,0.85);
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  box-shadow: inset 0 0 0 1px rgba(140,0,0,0.2);
+}
+.arc-intel-clearance {
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.7;
+}
+
+.arc-intel-title {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.arc-intel-sub {
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  color: var(--ink-mute);
+  line-height: 1.55;
+  margin: 0 0 22px;
+}
+
+.arc-intel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.arc-intel-line {
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* Redacted bar */
+.arc-redacted {
+  display: inline;
+  background: #0d0604;
+  color: #0d0604;
+  border-radius: 2px;
+  padding: 1px 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.5s ease, color 0.5s ease;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(140,0,0,0.18);
+}
+.arc-redacted:hover {
+  background: #1a0808;
+  color: #1a0808;
+}
+.arc-redacted::after {
+  content: "click to unseal";
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(201,162,39,0.9);
+  color: rgba(0,0,0,0.85);
+  font-family: var(--sans);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.arc-redacted:hover::after { opacity: 1; }
+
+/* Revealed state */
+.arc-redacted--revealed {
+  background: transparent;
+  color: var(--gold);
+  font-style: italic;
+  font-weight: 600;
+  cursor: default;
+}
+.arc-redacted--revealed::after { display: none; }
+.arc-redacted--revealed:hover { background: transparent; }
+
+/* Progress bar */
+.arc-intel-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(201,162,39,0.18);
+}
+.arc-intel-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(201,162,39,0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.arc-intel-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8a6b1c, #f5c430);
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.arc-intel-count {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+.arc-intel-count--done {
+  color: var(--gold);
+}
+
+/* Banner ready state (all intel revealed) */
+.arc-puzzle-banner--ready {
+  border-top-color: var(--gold);
+  background: rgba(8,4,2,0.98);
+}
+.arc-puzzle-banner--ready .apb-label {
+  color: var(--gold);
+  opacity: 0.85;
 }

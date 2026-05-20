@@ -4,8 +4,22 @@ import {
   SVG_RADIANT_DELTA,
   SVG_WAX_SEAL,
   SVG_SQUARE_COMPASS,
-  SVG_CORNER_FLOURISH
+  SVG_CORNER_FLOURISH,
+  SVG_HANGING_PENDANT
 } from './svg-library.js';
+
+function scrambleEl(el) {
+  if (!el) return;
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  let n;
+  while ((n = walker.nextNode())) nodes.push(n);
+  nodes.forEach(n => {
+    n.textContent = n.textContent.replace(/[a-zA-Z]/g, () =>
+      String.fromCharCode(97 + Math.floor(Math.random() * 26))
+    );
+  });
+}
 
 function renderFlames(lives, max = 3) {
   const out = [];
@@ -32,19 +46,6 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
         <div class="cmc-divider-line"></div>
       </div>
       <p class="cmc-body">${body}</p>
-      ${clueLines ? `
-        <div class="cmc-clue">
-          <div class="cmc-clue-label">${clueLabel}</div>
-          <div class="cmc-clue-lines">
-            ${clueLines.map(l => `
-              <div class="cmc-clue-line">
-                <span class="cmc-clue-icon">${l.icon}</span>
-                <span>${l.text}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      ` : ''}
       <button class="cmc-continue-btn shimmer-btn" id="modal-continue">${btnLabel}</button>
     </div>
   `;
@@ -61,7 +62,7 @@ function showCompletionModal({ title, body, clueLabel, clueLines, btnLabel, onCo
   });
 }
 
-export function initPuzzle1(container, onBack, onNext) {
+export function initPuzzle1(container, onBack, onNext, onArchives = null, unlocked = false) {
   const html = `
     <div id="screen-puzzle1" class="screen active">
 
@@ -82,7 +83,6 @@ export function initPuzzle1(container, onBack, onNext) {
       <div class="puzzle-scroll-body">
 
         <section class="puzzle-intro-strip">
-          <p class="pis-tag">REBUILD THE PHOTO</p>
           <p class="pis-quote">Six pieces of the 1886 Union Masonic Temple, scattered. Drag them back into place to see what the building looked like.</p>
         </section>
 
@@ -91,41 +91,13 @@ export function initPuzzle1(container, onBack, onNext) {
           <p class="pi-body"><strong>Drag</strong> each photo fragment from the left into the right slot on the grid. <strong>Watch the edges</strong>, they line up like a real jigsaw. <strong>You have three lives</strong>, every wrong placement costs one. The gold flame icons in the top right show how many lives you have left.</p>
         </div>
 
-        <div class="masonic-divider">
-          <div class="md-line"></div>
-          <span class="md-diamonds">◆◆</span>
-          <div class="md-line"></div>
-        </div>
-
-        <!-- Architectural plate header -->
-        <div class="plate-header">
-          <div class="plate-header-corner ph-tl"></div>
-          <div class="plate-header-corner ph-tr"></div>
-          <div class="plate-header-inner">
-            <span class="plate-tag">PLATE I</span>
-            <span class="plate-divider">·</span>
-            <span class="plate-title">UNION TEMPLE, EXTERIOR ELEVATION</span>
-            <span class="plate-divider">·</span>
-            <span class="plate-meta">DUTOITSPAN ROAD, 1888</span>
-          </div>
-        </div>
-
         <div class="puzzle-panels">
           <div class="pp-col pp-fragments">
-            <div class="pp-col-top-accent"></div>
-            <h3 class="pp-col-label">
-              <span class="pp-col-label-dot">◆</span>
-              FRAGMENTS
-            </h3>
             <div class="puzzle-source grid-3" id="puzzle-source"></div>
           </div>
           <div class="pp-col pp-sanctuary">
             <span class="pp-corner-bl"></span>
             <span class="pp-corner-br"></span>
-            <h3 class="pp-col-label">
-              <span class="pp-col-label-dot">◆</span>
-              SANCTUARY
-            </h3>
             <div class="puzzle-target grid-3 pp-drop-grid" id="puzzle-target">
               <div class="drop-slot" data-slot="1"><span class="slot-pos-marker">I</span><span class="slot-diamond">◆</span></div>
               <div class="drop-slot" data-slot="2"><span class="slot-pos-marker">II</span><span class="slot-diamond">◆</span></div>
@@ -147,11 +119,15 @@ export function initPuzzle1(container, onBack, onNext) {
           <span class="material-symbols-outlined pff-icon">emergency_home</span>
           <p class="pff-text" id="feedback-text">Drag the photo pieces from the left into the right grid. You have <strong>3 lives</strong>, every wrong placement costs one.</p>
         </div>
-        <div class="pff-stats">
+        <div class="pff-side">
           <div class="pff-stat">
             <span class="pff-stat-label">PROGRESS</span>
             <span class="pff-stat-val" id="progress-counter">0/6</span>
           </div>
+          <button class="pff-archives-btn" id="pff-archives-btn" title="Open the Secret Archives">
+            <span class="material-symbols-outlined">auto_stories</span>
+            Archives
+          </button>
         </div>
       </div>
 
@@ -160,6 +136,11 @@ export function initPuzzle1(container, onBack, onNext) {
 
   container.innerHTML = html;
   window.scrollTo(0, 0);
+
+  if (!unlocked) {
+    scrambleEl(document.querySelector('.pis-quote'));
+    scrambleEl(document.querySelector('.pi-body'));
+  }
 
   // ── Health system ────────────────────────────────────────────────────────────
   let lives = 3;
@@ -252,6 +233,32 @@ export function initPuzzle1(container, onBack, onNext) {
   document.getElementById('back-btn').addEventListener('click', () => {
     if (typeof onBack === 'function') onBack();
   });
+
+  if (typeof onArchives === 'function') {
+    document.getElementById('pff-archives-btn')?.addEventListener('click', () => {
+      gsap.to('#screen-puzzle1', { opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: onArchives });
+    });
+  }
+
+  if (!unlocked) {
+    const panels = document.querySelector('.puzzle-panels');
+    if (panels) panels.classList.add('is-locked');
+    const lockCard = document.createElement('div');
+    lockCard.className = 'puzzle-lock-card';
+    lockCard.innerHTML = `
+      <h3 class="plc-title">Research Required</h3>
+      <p class="plc-body">Explore the Secret Archives and unseal the classified intel to unlock this puzzle.</p>
+      <div class="plc-pendant-link" id="plc-archives-btn" role="button" tabindex="0">
+        <div class="pendant-svg">${SVG_HANGING_PENDANT}</div>
+        <span class="pendant-label">Open the Secret Archives</span>
+      </div>
+    `;
+    panels?.after(lockCard);
+    document.getElementById('plc-archives-btn')?.addEventListener('click', () => {
+      gsap.to('#screen-puzzle1', { opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: onArchives });
+    });
+    gsap.fromTo(lockCard, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.5 });
+  }
 
   const imageUrl = 'assets/PT-Masonic_Temple-1888.jpg';
 
@@ -361,8 +368,19 @@ export function initPuzzle1(container, onBack, onNext) {
     gsap.fromTo(piece, { scale: 0.85 }, { scale: 1, duration: 0.3, ease: 'back.out(1.7)' });
     recalcSlots();
 
-    if (slot.classList.contains('correct')) checkStreak();
-    else if (slot.classList.contains('wrong')) loseLife();
+    if (slot.classList.contains('correct')) {
+      checkStreak();
+    } else if (slot.classList.contains('wrong')) {
+      loseLife();
+      const fb = document.getElementById('feedback-text');
+      if (fb) {
+        fb.innerHTML = '<strong style="color:#ff4444;text-shadow:0 0 8px rgba(255,0,0,0.5)">Wrong position — that piece doesn\'t belong there</strong>';
+        gsap.fromTo('#feedback', { backgroundColor: 'rgba(140,0,0,0.18)' }, { backgroundColor: 'transparent', duration: 1.2, ease: 'power2.out' });
+        setTimeout(() => {
+          if (!completed) fb.textContent = `${solved} of 6 pieces in the right place. Keep going.`;
+        }, 1800);
+      }
+    }
   }
 
   slots.forEach(slot => {
@@ -487,7 +505,7 @@ export function initPuzzle1(container, onBack, onNext) {
         body: "You rebuilt the 1888 photograph of the Union Masonic Temple at 126-128 Dutoitspan Road in Kimberley. Seven Masonic groups from English, Scottish, and Dutch backgrounds pooled their money to raise this building. It became the first place in town where all three communities worked side by side.",
         clueLabel: '&#128269; You unlocked these clues. They help in the next puzzle.',
         clueLines: clue.lines,
-        btnLabel: 'Continue to Puzzle 2',
+        btnLabel: 'Return to the Lodge',
         onContinue: () => {
           if (typeof onNext === 'function') onNext(clue);
         }
