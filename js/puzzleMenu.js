@@ -6,7 +6,7 @@ import {
   SVG_FLAME
 } from './svg-library.js';
 
-export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzle3, completedPuzzles = 0, onBack = null) {
+export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzle3, completedPuzzles = 0, onBack = null, playerName = null, onSignOut = null) {
 
   const puzzles = [
     { num: 'I',   romanFull: 'PUZZLE I',   title: 'Rebuild the Photo',   subtitle: 'Drag 6 pieces back together', unlocked: true, complete: completedPuzzles >= 1 },
@@ -26,9 +26,14 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
           <h1>The Lodge</h1>
           <div class="lodge-title-underline"></div>
         </div>
+        ${playerName ? `
+        <div class="lodge-player-badge">
+          <span class="lodge-player-name">${playerName}</span>
+          <button class="lodge-signout-btn" id="lodge-signout-btn">Sign Out</button>
+        </div>` : `
         <div class="lodge-hearts">
           ${SVG_FLAME(true)}${SVG_FLAME(true)}${SVG_FLAME(true)}
-        </div>
+        </div>`}
       </header>
 
       <main class="lodge-main">
@@ -117,6 +122,12 @@ export function initPuzzleMenu(app, onStartPuzzle1, onStartPuzzle2, onStartPuzzl
         });
       }
     });
+  }
+
+  // Sign-out button
+  const signoutBtn = document.getElementById('lodge-signout-btn');
+  if (signoutBtn && typeof onSignOut === 'function') {
+    signoutBtn.addEventListener('click', onSignOut);
   }
 
   // Secret archives link

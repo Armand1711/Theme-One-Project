@@ -3652,3 +3652,193 @@ a { color: inherit; text-decoration: none; }
   color: var(--gold);
   opacity: 0.85;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   AUTH / LOGIN SCREEN
+   ───────────────────────────────────────────────────────────────────────── */
+
+.auth-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: var(--bg);
+  position: relative;
+}
+
+.auth-bg-veil {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(201,162,39,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border-gold-strong);
+  border-radius: 6px;
+  padding: 40px 36px 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.auth-diamond {
+  color: var(--gold);
+  font-size: 0.65rem;
+}
+
+.auth-ornament-line {
+  flex: 1;
+  max-width: 60px;
+  height: 1px;
+  background: var(--border-gold-strong);
+}
+
+.auth-title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1.45rem;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.auth-sub {
+  font-size: 0.77rem;
+  color: var(--ink-mute);
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
+}
+
+.auth-divider {
+  height: 1px;
+  background: var(--border-gold);
+  margin-bottom: 24px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+}
+
+.auth-input {
+  background: var(--surface-2);
+  border: 1px solid var(--border-gold);
+  border-radius: 3px;
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.auth-input:focus { border-color: rgba(201,162,39,0.5); }
+.auth-input::placeholder { color: var(--ink-faint); }
+
+.auth-error {
+  font-size: 0.75rem;
+  color: #e57373;
+  min-height: 18px;
+  text-align: center;
+}
+
+.auth-submit {
+  background: var(--gold);
+  color: #0a0502;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 13px 24px;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+  margin-top: 4px;
+}
+
+.auth-submit:hover:not(:disabled) { background: var(--gold-2); }
+.auth-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.auth-toggle {
+  display: block;
+  margin: 20px auto 0;
+  background: none;
+  border: none;
+  color: var(--ink-mute);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  letter-spacing: 0.02em;
+}
+
+.auth-toggle:hover { color: var(--gold); }
+
+/* ── Player badge in lodge header ─────────────────────────────────────────── */
+
+.lodge-player-badge {
+  justify-self: end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.lodge-player-name {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+}
+
+.lodge-signout-btn {
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  cursor: pointer;
+  padding: 4px 10px;
+  border: 1px solid var(--border-gold);
+  border-radius: 2px;
+  background: transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.lodge-signout-btn:hover {
+  color: var(--gold);
+  border-color: var(--border-gold-strong);
+}

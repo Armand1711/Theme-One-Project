@@ -6,7 +6,11 @@
       "Bash(node --check js/puzzle2.js)",
       "WebSearch",
       "Bash(Get-ChildItem \"c:\\\\Users\\\\arman\\\\Downloads\\\\stitch_the_hidden_bonds\\\\stitch_the_hidden_bonds\\\\\" -Recurse -Filter \"code.html\" | Select-Object FullName)",
-      "WebFetch(domain:api.anthropic.com)"
+      "WebFetch(domain:api.anthropic.com)",
+      "Bash(Test-Path \"c:\\\\Users\\\\arman\\\\OneDrive\\\\Desktop\\\\Theme-One-Project\\\\README.md\")",
+      "Bash(start python *)",
+      "Bash(curl -s http://localhost:8000)",
+      "Bash(curl -s http://localhost:8000/js/firebase.js)"
     ]
   }
 }
