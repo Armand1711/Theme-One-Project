@@ -99,19 +99,19 @@ export function initPuzzle1(container, onBack, onNext, onArchives = null, unlock
           </div>
         </div>
 
-      </div>
-
-      <div class="pff" id="feedback">
-        <div class="pff-main">
-          <span class="material-symbols-outlined pff-icon">emergency_home</span>
-          <p class="pff-text" id="feedback-text">Drag the photo pieces from the left into the right grid. You have <strong>3 lives</strong>, every wrong placement costs one.</p>
-        </div>
-        <div class="pff-side">
-          <div class="pff-stat">
-            <span class="pff-stat-label">PROGRESS</span>
-            <span class="pff-stat-val" id="progress-counter">0/6</span>
+        <div class="pff" id="feedback">
+          <div class="pff-main">
+            <span class="material-symbols-outlined pff-icon">emergency_home</span>
+            <p class="pff-text" id="feedback-text">Drag the photo pieces from the left into the right grid. You have <strong>3 lives</strong>, every wrong placement costs one.</p>
+          </div>
+          <div class="pff-side">
+            <div class="pff-stat">
+              <span class="pff-stat-label">PROGRESS</span>
+              <span class="pff-stat-val" id="progress-counter">0/6</span>
+            </div>
           </div>
         </div>
+
       </div>
 
       <div class="puzzle-arc-float" id="puzzle-arc-float" role="button" tabindex="0" title="Open the Secret Archives">

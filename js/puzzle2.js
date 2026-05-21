@@ -158,13 +158,13 @@ export function initPuzzle2(container, clue, onBack, onNext, onArchives = null, 
           </div>
         </div>
 
-      </div>
-
-      <div class="pff" id="feedback">
-        <div class="pff-main">
-          <span class="material-symbols-outlined pff-icon">emergency_home</span>
-          <p class="pff-text" id="feedback-text">Drag each symbol onto the meaning that fits. <strong>3 lives</strong> — tap the seal on the right to review your research if you need a clue.</p>
+        <div class="pff" id="feedback">
+          <div class="pff-main">
+            <span class="material-symbols-outlined pff-icon">emergency_home</span>
+            <p class="pff-text" id="feedback-text">Drag each symbol onto the meaning that fits. <strong>3 lives</strong> — tap the seal on the right to review your research if you need a clue.</p>
+          </div>
         </div>
+
       </div>
 
       <div class="puzzle-arc-float" id="puzzle-arc-float" role="button" tabindex="0" title="Open the Secret Archives">

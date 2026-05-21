@@ -144,13 +144,13 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
           </div>
         </div>
 
-      </div>
-
-      <div class="pff" id="feedback">
-        <div class="pff-main">
-          <span class="material-symbols-outlined pff-icon">emergency_home</span>
-          <p class="pff-text" id="feedback-text">Click and drag from one circle to another. Find <strong>6 real connections</strong>. You have 3 lives — tap the seal on the right to review your research.</p>
+        <div class="pff" id="feedback">
+          <div class="pff-main">
+            <span class="material-symbols-outlined pff-icon">emergency_home</span>
+            <p class="pff-text" id="feedback-text">Click and drag from one circle to another. Find <strong>6 real connections</strong>. You have 3 lives — tap the seal on the right to review your research.</p>
+          </div>
         </div>
+
       </div>
 
       <div class="puzzle-arc-float" id="puzzle-arc-float" role="button" tabindex="0" title="Open the Secret Archives">

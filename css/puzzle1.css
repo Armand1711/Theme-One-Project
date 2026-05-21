@@ -10,7 +10,7 @@
   background:
     radial-gradient(ellipse at top, rgba(140,31,31,0.06), transparent 60%),
     var(--bg);
-  padding-bottom: 120px;
+  padding-bottom: 48px;
 }
 .screen.active { display: block; }
 
@@ -830,19 +830,15 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   FEEDBACK FOOTER
+   FEEDBACK BAR — in-flow block beneath the puzzle panels
    ───────────────────────────────────────────────────────────────────────── */
 .pff {
-  position: fixed;
-  left: 50%; bottom: 16px;
-  transform: translateX(-50%);
-  z-index: 25;
-  max-width: 720px; width: calc(100% - 32px);
+  margin-top: 28px;
   padding: 14px 22px;
   background: rgba(10,5,2,0.92);
-  backdrop-filter: blur(12px);
   border: 1px solid var(--border-gold);
-  box-shadow: 0 10px 24px -8px rgba(0,0,0,0.6);
+  border-radius: 4px;
+  box-shadow: 0 4px 16px -4px rgba(0,0,0,0.5);
   display: flex; align-items: center; justify-content: space-between;
   gap: 14px;
 }
@@ -1555,10 +1551,6 @@
 }
 
 /* Feedback footer — slightly more prominent */
-.pff {
-  padding: 16px 26px;
-  background: rgba(8,4,2,0.94);
-}
 .pff-text {
   font-family: var(--serif);
   font-style: italic;
