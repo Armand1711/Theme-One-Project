@@ -12,6 +12,7 @@
 
 <br/>
 
+[![Live Site](https://img.shields.io/badge/🔗%20Live%20Site-GitHub%20Pages-222?style=for-the-badge)](https://armand1711.github.io/Theme-One-Project/)
 [![Watch the Walkthrough](https://img.shields.io/badge/▶%20Watch%20Walkthrough-Google%20Drive-crimson?style=for-the-badge)](https://drive.google.com/file/d/1Yl6N5JXyW0muq4pEa43pT5_WLkRzzwCy/view?usp=sharing)
 
 </div>
