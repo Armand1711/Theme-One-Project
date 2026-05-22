@@ -1,26 +1,74 @@
+<div align="center">
+
 # Connect the Hidden Bonds
 
-An interactive heritage puzzle web application centered on the **1886 Union Masonic Temple** in Kimberley, South Africa. Players uncover the hidden social bonds that connected immigrant communities in the diamond fields through three progressive enigmas.
+### An Interactive Heritage Puzzle Experience
+
+*Uncover the secret bonds that built a city out of stone. Explore the echoes of the past within the stone walls of The Groot-Loge.*
+
+<br/>
+
+![App Overview](Mockups/Mockup%20Group.png)
+
+<br/>
+
+[![Watch the Walkthrough](https://img.shields.io/badge/▶%20Watch%20Walkthrough-Google%20Drive-crimson?style=for-the-badge)](https://drive.google.com/file/d/1Yl6N5JXyW0muq4pEa43pT5_WLkRzzwCy/view?usp=sharing)
+
+</div>
 
 ---
 
 ## Overview
 
-The Union Masonic Temple at 126–128 Du Toitspan Road, Kimberley, was built in 1886 by seven Masonic lodges from English, Scottish, and Netherlandic constitutions — immigrant communities from across the world who arrived during the diamond rush. In a city of ~50,000 people, men from Australia, England, the USA, Scotland, the Netherlands, and Germany set aside national difference and pooled their debenture subscriptions to raise a shared home.
+The **Union Masonic Temple** at 126–128 Du Toitspan Road, Kimberley, was built in 1886 by seven Masonic lodges from English, Scottish, and Netherlandic constitutions — immigrant communities from across the world who arrived during the diamond rush. In a city of ~50,000 people, men from Australia, England, the USA, Scotland, the Netherlands, and Germany set aside national difference and pooled their debenture subscriptions to raise a shared home.
 
-This application places the user in the role of an investigator uncovering those hidden bonds one enigma at a time. The tone is deliberately mysterious and archival — a secret society document vault, not a classroom.
+This application places the player in the role of an investigator uncovering those hidden bonds one enigma at a time. The tone is deliberately mysterious and archival — a secret society document vault, not a classroom.
+
+---
+
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="Mockups/Mockup%203.png" alt="Landing Screen" width="300"/>
+      <br/><sub><b>Landing Screen</b></sub>
+    </td>
+    <td align="center">
+      <img src="Mockups/Mockup%205.png" alt="The Lodge — Enigma Menu" width="300"/>
+      <br/><sub><b>The Lodge — Enigma Menu</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="Mockups/Mockup%202.png" alt="Enigma I — Shattered Sanctuary" width="300"/>
+      <br/><sub><b>Enigma I — Shattered Sanctuary</b></sub>
+    </td>
+    <td align="center">
+      <img src="Mockups/Mockup%204.png" alt="Enigma III — Web of Whispers" width="300"/>
+      <br/><sub><b>Enigma III — Web of Whispers</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="Mockups/Mockup%201.png" alt="Secret Archives" width="300"/>
+      <br/><sub><b>Secret Archives — Intelligence Dossier</b></sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
 ## Features
 
-- **Secret Archives** — Classified intelligence dossier per puzzle. Text is redacted on first visit; players click to unseal each item before attempting the puzzle. Revealed intel persists for the session so players can return and review research at any time.
-- **Three progressive puzzles** — Each builds on the previous, escalating from spatial reasoning to symbolic interpretation to relational network mapping.
-- **Health system** — Three lives per puzzle represented as candle flames. Losing a life triggers a flame-extinguish animation and a full-screen crimson flash. Correct streaks restore a life.
-- **Submit Seal** — Puzzle 1 requires the player to explicitly confirm their completed arrangement before the result is revealed.
-- **Completion modals** — Each solved puzzle unlocks a narrative reveal and passes a clue to the next enigma.
-- **Reflection screen** — Final screen synthesises the journey after all three puzzles are solved.
-- **Fully animated** — GSAP 3.12.5 drives all screen transitions, entrance sequences, interactive feedback, and modal reveals.
+- **Player Login & Progress Sync** — Players register with a name and email. Progress is saved to a live database and restored on every return visit.
+- **Secret Archives** — A classified intelligence dossier unlocks per puzzle. Research text is redacted on first visit; players click to unseal each item before attempting the enigma. Revealed intel persists across sessions.
+- **Three Progressive Enigmas** — Each builds on the previous, escalating from spatial reasoning to symbolic interpretation to relational network mapping.
+- **Health System** — Three lives per puzzle represented as candle flames. Losing a life triggers a flame-extinguish animation and a full-screen crimson flash. Correct streaks restore a life.
+- **Submit Seal** — Enigma I requires the player to explicitly confirm their completed arrangement before the result is revealed.
+- **Completion Modals** — Each solved puzzle unlocks a narrative reveal and passes a clue into the next enigma.
+- **Reflection Screen** — A final screen synthesises the investigator's journey after all three enigmas are solved.
+- **Fully Animated** — GSAP 3.12.5 drives all screen transitions, entrance sequences, interactive feedback, and modal reveals.
 
 ---
 
@@ -33,7 +81,7 @@ A photograph of the temple (circa 1888) has been fragmented into six pieces. Dra
 Four Masonic symbols — the clasped hand, the chain, the arched bridge, and the lit candle — must be matched to their historical meanings. Each meaning reflects a real principle that bound the immigrant brotherhood together.
 
 ### Enigma III — Web of Whispers
-Five nodes represent the Union Temple, the English Craft lodges, the Diamond Traders, the Dutch Brethren, and the Scottish Chapter. Draw six lines connecting the pairs with documented historical bonds. Wrong connections cost a life.
+Five nodes represent the Union Temple, the English Craft Lodges, the Diamond Traders, the Dutch Brethren, and the Scottish Chapter. Draw six lines connecting the pairs with documented historical bonds. Wrong connections cost a life.
 
 ---
 
@@ -45,6 +93,8 @@ Five nodes represent the Union Temple, the English Craft lodges, the Diamond Tra
 | Styling | CSS3 with custom properties, no framework |
 | Logic | Vanilla ES6+ modules, no bundler |
 | Animation | GSAP 3.12.5 via CDN |
+| Database | Firebase Firestore (player profiles & progress) |
+| Authentication | Firebase Auth (email/password) |
 | Fonts | Playfair Display (serif headings), Inter (body) via Google Fonts |
 | Icons | Material Symbols Outlined via Google Fonts |
 
@@ -78,24 +128,31 @@ npx serve .
 
 ```
 Theme-One-Project/
-├── index.html              # Single entry point
+├── index.html                  # Single entry point
 ├── css/
-│   ├── landing.css         # Global CSS variables, landing, menu, archives, reflection
-│   └── puzzle1.css         # All three puzzle screen styles
+│   ├── landing.css             # Global CSS variables, landing, menu, archives, reflection
+│   └── puzzle1.css             # All three puzzle screen styles
 ├── js/
-│   ├── main.js             # App entry point, screen orchestration, state
-│   ├── landing.js          # Landing screen
-│   ├── puzzleMenu.js       # Enigma selection menu
-│   ├── menu.js             # Menu utilities
-│   ├── secret_archives.js  # Intelligence dossier — classified intel per puzzle
-│   ├── puzzle1.js          # Enigma I: Shattered Sanctuary (drag-drop jigsaw)
-│   ├── puzzle2.js          # Enigma II: Symbol Cipher (drag-match)
-│   ├── puzzle3.js          # Enigma III: Web of Whispers (node-connection network)
-│   ├── reflection.js       # Final reflection screen
-│   ├── immersion.js        # Atmosphere utilities
-│   └── svg-library.js      # All inline SVGs (wax seals, flames, compass marks)
+│   ├── main.js                 # App entry point, screen orchestration, state
+│   ├── firebase.js             # Firebase Auth + Firestore — login, register, progress sync
+│   ├── loginScreen.js          # Auth UI — register / sign-in screen
+│   ├── landing.js              # Landing screen
+│   ├── puzzleMenu.js           # Enigma selection menu
+│   ├── menu.js                 # Menu utilities
+│   ├── secret_archives.js      # Intelligence dossier — classified intel per puzzle
+│   ├── puzzle1.js              # Enigma I: Shattered Sanctuary (drag-drop jigsaw)
+│   ├── puzzle2.js              # Enigma II: Symbol Cipher (drag-match)
+│   ├── puzzle3.js              # Enigma III: Web of Whispers (node-connection network)
+│   ├── reflection.js           # Final reflection screen
+│   ├── immersion.js            # Atmosphere utilities
+│   └── svg-library.js          # All inline SVGs (wax seals, flames, compass marks)
 └── assets/
-    └── PT-Masonic_Temple-1888.jpg   # Historical photograph used in Enigma I
+    ├── PT-Masonic_Temple-1888.jpg
+    ├── PT-Masonic_Temple-1888-Interior-02.jpg
+    ├── PT-Masonic_Temple-1888-Interior stained glass.jpg
+    ├── PT-Masonic_Temple-1900 hospital.jpg
+    ├── Floor plan masonic.jpg
+    └── Old masonic members photo.jpg
 ```
 
 ---
