@@ -185,4 +185,4 @@ The seven founding lodges spanned three national constitutions (English, Scottis
 
 ## Author
 
-Armand — Theme One Project, 2025
+Armand — Theme One Project, 2026
