@@ -123,7 +123,7 @@ export function initPuzzle2(container, clue, onBack, onNext, onArchives = null, 
 
         <div class="puzzle-instr">
           <h4 class="pi-title">HOW TO PLAY</h4>
-          <p class="pi-body"><strong>Drag</strong> a stone tile from the left over to a meaning on the right. <strong>Get it right</strong> and the slot lights up gold. <strong>Get it wrong</strong> and you lose a life. Need a clue? Tap the seal on the right to review your research.</p>
+          <p class="pi-body"><strong>Drag</strong> a stone tile from the left over to a meaning on the right. <strong>Get it right</strong> and the slot lights up gold. <strong>Get it wrong</strong> and you lose a life. Open the Secret Archives on the right to view your discovered research.</p>
         </div>
 
         <div class="puzzle-panels">
@@ -161,7 +161,7 @@ export function initPuzzle2(container, clue, onBack, onNext, onArchives = null, 
         <div class="pff" id="feedback">
           <div class="pff-main">
             <span class="material-symbols-outlined pff-icon">emergency_home</span>
-            <p class="pff-text" id="feedback-text">Drag each symbol onto the meaning that fits. <strong>3 lives</strong> — tap the seal on the right to review your research if you need a clue.</p>
+            <p class="pff-text" id="feedback-text">Drag each symbol onto the meaning that fits. <strong>3 lives</strong> — open the Secret Archives on the right to view your discovered research.</p>
           </div>
         </div>
 
@@ -223,7 +223,7 @@ export function initPuzzle2(container, clue, onBack, onNext, onArchives = null, 
       if (!completed) {
         const placed = [...document.querySelectorAll('.drop-slot')].filter(s => s.querySelector('.piece')).length;
         document.getElementById('feedback-text').textContent =
-          placed === 0 ? 'Drag each symbol to its meaning. Use the hint button if you need help.'
+          placed === 0 ? 'Drag each symbol to its meaning. Open the Secret Archives on the right to view your discovered research.'
                        : `${solved} of 4 symbols correctly matched. Keep going.`;
       }
     }, 1600);
@@ -370,7 +370,7 @@ export function initPuzzle2(container, clue, onBack, onNext, onArchives = null, 
     if (solved < slots.length) {
       document.getElementById('feedback-text').textContent =
         placed === 0
-          ? 'Drag each symbol to its meaning. Use the hint button if you need help.'
+          ? 'Drag each symbol to its meaning. Open the Secret Archives on the right to view your discovered research.'
           : `${solved} of 4 symbols correctly matched. Keep going.`;
     }
 

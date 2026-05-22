@@ -134,7 +134,7 @@ export function initSecretArchives(app, onBack, puzzleContext = null) {
             </div>
           </div>
           <div class="archives-arch-feature">
-            <div class="archives-arch-feature-icon">${MS('arch')}</div>
+            <div class="archives-arch-feature-icon">${MS('domain')}</div>
             <div class="archives-arch-feature-body">
               <div class="archives-arch-feature-title">Central Arched Entrance</div>
               <div class="archives-arch-feature-text">A semicircular arch frames the main entrance at 126&ndash;128 Dutoitspan Road. The keystone position carries decorative Masonic motifs &mdash; the compass and square &mdash; identifying the building&rsquo;s fraternal purpose to initiates.</div>
@@ -146,6 +146,16 @@ export function initSecretArchives(app, onBack, puzzleContext = null) {
               <div class="archives-arch-feature-title">Stained Glass Windows</div>
               <div class="archives-arch-feature-text">Cecil Rhodes donated the building&rsquo;s principal stained glass window. The coloured glass casts geometric light patterns across the floor of the Great Hall during morning assemblies &mdash; a deliberate symbolic effect noted in lodge records.</div>
             </div>
+          </div>
+        </div>
+        <div class="archives-arch-interior-row">
+          <div class="archives-real-img-frame">
+            <img src="assets/PT-Masonic_Temple-1888-Interior stained glass.jpg" alt="Interior stained glass window donated by Cecil Rhodes" class="archives-real-img" />
+            <div class="archives-img-caption">${MS('light')} Great Hall &mdash; Stained glass window donated by Cecil&nbsp;Rhodes, c.&nbsp;1888</div>
+          </div>
+          <div class="archives-real-img-frame">
+            <img src="assets/PT-Masonic_Temple-1888-Interior-02.jpg" alt="Interior of the Union Masonic Temple Great Hall" class="archives-real-img" />
+            <div class="archives-img-caption">${MS('photo_camera')} Great Hall interior &mdash; Union Masonic Temple, c.&nbsp;1888</div>
           </div>
         </div>
         <div class="archives-ornament">&mdash;&mdash; &#9670; &#9670; &mdash;&mdash;</div>
@@ -240,6 +250,10 @@ export function initSecretArchives(app, onBack, puzzleContext = null) {
           <span class="material-symbols-outlined archives-doc-icon" style="font-variation-settings:'FILL' 0,'wght' 300,'GRAD' 0,'opsz' 48">groups</span>
         </div>
         <p class="archives-doc-quote">&ldquo;They came from different lands and answered to different Grand Lodges — yet within these walls, the only rank that mattered was the degree of one&rsquo;s sincerity.&rdquo;</p>
+        <div class="archives-real-img-frame" style="margin:0 0 24px">
+          <img src="assets/Old masonic members photo.jpg" alt="Founding members of the Union Masonic Temple lodges" class="archives-real-img" />
+          <div class="archives-img-caption">${MS('groups')} Founding lodge brethren &mdash; Union Masonic Temple, Kimberley, c.&nbsp;1889</div>
+        </div>
         <div class="archives-lodge-table">
           <div class="archives-lodge-table-head">
             <span>Lodge</span><span>Constitution</span><span>Origin</span><span>Members</span>
@@ -391,29 +405,24 @@ export function initSecretArchives(app, onBack, puzzleContext = null) {
             <div class="archives-photo-card-body">
               <div class="archives-photo-card-title">The Great Hall Interior</div>
               <div class="archives-photo-card-text">Interior view of the principal lodge room, upper floor. Shows the altar, the three columns, and the Worshipful Master&rsquo;s chair positioned in the east. Stained glass visible at upper right. Recorded in the 1889 consecration programme as &ldquo;a room fit for the labours of Solomon&rsquo;s craftsmen.&rdquo;</div>
-              <span class="archives-doc-tag" style="margin-top:8px;display:inline-block">Record: Plate 7, 1889</span>
             </div>
           </div>
           <div class="archives-photo-card">
-            <div class="archives-photo-placeholder">
-              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 48;font-size:2.5rem;color:rgba(201,162,39,0.3)">light</span>
-              <span class="archives-photo-plate-label">Plate&nbsp;lost c.&nbsp;1899</span>
+            <div class="archives-real-img-frame archives-photo-img-frame">
+              <img src="assets/PT-Masonic_Temple-1888-Interior stained glass.jpg" alt="Rhodes stained glass window, Union Masonic Temple" class="archives-real-img archives-photo-img" />
             </div>
             <div class="archives-photo-card-body">
               <div class="archives-photo-card-title">The Rhodes Stained Glass Window</div>
               <div class="archives-photo-card-text">Close-up photograph of the stained glass window donated by Cecil John Rhodes. The design incorporates geometric Masonic motifs &mdash; the compass, the square, and the all-seeing eye &mdash; within a traditional Victorian leaded-glass format. The window was relocated during the 1899 siege.</div>
-              <span class="archives-doc-tag" style="margin-top:8px;display:inline-block">Record: Plate 12, 1890</span>
             </div>
           </div>
           <div class="archives-photo-card">
-            <div class="archives-photo-placeholder">
-              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 0,'wght' 200,'GRAD' 0,'opsz' 48;font-size:2.5rem;color:rgba(201,162,39,0.3)">groups</span>
-              <span class="archives-photo-plate-label">Plate&nbsp;surviving</span>
+            <div class="archives-real-img-frame archives-photo-img-frame">
+              <img src="assets/Old masonic members photo.jpg" alt="Founding lodge members, Union Masonic Temple, 1889" class="archives-real-img archives-photo-img" />
             </div>
             <div class="archives-photo-card-body">
               <div class="archives-photo-card-title">Consecration Assembly, 1889</div>
               <div class="archives-photo-card-text">Group portrait of lodge members assembled on the steps of the temple for the consecration ceremony on 15 August 1889. Representatives from all seven founding lodges are present. The Worshipful Masters of each lodge stand in the front row. Forty-seven brethren are identified by name in the programme.</div>
-              <span class="archives-doc-tag" style="margin-top:8px;display:inline-block">Record: Plate 3, 1889</span>
             </div>
           </div>
           <div class="archives-photo-card">
@@ -423,7 +432,6 @@ export function initSecretArchives(app, onBack, puzzleContext = null) {
             <div class="archives-photo-card-body">
               <div class="archives-photo-card-title">The Fever Hospital, 1899</div>
               <div class="archives-photo-card-text">Photograph taken during the Siege of Kimberley showing the Great Hall converted to a military fever hospital. Lodge furniture replaced by camp beds. British soldiers are visible. The photograph was confiscated by the military censor and the original plate was never returned to the lodge.</div>
-              <span class="archives-doc-tag" style="margin-top:8px;display:inline-block">Record: Plate 31, Oct 1899</span>
             </div>
           </div>
         </div>

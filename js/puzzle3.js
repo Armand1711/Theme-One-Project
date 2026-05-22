@@ -119,7 +119,7 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
 
         <div class="puzzle-instr">
           <h4 class="pi-title">HOW TO PLAY</h4>
-          <p class="pi-body"><strong>Click and drag</strong> from one circle to another to draw a line between them. <strong>A real bond</strong> lights up gold. <strong>A wrong guess</strong> flashes red and costs a life. Stuck? Tap the seal on the right to review your research.</p>
+          <p class="pi-body"><strong>Click and drag</strong> from one circle to another to draw a line between them. <strong>A real bond</strong> lights up gold. <strong>A wrong guess</strong> flashes red and costs a life. Open the Secret Archives on the right to view your discovered research.</p>
         </div>
 
         <div class="network-layout">
@@ -147,7 +147,7 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
         <div class="pff" id="feedback">
           <div class="pff-main">
             <span class="material-symbols-outlined pff-icon">emergency_home</span>
-            <p class="pff-text" id="feedback-text">Click and drag from one circle to another. Find <strong>6 real connections</strong>. You have 3 lives — tap the seal on the right to review your research.</p>
+            <p class="pff-text" id="feedback-text">Click and drag from one circle to another. Find <strong>6 real connections</strong>. You have 3 lives — open the Secret Archives on the right to view your discovered research.</p>
           </div>
         </div>
 
@@ -208,7 +208,7 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
     setTimeout(() => {
       if (!completed) {
         document.getElementById('feedback-text').textContent =
-          `${connections.length} of 6 bonds drawn. Use the hint button for guidance.`;
+          `${connections.length} of 6 bonds drawn. Open the Secret Archives on the right to view your discovered research.`;
       }
     }, 1600);
   }
@@ -427,7 +427,7 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
       const count = connections.length;
       if (count < correctConnections.length) {
         document.getElementById('feedback-text').textContent =
-          `${count} of 6 bonds drawn. Keep going, use the hint button if you need a clue.`;
+          `${count} of 6 bonds drawn. Keep going, open the Secret Archives on the right to view your discovered research.`;
       }
       checkCompletion();
     } else {
@@ -437,7 +437,7 @@ export function initPuzzle3(container, clue, onBack, onNext, onArchives = null, 
       ft.textContent = 'No bond exists between those two, try a different connection.';
       setTimeout(() => {
         if (!completed) {
-          ft.textContent = `${connections.length} of 6 bonds drawn. Use the hint button for guidance.`;
+          ft.textContent = `${connections.length} of 6 bonds drawn. Open the Secret Archives on the right to view your discovered research.`;
         }
       }, 1800);
     }

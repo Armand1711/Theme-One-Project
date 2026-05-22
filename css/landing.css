@@ -1713,6 +1713,18 @@ a { color: inherit; text-decoration: none; }
   color: var(--ink-mute);
 }
 
+/* Two-up interior photo row */
+.archives-arch-interior-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0 20px;
+}
+
+@media (max-width: 640px) {
+  .archives-arch-interior-row { grid-template-columns: 1fr; }
+}
+
 /* Timeline — rope */
 .archives-timeline {
   position: relative;
@@ -1908,6 +1920,15 @@ a { color: inherit; text-decoration: none; }
 .archives-photo-img-frame {
   padding: 10px;
   margin: 0;
+  height: 220px;
+  overflow: hidden;
+}
+.archives-photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 .archives-photo-placeholder {
   aspect-ratio: 4 / 3;
@@ -3237,21 +3258,6 @@ a { color: inherit; text-decoration: none; }
   font-size: 0.78rem;
   color: var(--ink);
   letter-spacing: 0.02em;
-}
-.archives-img-caption::before {
-  content: "PLATE";
-  display: inline-block;
-  margin-right: 10px;
-  padding: 2px 6px;
-  background: var(--crimson-deep);
-  color: var(--gold-2);
-  font-family: var(--sans);
-  font-style: normal;
-  font-weight: 600;
-  font-size: 0.55rem;
-  letter-spacing: 0.3em;
-  border: 1px solid var(--gold);
-  vertical-align: middle;
 }
 
 /* Timeline — rope feel */

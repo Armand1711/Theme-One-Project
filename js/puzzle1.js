@@ -102,7 +102,7 @@ export function initPuzzle1(container, onBack, onNext, onArchives = null, unlock
         <div class="pff" id="feedback">
           <div class="pff-main">
             <span class="material-symbols-outlined pff-icon">emergency_home</span>
-            <p class="pff-text" id="feedback-text">Drag the photo pieces from the left into the right grid. You have <strong>3 lives</strong>, every wrong placement costs one.</p>
+            <p class="pff-text" id="feedback-text">Drag the photo pieces from the left into the right grid. You have <strong>3 lives</strong> — open the Secret Archives on the right to view your discovered research.</p>
           </div>
           <div class="pff-side">
             <div class="pff-stat">
